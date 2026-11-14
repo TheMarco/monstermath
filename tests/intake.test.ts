@@ -121,4 +121,14 @@ describe('intake staircases', () => {
     });
     expect(reached(add, 7).next).toBeNull();
   });
+
+  it('tells the parent when the check was passed in full', async () => {
+    const { intakeCeiling } = await import('../src/report');
+    const full = Object.fromEntries(STRANDS.map((s) => [s.id, s.levels.length]));
+    const save = (intakeLevels: object) => ({ intakeLevels }) as never;
+    expect(intakeCeiling(save({ add: 3, sub: 2 }))).toBeNull();
+    expect(intakeCeiling(save({ ...full, frac: 2, mul: 1, div: 0, place: 2 }))).toContain('passed in full in addition and subtraction');
+    expect(intakeCeiling(save(full))).toContain('Every topic of the check was passed in full');
+  });
 });
+

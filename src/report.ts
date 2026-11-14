@@ -196,6 +196,20 @@ export function intakeWarning(save: Save): string | null {
   return `In ${names} the check stopped before sums within 10. The game starts there, with berries to count one by one. If that stays hard, counting practice with real objects comes first, which a screen cannot replace.`;
 }
 
+/** Strands where she passed every level of the check: the game has little new to teach there. */
+export function intakeCeiling(save: Save): string | null {
+  const levels = save.intakeLevels;
+  if (!levels) return null;
+  const top = STRANDS.filter((s) => (levels[s.id] ?? 0) >= s.levels.length);
+  if (top.length === 0) return null;
+  if (top.length === STRANDS.length) {
+    return 'Every topic of the check was passed in full. The hardest work in this game is about the end of grade 3, with fractions reaching into grade 4, so it has little new to teach here. What is left is multiplying a fraction by a fraction and the top one or two levels of each skill; after that it is practice.';
+  }
+  const names = top.map((s) => s.name.toLowerCase());
+  const list = names.length === 1 ? names[0] : `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]}`;
+  return `The check was passed in full in ${list}. The game has little new to teach in ${names.length === 1 ? 'that topic' : 'those topics'}: expect practice there, and new learning in the others.`;
+}
+
 /** How often each taught lesson has been seen, and how often she needed the step-by-step help. */
 export function tutoringRows(save: Save): Array<{ lesson: string; teaches: string; seen: number }> {
   return Object.values(LESSONS).map((l) => ({ lesson: l.title, teaches: l.teaches, seen: save.lessons?.[l.id]?.seen ?? 0 }));
@@ -262,6 +276,9 @@ export function teacherSummary(save: Save): string {
     lines.push('');
     lines.push('First-day check, by strand:');
     for (const row of rows) lines.push(`  ${row.strand}: reached "${row.reached}". Stopped at: ${row.next}.`);
+  }
+  for (const note of [intakeWarning(save), intakeCeiling(save)]) {
+    if (note) lines.push('', `Note: ${note}`);
   }
   if (save.placement.length) {
     lines.push('');

@@ -4520,3 +4520,13 @@ button.hpiece:hover {
   font-size: 22px;
   font-weight: 700;
 }
+
+/* A note the parent should not miss: what the game cannot do for this child. */
+.gu-card p.gu-flag {
+  margin-top: 12px;
+  padding: 10px 14px;
+  color: #5c3b06;
+  background: #fff4dc;
+  border-left: 4px solid #e2a100;
+  border-radius: 8px;
+}

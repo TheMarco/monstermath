@@ -2,7 +2,7 @@ import { ALL_SPECIES, SPECIES } from '../data/monsters';
 import { OP_SYMBOL, type Kind } from '../math/expr';
 import { FRAC_ERROR_TEXT } from '../math/fractions';
 import { ERROR_TEXT } from '../math/regroup';
-import { daysAgo, exprStats, FRAC_TEXT, fracStats, levelRows, intakeRows, intakeWarning, tutoringRows, walkthroughCount, KIND_TEXT, monsterStatus, pct, teacherSummary, tripStats, TYPE_TEXT } from '../report';
+import { daysAgo, exprStats, FRAC_TEXT, fracStats, levelRows, intakeCeiling, intakeRows, intakeWarning, tutoringRows, walkthroughCount, KIND_TEXT, monsterStatus, pct, teacherSummary, tripStats, TYPE_TEXT } from '../report';
 import { adoptBackup, currentPlayer, daysPlayed, friends, NAME_MAX, players, readBackup, removePlayer, renamePlayer } from '../state';
 import { button, monsterImg, type Screen } from '../ui/common';
 import { h, replace } from '../ui/dom';
@@ -284,7 +284,8 @@ export const grownupsScreen: Screen = (app, params) => {
                   intakeRows(save).map((x) => row(x.strand, x.reached, x.next)),
                 )
               : null,
-            intakeWarning(save) ? h('p', null, intakeWarning(save)) : null,
+            intakeWarning(save) ? h('p', { class: 'gu-flag' }, intakeWarning(save)) : null,
+            intakeCeiling(save) ? h('p', { class: 'gu-flag' }, intakeCeiling(save)) : null,
             h('p', null, 'Every question asked:'),
             table(
               head('Question', 'Answer given', 'Expected'),
