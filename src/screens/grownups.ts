@@ -3,11 +3,11 @@ import { OP_SYMBOL, type Kind } from '../math/expr';
 import { FRAC_ERROR_TEXT } from '../math/fractions';
 import { ERROR_TEXT } from '../math/regroup';
 import { daysAgo, exprStats, FRAC_TEXT, fracStats, levelRows, intakeRows, intakeWarning, tutoringRows, walkthroughCount, KIND_TEXT, monsterStatus, pct, teacherSummary, tripStats, TYPE_TEXT } from '../report';
-import { adoptBackup, currentPlayer, daysPlayed, NAME_MAX, players, readBackup, removePlayer, renamePlayer } from '../state';
-import { button, type Screen } from '../ui/common';
+import { adoptBackup, currentPlayer, daysPlayed, friends, NAME_MAX, players, readBackup, removePlayer, renamePlayer } from '../state';
+import { button, monsterImg, type Screen } from '../ui/common';
 import { h, replace } from '../ui/dom';
 
-/** Plain progress page for the parent. No game styling, no speech. */
+/** Progress page for the parent: calm, readable, no speech. */
 export const grownupsScreen: Screen = (app, params) => {
   const { save } = app;
   const player = currentPlayer();
@@ -20,6 +20,24 @@ export const grownupsScreen: Screen = (app, params) => {
 
   const row = (...cells: Array<string | number>): HTMLElement => h('tr', null, cells.map((c) => h('td', null, String(c))));
   const head = (...cells: string[]): HTMLElement => h('tr', null, cells.map((c) => h('th', null, c)));
+  const table = (...rows: Array<HTMLElement | HTMLElement[]>): HTMLElement => h('div', { class: 'gu-table' }, h('table', {}, rows.flat()));
+  const card = (title: string, ...kids: unknown[]): HTMLElement => h('section', { class: 'gu-card' }, h('h2', null, title), kids as HTMLElement[]);
+  const tile = (value: string | number, label: string): HTMLElement => h('div', { class: 'gu-tile' }, h('b', null, String(value)), h('span', null, label));
+
+  /** A monster's name with its picture, so the tables match what the child sees. */
+  const face = (name: string): HTMLElement => {
+    const id = ALL_SPECIES.find((x) => SPECIES[x].name === name);
+    return h('span', { class: 'gu-face' }, id ? monsterImg(id, save.monsters[id]?.stage ?? 1, 30) : null, name);
+  };
+  /** "2 of 5" as filled steps, with the words beside them. */
+  const steps = (level: string): HTMLElement => {
+    const m = /^(\d+) of (\d+)$/.exec(level);
+    if (!m) return h('span', { class: 'gu-muted' }, level);
+    const at = Number(m[1]);
+    const of = Number(m[2]);
+    return h('span', { class: 'gu-steps' }, h('span', { class: 'gu-steps-bar', 'aria-hidden': 'true' }, Array.from({ length: of }, (_, i) => h('i', { class: i < at ? 'on' : '' }))), level);
+  };
+  const cells = (...kids: Array<HTMLElement | string | number>): HTMLElement => h('tr', null, kids.map((c) => h('td', null, typeof c === 'object' ? c : String(c))));
 
   const copy = (): void => {
     const text = teacherSummary(save);
@@ -119,7 +137,18 @@ export const grownupsScreen: Screen = (app, params) => {
         'div',
         { class: 'gu-top' },
         h('h1', null, `For grown-ups: ${who}`),
-        button('Back to the game', () => app.go(save.introDone ? 'home' : 'title'), 'btn-small'),
+        button('Back to the game', () => app.go(save.introDone ? 'home' : 'title'), 'btn-small gu-back'),
+      ),
+      h(
+        'div',
+        { class: 'gu-page' },
+      h(
+        'div',
+        { class: 'gu-tiles' },
+        tile(days.length, days.length === 1 ? 'day played' : 'days played'),
+        tile(days.length ? days[days.length - 1]! : 'not yet', 'last played'),
+        tile(`${friends(save).length} of ${ALL_SPECIES.length}`, 'monsters befriended'),
+        tile(week.correct, 'number sentences right, last 7 days'),
       ),
       h(
         'p',
@@ -129,17 +158,16 @@ export const grownupsScreen: Screen = (app, params) => {
           : `Played on ${days.length} ${days.length === 1 ? 'day' : 'days'}. First ${days[0]}, latest ${days[days.length - 1]}. A session of 10 to 15 minutes a day is the target; the three "Today" goals take about that long.`,
       ),
 
-      h('h2', null, `Where ${who} is now`),
+      card(
+        `Where ${who} is now`,
       h(
         'p',
         null,
         'Every skill is a ladder. Problems come from the current level, and about one in four comes from the level above. The level goes up when at least five of the last six problems were right the first time without help, and down after two misses in a row. A miss on a problem from the level above never counts.',
       ),
-      h(
-        'table',
-        null,
+      table(
         head('Skill', 'Monster', 'Level', 'Working on', 'Lately'),
-        levelRows(save).map((x) => row(x.skill, x.monster, x.level, x.working, x.recent)),
+        levelRows(save).map((x) => cells(x.skill, face(x.monster), steps(x.level), x.working, x.recent)),
       ),
       h(
         'p',
@@ -147,12 +175,12 @@ export const grownupsScreen: Screen = (app, params) => {
         'A new monster comes out when the skill before it is secure (six or more problems, most of the recent ones right the first time). If the class has moved on and a topic is needed now, open everything: ',
         openBtn,
       ),
+      ),
 
-      h('h2', null, 'Number sentences (make the number)'),
+      card(
+        'Number sentences (make the number)',
       h('p', null, easyNote),
-      h(
-        'table',
-        null,
+      table(
         head('Kind of sentence', 'All time', 'Last 7 days'),
         (Object.keys(KIND_TEXT) as Kind[]).map((k) => row(KIND_TEXT[k], all.byKind[k], week.byKind[k])),
         row('Tries that did not equal the number', all.attempts - all.correct, week.attempts - week.correct),
@@ -168,11 +196,11 @@ export const grownupsScreen: Screen = (app, params) => {
             ),
           )
         : null,
+      ),
 
-      h('h2', null, 'Berry Canyon (2-digit addition and subtraction)'),
-      h(
-        'table',
-        null,
+      card(
+        'Berry Canyon (2-digit addition and subtraction)',
+      table(
         head('Problem type', 'Problems', 'Right first try', 'Used the blocks', 'Error patterns seen'),
         trips.map((s) =>
           row(
@@ -200,11 +228,11 @@ export const grownupsScreen: Screen = (app, params) => {
             }),
           )
         : null,
+      ),
 
-      h('h2', null, 'Honey Hollow (fractions)'),
-      h(
-        'table',
-        null,
+      card(
+        'Honey Hollow (fractions)',
+      table(
         head('Idea', 'Problems', 'Right first try', 'Needed counting help', 'Error patterns seen'),
         fracStats(save).map((s) =>
           row(
@@ -227,50 +255,52 @@ export const grownupsScreen: Screen = (app, params) => {
               .map((f) => h('span', { class: f.firstTry ? 'ok' : 'miss' }, `${f.text}${f.answers.length > 1 ? ` (first answered ${f.answers.slice(0, -1).join(', ')})` : ''}`)),
           )
         : null,
+      ),
 
-      h('h2', null, 'Teaching'),
+      card(
+        'Teaching',
       h(
         'p',
         null,
         `Each lesson plays once before its skill, again whenever "Teach me" is pressed, and by itself (at most once a day) after two missed problems in a row. Step-by-step help on a berry trip was used ${walkthroughCount(save)} times.`,
       ),
-      h('table', null, head('Lesson', 'What it teaches', 'Times seen'), tutoringRows(save).map((x) => row(x.lesson, x.teaches, x.seen))),
+      table( head('Lesson', 'What it teaches', 'Times seen'), tutoringRows(save).map((x) => row(x.lesson, x.teaches, x.seen))),
+      ),
 
-      h('h2', null, 'Skills by monster'),
-      h(
-        'table',
-        null,
+      card(
+        'Skills by monster',
+      table(
         head('Monster', 'Skill', 'Status'),
-        ALL_SPECIES.map((id) => row(SPECIES[id].name, SPECIES[id].skill, monsterStatus(save, id))),
+        ALL_SPECIES.map((id) => cells(face(SPECIES[id].name), SPECIES[id].skill, monsterStatus(save, id))),
+      ),
       ),
 
       save.placement.length
-        ? [
-            h('h2', null, 'First-day check'),
+        ? card(
+            'First-day check',
             intakeRows(save).length
-              ? h(
-                  'table',
-                  null,
+              ? table(
                   head('Strand', 'Highest level passed', 'Where it stopped'),
                   intakeRows(save).map((x) => row(x.strand, x.reached, x.next)),
                 )
               : null,
             intakeWarning(save) ? h('p', null, intakeWarning(save)) : null,
             h('p', null, 'Every question asked:'),
-            h(
-              'table',
-              null,
+            table(
               head('Question', 'Answer given', 'Expected'),
               save.placement.map((p) => row(p.prompt, p.unsure ? 'not sure' : (p.given ?? ''), p.correct ? 'correct' : p.expected)),
             ),
-          ]
+          )
         : null,
 
-      h('h2', null, 'Player'),
-      h('div', { class: 'gu-actions' }, h('label', { class: 'gu-label' }, 'Name ', nameInput), button('Save name', rename, 'btn-small'), resetBtn, removeBtn),
+      card(
+        'Player',
+      h('div', { class: 'gu-actions' }, h('label', { class: 'gu-label' }, 'Name ', nameInput), button('Save name', rename, 'btn-small'), h('span', { class: 'gu-danger' }, resetBtn, removeBtn)),
       h('p', { class: 'gu-small' }, 'Add another child with "Players" on the title screen. Each player has separate progress.'),
+      ),
 
-      h('h2', null, 'Share and back up'),
+      card(
+        'Share and back up',
       h(
         'div',
         { class: 'gu-actions' },
@@ -284,6 +314,8 @@ export const grownupsScreen: Screen = (app, params) => {
         'p',
         { class: 'gu-small' },
         'Progress is stored in this browser on this computer only, and clearing the browser data erases it. A backup file holds one player. Loading one never overwrites anyone: it fills the current player if they have not started yet, and otherwise adds a new player. To move to another computer, save a backup here and load it on this page there.',
+      ),
+      ),
       ),
     ),
   );

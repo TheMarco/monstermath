@@ -4080,3 +4080,254 @@ button.hpiece:hover {
   border: 0;
   box-shadow: 0 2px 10px rgba(40, 20, 50, 0.22);
 }
+
+/* ---- grown-ups page: a calm report --------------------------------------- */
+
+.grownups-screen {
+  background: #f6f1ea;
+  color: #2b2330;
+}
+
+.gu-scroll {
+  padding: 0 0 56px;
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+/* The title and the way back stay in view while the page scrolls. */
+.gu-top {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  padding: 14px 120px;
+  background: rgba(246, 241, 234, 0.94);
+  backdrop-filter: blur(6px);
+  border-bottom: 1px solid #e4dbd0;
+}
+
+.gu-scroll h1 {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--plum);
+}
+
+.gu-page {
+  padding: 22px 120px 0;
+}
+
+.gu-tiles {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+
+.gu-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 14px 18px;
+  background: #fff;
+  border: 1px solid #e4dbd0;
+  border-radius: 14px;
+}
+
+.gu-tile b {
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--plum);
+}
+
+.gu-tile span {
+  font-size: 13px;
+  color: #6b6070;
+}
+
+.gu-lead {
+  margin: 14px 2px 0;
+  color: #4d4352;
+}
+
+.gu-card {
+  margin-top: 18px;
+  padding: 20px 24px 22px;
+  background: #fff;
+  border: 1px solid #e4dbd0;
+  border-radius: 16px;
+}
+
+.gu-card h2 {
+  margin: 0 0 8px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--plum);
+}
+
+.gu-card p {
+  max-width: 820px;
+  color: #4d4352;
+}
+
+.gu-card p + p,
+.gu-table + p {
+  margin-top: 12px;
+}
+
+.gu-table {
+  margin-top: 12px;
+  border: 1px solid #ebe4da;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.gu-scroll table {
+  margin-top: 0;
+}
+
+.gu-scroll th,
+.gu-scroll td {
+  padding: 8px 14px;
+  border-bottom: 1px solid #f0eae2;
+  vertical-align: middle;
+}
+
+.gu-scroll tr:last-child td {
+  border-bottom: 0;
+}
+
+.gu-scroll th {
+  font-size: 13px;
+  font-weight: 600;
+  color: #6b6070;
+  background: #faf6f0;
+  border-bottom: 1px solid #ebe4da;
+}
+
+.gu-scroll td:first-child {
+  font-weight: 600;
+  color: #2b2330;
+}
+
+.gu-face {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.gu-muted {
+  color: #8a808f;
+}
+
+.gu-steps {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.gu-steps-bar {
+  display: inline-flex;
+  gap: 3px;
+}
+
+.gu-steps-bar i {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  background: #e8e0d6;
+}
+
+.gu-steps-bar i.on {
+  background: var(--berry);
+}
+
+.gu-recent {
+  margin-top: 12px;
+  font-size: 13px;
+  color: #6b6070;
+}
+
+.gu-recent span {
+  margin: 3px 6px 3px 0;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 14px;
+  color: #1f5a33;
+  background: #e6f4e8;
+}
+
+.gu-recent span.miss {
+  color: #8a4a0c;
+  background: #fdebd6;
+}
+
+.gu-small {
+  margin-top: 12px;
+  font-size: 13px;
+  color: #6b6070;
+}
+
+.gu-danger {
+  display: inline-flex;
+  gap: 12px;
+  margin-left: auto;
+}
+
+/* Plain buttons here: the chunky game buttons belong to the child's screens. */
+.grownups-screen .btn {
+  font-size: 14px;
+  font-weight: 600;
+  padding: 7px 14px;
+  color: var(--plum);
+  background: #fff;
+  border: 1.5px solid #cfc3d1;
+  border-radius: 10px;
+  box-shadow: none;
+}
+
+.grownups-screen .btn:hover:not([disabled]) {
+  background: #f6f0f7;
+  border-color: var(--plum);
+  transform: none;
+}
+
+.grownups-screen .btn:active:not([disabled]) {
+  transform: none;
+  box-shadow: none;
+  background: #ece2ee;
+}
+
+.grownups-screen .gu-back {
+  color: #fff;
+  background: var(--plum);
+  border-color: var(--plum);
+}
+
+.grownups-screen .gu-back:hover:not([disabled]) {
+  background: #5d3158;
+}
+
+.grownups-screen .gu-danger .btn {
+  color: #a3262a;
+  border-color: #e6bcbc;
+}
+
+.grownups-screen .btn.btn-danger {
+  color: #fff;
+  background: #b8323a;
+  border-color: #b8323a;
+}
+
+.gu-name {
+  padding: 6px 10px;
+  border: 1.5px solid #cfc3d1;
+  border-radius: 10px;
+  margin-left: 6px;
+}
+
+.gu-note {
+  font-size: 14px;
+  color: #1f5a33;
+}
