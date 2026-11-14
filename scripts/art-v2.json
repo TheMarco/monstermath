@@ -1,0 +1,25 @@
+{
+  "note": "Bold cartoon redesign (2026-11-13). Scenario asset ids per monster and stage. Style anchor: puff stage 1.",
+  "model": "model_openai-gpt-image-2-5-sunburst",
+  "stage1": {
+    "puff": "asset_oQzuVzEj7PDVkiPLkuxZ8u63",
+    "pim": "asset_QkMEecBQ2NiKB2vus7KiaNWV",
+    "bop": "asset_32uVWvf8fvH34dZj2mrE5CS7",
+    "dab": "asset_YvkKJc7RUsbKUQxYJZpyxJfe",
+    "moss": "asset_eBTYnj8r88K5YJfptHFHMZv3",
+    "glim": "asset_EYjpdWxPbYdrmvnftRQDCT4F",
+    "fenn": "asset_BZfW5kJPyq2AymDqtDxfqc6h",
+    "nub": "asset_cQuRbhXViAu9wbyP1wfRbMqw",
+    "plum": "asset_NKgx3vc2kkchm2pbWx8fjwVN",
+    "dusk": "asset_cLhYWFhhNeUSNSnKVC8teiXN",
+    "chip": "asset_Lffgr8XKfopDx3ywA23fnNeP",
+    "tup": "asset_aABLyYnkPg8WUBeJEpNPMYRe",
+    "jam": "asset_GsQGZYq14zH1dt2i6GAhePEE",
+    "mint": "asset_ofWnYSa8i4WsogABLJtAJDPd",
+    "pom": "asset_K1sUJgKvSHY2R7qkHoCECe8f",
+    "nox": "asset_F1GPoZmqi9JzE8p5HTKq9tDE",
+    "fizz": "asset_Hpo7XRvyHZ5sXFw4d6SenAq1"
+  },
+  "stage2": { "puff": "asset_VXLuHhkxLs4SUhR4r6g4cKbE" },
+  "stage3": { "puff": "asset_Wso9Ya6CZSVcm6t9rbDUqQqC" }
+}

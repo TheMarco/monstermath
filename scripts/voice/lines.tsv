@@ -1,0 +1,870 @@
+welcome	Welcome to Monster Meadow! Three little monsters want a friend. Who do you pick?
+q_place	Your friend is hungry! Each crate holds ten berries. How many berries are here?
+q_add	Your friend has twenty-three berries. Here come fourteen more. How many now?
+q_addR	Your friend has twenty-seven berries. Here come fifteen more. How many now?
+q_sub	Your friend has forty-six berries, and eats twelve. How many are left?
+q_subR	Your friend has fifty-two berries, and eats twenty-seven. How many are left?
+q_array	Look at the rows of berries. Which one matches the picture?
+q_share	Twelve berries, shared by three friends. Which one matches the picture?
+m_hello	You have a new friend! Tap your friend to say hello.
+m_name	Does your friend need a new name? Type one, or keep this one.
+m_feed	Your friend is hungry! Tap the berries to feed your friend.
+m_more2	Nice. Now let us see what you two can do together.
+m_break2	Quick break! Give your partner a high five.
+i_intro2	Answer what you can. If you are not sure, that is okay. Just press, Not sure.
+i_next2	Nice. Next round!
+i_count	How many berries?
+i_carts	A cart holds one hundred berries. A crate holds ten. How many berries are here?
+i_bigger	Which number is bigger?
+i_in_all	How many berries in all?
+i_what_make	What does this make?
+i_missing	Which number is missing?
+i_each	The berries are shared equally. How many does each friend get?
+i_match_groups	Look at the groups of berries. Which one matches the picture?
+i_frac_part	How much of the bar is purple?
+i_frac_bigger	Which one is bigger?
+i_frac_same	Which one is the same amount?
+got1	Thanks!
+got2	Got it!
+got3	Okay!
+got4	Next one!
+got5	Noted!
+thats_okay	That is okay!
+first_friend	You made your first friend! Now let us go find more monsters.
+home_tip	This is your meadow. Something is hiding in the tall grass. Go and say hi!
+egg_ready	Your egg is ready to hatch! Tap it!
+egg_cold	Your egg needs to get warm. Every right answer warms it up.
+egg_hatched	Your egg hatched! Say hello to your new friend!
+wants_play	This friend wants to play with you today!
+day_done2	That is all of today done! Your first partner earned a bonus star. Come back tomorrow for more.
+no_berries	No berries left. Play a game to earn more!
+new_buddy	This is your buddy now! Your buddy helps you, and teaches you new things.
+all_full	So full! No more berries today.
+who_is_it	Who could it be? Go and look!
+met_this	You met this one. Keep going to make friends!
+t_wish	Wish granted!
+t_bond	You are closer friends now!
+t_level	Ranger level up!
+t_egg	You got a mystery egg!
+t_sticker	New sticker!
+wild2_any	A wild monster!
+wild2_add	A wild monster! It loves plus treats.
+wild2_sub	A wild monster! It loves minus treats.
+wild2_mul	A wild monster! It loves times treats.
+wild2_div	A wild monster! It loves sharing treats.
+lets_play	Let us play!
+how_to	Pick a number, then a sign, then another number.
+already	You found that one already. Try a new one!
+easy_again	True! But your friend has had that kind of easy treat.
+flip	A flip! Same parts, other way round.
+flip_have	True! That is a flip of one you have.
+tired2_add	That works. But that is a lot of plus treats. Try another kind!
+tired2_sub	That works. But that is a lot of minus treats. Try another kind!
+tired2_mul	That works. But that is a lot of times treats. Try another kind!
+tired2_div	That works. But that is a lot of sharing treats. Try another kind!
+easy_one	True! That is the easy one. Can you make a trickier treat?
+bigger_parts	True! Now try bigger parts.
+nice1	Nice one!
+nice2	Great treat!
+nice3	Good thinking!
+nice4	That works!
+double2	A double! Nice!
+round_number	A round number. Smart!
+new_kind	A new kind of treat!
+almost_add	Almost ready! This monster loves plus treats. Make one with plus.
+almost_sub	Almost ready! This monster loves minus treats. Make one with minus.
+almost_mul	Almost ready! This monster loves times treats. Make one with times.
+almost_div	Almost ready! This monster loves sharing treats. Make one with the share sign.
+zero_groups	You cannot share into zero groups. Try another number.
+not_even	That does not share evenly. Some are left over.
+too_much_away	That takes away too much.
+too_many	That is too many.
+not_enough	That is not enough.
+not_it	Not that one. Look at the bars and try again.
+hint_add	Start with this number. How many more do you need?
+hint_sub	Start with this number. How many do you take away?
+hint_mul	Look at the rows of berries. How many are in each row?
+hint_div	Look at the groups of berries. How many groups are there?
+no_hint	You found so many! Try any numbers you like.
+keep_going	Keep going! Your friend still wants treats.
+new_friend	You made a new friend!
+got_star	Your friend got a star!
+grew_up	Your friend grew up! Look how big and strong!
+full_today	That was so much fun! Your friend is full of stars for today. More stars tomorrow!
+how_many_now	How many now?
+how_many_left	How many are left?
+tip_add	Put the berries together. Then count the crates and the loose berries.
+tip_sub	Click the berries to feed your friend. Then count what is left.
+so_many_loose	So many loose berries! Ten fit in a crate. Pack a crate.
+now_count	Now count the crates and the loose berries.
+packed	Packed! Ten berries made one new crate. Now count.
+made_cart	Ten crates made one cart. That is one hundred!
+packed_back	Packed back into a crate. Now count what is left.
+opened	One crate opened. Now there are ten more loose berries.
+is_full	Your friend is full. Count what is left.
+crate_too_much	A whole crate is too much. Open a crate to get loose berries.
+all_eaten	All eaten! How many are left? Count them.
+need_open	No loose berries left. Open a crate!
+c_no_carry	Look at the loose berries. Ten of them fit in a crate. Pack a crate, then count again.
+c_need_open	There are not enough loose berries. Open a crate to get more.
+c_reversed	So close! Check which number is crates, and which is loose berries.
+c_grows	More berries are coming, so the pile grows. Put them together.
+c_shrinks	Your friend is eating berries, so the pile shrinks. Feed your friend, and count what is left.
+c_off_one	So close! Count the berries one more time.
+c_off_ten	So close! Count the crates one more time.
+c_other	Not yet. Let us use the berries to find out.
+c_count	Not yet. Count the crates, then the loose berries.
+c_together	Not yet. Put the berries together and count.
+c_here	Not yet. Here are the berries to help.
+yes	Yes! You got it!
+l_intro	Time for a tiny lesson. Watch me first!
+l_try	Not quite. Look at the picture, and try again.
+l_show_answer	Here is the answer. Look at the picture, and count with me.
+l_parts_1	Every number is made of parts. Here is twelve.
+l_parts_2	I can break it into ten and two. Ten plus two makes twelve.
+l_parts_3	Or six and six. A double!
+l_parts_4	I can also start bigger, and take some away. Fifteen minus three.
+l_parts_5	Your turn. Seven, and how many more, to make twelve?
+l_parts_6	Monsters love treats with real parts. Plus zero is true, but it is the easy one. Try bigger parts!
+l_pack_1	Watch me add. Twenty-seven berries, and fifteen more.
+l_pack_2	I put them together. Three crates, and twelve loose berries. That is too many loose ones!
+l_pack_3	Ten loose berries fit in one crate. I pack ten. Now there are four crates, and two loose berries.
+l_pack_4	Four crates and two loose berries is forty-two.
+l_pack_5	Your turn. Thirty-six and eighteen. Too many loose berries. Press, pack ten.
+l_pack_6	How many berries now? Count the crates, then the loose ones.
+l_pack_7	You packed a crate! Grown-ups call that regrouping.
+l_open_1	Watch me take away. Fifty-two berries. My friend eats twenty-seven.
+l_open_2	First the crates. Two crates gone.
+l_open_3	Now seven loose berries. But there are only two! So I open a crate.
+l_open_4	Now I can take seven. Two crates and five loose berries are left. Twenty-five.
+l_open_5	Your turn. Forty-three, take away eighteen. One crate is gone. Now eight loose berries, but there are only three. Press, open a crate.
+l_open_6	Now eight can go. How many berries are left? Count the crates, then the loose ones.
+l_open_7	You opened a crate! That is how to take away when there are not enough loose ones.
+l_rows_1	Look. Berries in rows. Three rows, with four berries in each row.
+l_rows_2	I could count four, and four, and four. That is twelve.
+l_rows_3	A faster way to say it: three times four. Three rows of four makes twelve.
+l_rows_4	Turn it around: four rows of three. Still twelve! Four times three is the same as three times four.
+l_rows_5	Your turn. Two rows of five. Which treat matches?
+l_rows_6	How many berries is two times five?
+l_rows_7	That is multiplication: equal rows.
+l_share_1	Twelve berries, and three friends. Everyone gets the same.
+l_share_2	I share them out, one each, until they are gone. Each friend gets four.
+l_share_3	We say: twelve divided by three is four.
+l_share_4	Look, it is the rows again! Three rows of four is twelve. Sharing is times, backwards.
+l_share_5	Your turn. Ten berries, two friends. Which treat matches?
+l_share_6	How many does each friend get?
+l_share_7	That is division: sharing equally.
+show_you	Let me show you.
+w_add	Let us do it together. First, put the berries together.
+w_pack	More than nine loose berries. Ten of them go in a crate.
+w_sub	Let us do it together. First, feed the crates.
+w_open	Not enough loose berries. So we open a crate.
+w_feed	Now feed the loose berries.
+w_count	Now count. Crates first, then the loose berries. Pick the numbers below.
+help_hint	Here is a little help.
+hollow_tip	Welcome to Honey Hollow! The monsters here love honey bars, cut into equal pieces.
+wild_honey	A wild monster! It loves honey.
+fq_name	How much of the honey bar is gold? Pick how many pieces are gold, and how many pieces there are in all.
+fq_name_s	How much of the bar is gold?
+fq_build	Fill the honey bar to make this fraction.
+fq_build_cut	First cut the bar into equal pieces. Then fill it to make this fraction.
+fq_compare	Which bar has more honey? Or are they the same?
+fq_match	Fill the bottom bar, so it has the same amount of honey as the top bar.
+fq_times	Your friend eats the same piece of honey bar every day. How much is that in all? Press, add a piece, to find out.
+fq_times_s	How much honey in all?
+fq_tray	Your friend wants a piece of a piece. First cut the tray one way. Then cut it the other way.
+fq_tray_s	How much of the whole tray is that?
+f_all_pieces	All the pieces are down. Count them. The pieces are still the same size.
+f_tray_cut1	That is the first piece, in gold. Now take a part of the gold.
+f_tray_cut2	The dark gold is the piece of the piece. Count the dark pieces. Then count all the small pieces in the tray.
+f_count_with_me	Let us count together. The gold pieces go on top. The pieces in one whole go on the bottom.
+f_tap_glow	Let me help. Tap the pieces that glow.
+f_same_yes	Yes! Different pieces, same amount.
+f_show_bars	Here are the bars to help.
+fc_swapped	So close! The bottom number is how many pieces in all. The top number is how many are gold.
+fc_empty	Count the gold pieces, not the empty ones.
+fc_partpart	The bottom number counts all the pieces, gold and empty together.
+fc_count	Not yet. Count the pieces in the whole bar. Then count the gold ones.
+fc_cuts	Look at the bottom number. That is how many equal pieces the bar needs.
+fc_fill	Look at the top number. That is how many pieces to fill.
+fc_bigger_bottom	A bigger bottom number means more cuts. More cuts make smaller pieces.
+fc_look_bars	Not yet. Look at how far the gold goes in each bar.
+fc_match	Not yet. Make the gold go just as far as in the top bar.
+fc_times_both	The pieces stay the same size, so the bottom number stays the same. Only the top number grows.
+fc_times_added	It is times, not plus. Count every piece you put down.
+fc_times_other	Not yet. Put the pieces down, and count them.
+fc_tray_added	Do not add the bottom numbers. Count all the small pieces in the whole tray.
+fc_tray_one	That is only one of the two cuts. Cut the tray both ways, and count.
+fc_tray_other	Not yet. Cut the tray both ways. Then count the dark pieces, and all the small pieces.
+l_frac_1	Here is one whole honey bar.
+l_frac_2	I cut it into four equal pieces. Every piece is the same size.
+l_frac_3	I fill one piece with honey. That is one fourth of the bar.
+l_frac_4	The bottom number says how many equal pieces are in the whole bar. The top number says how many are gold.
+l_frac_5	Now three pieces are gold. Three fourths.
+l_frac_6	Your turn. How many equal pieces are in this whole bar?
+l_frac_7	And how many pieces are gold?
+l_frac_8	Two thirds! Two gold pieces, out of three.
+l_same_1	This honey bar is cut in two. One half is gold.
+l_same_2	This bar is the same size, but cut in four. Two fourths are gold.
+l_same_3	Look! The gold goes just as far. One half, and two fourths, are the same amount.
+l_same_4	Now one half, and one fourth. Four is a bigger number than two. But one fourth is a smaller piece!
+l_same_5	More cuts make smaller pieces.
+l_same_6	Your turn. Which one is more honey?
+l_same_7	Yes. Thirds are bigger pieces than sixths.
+l_ftimes_1	My friend eats one fourth of a honey bar every day.
+l_ftimes_2	After two days, that is two pieces. Two fourths.
+l_ftimes_3	After three days, three pieces. Three times one fourth is three fourths.
+l_ftimes_4	The pieces stay the same size, so the bottom number stays the same. Only the top number grows.
+l_ftimes_5	Five days is five pieces. That is more than one whole bar!
+l_ftimes_6	Your turn. Two times one third. How many pieces are gold?
+l_ftimes_7	Two thirds. Two pieces, and each piece is one third.
+l_ftray_1	Here is a whole tray of honey. I cut it into three equal strips, and fill one. One third.
+l_ftray_2	My friend wants half of that third. So I cut the tray across, into two.
+l_ftray_3	Half of the gold strip is this one small, dark piece.
+l_ftray_4	How big is it? Count all the small pieces in the tray. Six. So it is one sixth.
+l_ftray_5	Your turn. Half of one fourth. How many small pieces are in the whole tray?
+l_ftray_6	One half of one fourth is one eighth. A piece of a piece is a smaller piece.
+stretch_try	Ooh, a tricky one! Give it a try. If it is too hard, we will do it together.
+stretch_yes	Wow! That was a tricky one, and you got it!
+stretch_miss	That one was extra tricky. Let us look at it together.
+t_harder	You are getting stronger! The problems grow with you.
+gate_tip	A new monster is watching you! Play a bit more with your friends, and it will come out.
+shop_tip	Spend your berries here! Charms are for your monsters. Decorations go in your meadow.
+shop_bought	Got it! It is yours now.
+shop_poor	Not enough berries yet. Play to earn more!
+decor_tip	Your new decoration is in the meadow. Drag it to where you want it.
+charm_tip	You got a charm! Tap a friend in the meadow, and press Charm, to put it on.
+charm_on	Looking good!
+night_tip	When you are done playing, press Good night, to tuck everyone in.
+good_night	Good night, everyone! See you tomorrow.
+wake_up	Rise and shine! Everyone is awake.
+name_puff	Puff!
+about2_puff	Puff. A storm ram. Carries a storm in its fleece. Charges like thunder. Loves all kinds of treats.
+name_pim	Pim!
+about2_pim	Pim. A spore hare. Grows mushrooms on its back. Fast on its feet. Loves all kinds of treats.
+name_bop	Bop!
+about2_bop	Bop. A tide otter. Rides its own wave. Never sits still. Loves all kinds of treats.
+name_dab	Dab!
+about2_dab	Dab. A lotus duck. Wears a lily pad. Loves plus treats.
+name_moss	Moss!
+about2_moss	Moss. A moss armadillo. Carries a garden on its shell. Loves minus treats.
+name_glim	Glim!
+about2_glim	Glim. A lantern beetle. Lights up the night. Loves times treats.
+name_fenn	Fenn!
+about2_fenn	Fenn. A fern fox. Has a fern for a tail. Loves sharing treats.
+name_nub	Nub!
+about2_nub	Nub. A stone pup. Tough as a boulder. Loves a big pile.
+name_plum	Plum!
+about2_plum	Plum. An orchard bird. Quick wings and sharp eyes. Loves a full crate.
+name_dusk	Dusk!
+about2_dusk	Dusk. A dusk bat. Flies at sunset. Always hungry. Loves a berry snack.
+name_chip	Chip!
+about2_chip	Chip. A crystal chipmunk. Has a crystal tail. Loves to open crates.
+name_bix	Bix!
+about2_bix	Bix. A honeycomb badger. Tough as nails, with a sweet tooth. Loves equal pieces.
+name_tam	Tam!
+about2_tam	Tam. An amber panda. Balances on anything. Loves to match honey bars.
+name_zim	Zim!
+about2_zim	Zim. A comb lizard. Flares its frill and runs. Loves honey every day.
+name_lux	Lux!
+about2_lux	Lux. A pollen fawn. Flowers bloom where it walks. Loves a piece of a piece.
+name_tup	Tup!
+about2_tup	Tup. An ember cat. Ears and a tail of flame. Always ready to pounce. Loves all kinds of treats.
+name_jam	Jam!
+about2_jam	Jam. A berry bear. Strong and sweet. Hides snacks everywhere. Loves all kinds of treats.
+name_mint	Mint!
+about2_mint	Mint. A leaf dragon. Wings like leaves. Afraid of nothing. Loves all kinds of treats.
+name_pom	Pom!
+about2_pom	Pom. A frost penguin. Slides on ice. Loves the cold.
+name_nox	Nox!
+about2_nox	Nox. A star owl. Stars on its wings. Sees everything. Loves all kinds of treats.
+name_fizz	Fizz!
+about2_fizz	Fizz. A reef axolotl. A crown of coral gills. Always grinning. Loves all kinds of treats.
+st_friend	First wild friend. Make friends with a wild monster.
+st_plus	Plus pro. Give 10 plus treats with real parts.
+st_minus	Minus master. Give 10 minus treats.
+st_times	Times star. Give 10 times treats.
+st_share	Super sharer. Give 10 sharing treats.
+st_ways	Six ways. Find 6 ways to make one number.
+st_four	All four. Make one number with plus, minus, times, and sharing.
+st_pack	Crate packer. Pack crates on 5 berry trips.
+st_open	Crate opener. Open crates on 5 berry trips.
+st_sharp	Sharp eyes. Get 10 berry trips right the first time.
+st_slice	Fair slicer. Name or build 10 fractions.
+st_twin	Honey twins. Compare or match 8 pairs of honey bars.
+st_stack	Honey stacker. Solve 8 fraction times problems.
+st_tray	Tray master. Find 8 pieces of a piece.
+st_grow	Evolved. Help a monster evolve.
+st_hatch	Egg hatcher. Hatch an egg.
+st_best	Best friends. Become best friends with a monster.
+st_eight	Full meadow. Have 8 monster friends.
+st_days3	Three days. Play on 3 different days.
+st_days7	Seven days. Play on 7 different days.
+n0	0.
+n1	1.
+n2	2.
+n3	3.
+n4	4.
+n5	5.
+n6	6.
+n7	7.
+n8	8.
+n9	9.
+n10	10.
+n11	11.
+n12	12.
+n13	13.
+n14	14.
+n15	15.
+n16	16.
+n17	17.
+n18	18.
+n19	19.
+n20	20.
+n21	21.
+n22	22.
+n23	23.
+n24	24.
+n25	25.
+n26	26.
+n27	27.
+n28	28.
+n29	29.
+n30	30.
+n31	31.
+n32	32.
+n33	33.
+n34	34.
+n35	35.
+n36	36.
+n37	37.
+n38	38.
+n39	39.
+n40	40.
+n41	41.
+n42	42.
+n43	43.
+n44	44.
+n45	45.
+n46	46.
+n47	47.
+n48	48.
+n49	49.
+n50	50.
+n51	51.
+n52	52.
+n53	53.
+n54	54.
+n55	55.
+n56	56.
+n57	57.
+n58	58.
+n59	59.
+n60	60.
+n61	61.
+n62	62.
+n63	63.
+n64	64.
+n65	65.
+n66	66.
+n67	67.
+n68	68.
+n69	69.
+n70	70.
+n71	71.
+n72	72.
+n73	73.
+n74	74.
+n75	75.
+n76	76.
+n77	77.
+n78	78.
+n79	79.
+n80	80.
+n81	81.
+n82	82.
+n83	83.
+n84	84.
+n85	85.
+n86	86.
+n87	87.
+n88	88.
+n89	89.
+n90	90.
+n91	91.
+n92	92.
+n93	93.
+n94	94.
+n95	95.
+n96	96.
+n97	97.
+n98	98.
+n99	99.
+n100	100.
+n101	101.
+n102	102.
+n103	103.
+n104	104.
+n105	105.
+n106	106.
+n107	107.
+n108	108.
+n109	109.
+n110	110.
+n111	111.
+n112	112.
+n113	113.
+n114	114.
+n115	115.
+n116	116.
+n117	117.
+n118	118.
+n119	119.
+n120	120.
+n121	121.
+n122	122.
+n123	123.
+n124	124.
+n125	125.
+n126	126.
+n127	127.
+n128	128.
+n129	129.
+n130	130.
+n131	131.
+n132	132.
+n133	133.
+n134	134.
+n135	135.
+n136	136.
+n137	137.
+n138	138.
+n139	139.
+n140	140.
+n141	141.
+n142	142.
+n143	143.
+n144	144.
+n145	145.
+n146	146.
+n147	147.
+n148	148.
+n149	149.
+n150	150.
+n151	151.
+n152	152.
+n153	153.
+n154	154.
+n155	155.
+n156	156.
+n157	157.
+n158	158.
+n159	159.
+n160	160.
+n161	161.
+n162	162.
+n163	163.
+n164	164.
+n165	165.
+n166	166.
+n167	167.
+n168	168.
+n169	169.
+n170	170.
+n171	171.
+n172	172.
+n173	173.
+n174	174.
+n175	175.
+n176	176.
+n177	177.
+n178	178.
+n179	179.
+n180	180.
+n181	181.
+n182	182.
+n183	183.
+n184	184.
+n185	185.
+n186	186.
+n187	187.
+n188	188.
+n189	189.
+n190	190.
+n191	191.
+n192	192.
+n193	193.
+n194	194.
+n195	195.
+n196	196.
+n197	197.
+n198	198.
+n199	199.
+n200	200.
+has_1	Your friend has 1 berry.
+has_2	Your friend has 2 berries.
+has_3	Your friend has 3 berries.
+has_4	Your friend has 4 berries.
+has_5	Your friend has 5 berries.
+has_6	Your friend has 6 berries.
+has_7	Your friend has 7 berries.
+has_8	Your friend has 8 berries.
+has_9	Your friend has 9 berries.
+has_10	Your friend has 10 berries.
+has_11	Your friend has 11 berries.
+has_12	Your friend has 12 berries.
+has_13	Your friend has 13 berries.
+has_14	Your friend has 14 berries.
+has_15	Your friend has 15 berries.
+has_16	Your friend has 16 berries.
+has_17	Your friend has 17 berries.
+has_18	Your friend has 18 berries.
+has_19	Your friend has 19 berries.
+has_20	Your friend has 20 berries.
+has_21	Your friend has 21 berries.
+has_22	Your friend has 22 berries.
+has_23	Your friend has 23 berries.
+has_24	Your friend has 24 berries.
+has_25	Your friend has 25 berries.
+has_26	Your friend has 26 berries.
+has_27	Your friend has 27 berries.
+has_28	Your friend has 28 berries.
+has_29	Your friend has 29 berries.
+has_30	Your friend has 30 berries.
+has_31	Your friend has 31 berries.
+has_32	Your friend has 32 berries.
+has_33	Your friend has 33 berries.
+has_34	Your friend has 34 berries.
+has_35	Your friend has 35 berries.
+has_36	Your friend has 36 berries.
+has_37	Your friend has 37 berries.
+has_38	Your friend has 38 berries.
+has_39	Your friend has 39 berries.
+has_40	Your friend has 40 berries.
+has_41	Your friend has 41 berries.
+has_42	Your friend has 42 berries.
+has_43	Your friend has 43 berries.
+has_44	Your friend has 44 berries.
+has_45	Your friend has 45 berries.
+has_46	Your friend has 46 berries.
+has_47	Your friend has 47 berries.
+has_48	Your friend has 48 berries.
+has_49	Your friend has 49 berries.
+has_50	Your friend has 50 berries.
+has_51	Your friend has 51 berries.
+has_52	Your friend has 52 berries.
+has_53	Your friend has 53 berries.
+has_54	Your friend has 54 berries.
+has_55	Your friend has 55 berries.
+has_56	Your friend has 56 berries.
+has_57	Your friend has 57 berries.
+has_58	Your friend has 58 berries.
+has_59	Your friend has 59 berries.
+has_60	Your friend has 60 berries.
+has_61	Your friend has 61 berries.
+has_62	Your friend has 62 berries.
+has_63	Your friend has 63 berries.
+has_64	Your friend has 64 berries.
+has_65	Your friend has 65 berries.
+has_66	Your friend has 66 berries.
+has_67	Your friend has 67 berries.
+has_68	Your friend has 68 berries.
+has_69	Your friend has 69 berries.
+has_70	Your friend has 70 berries.
+has_71	Your friend has 71 berries.
+has_72	Your friend has 72 berries.
+has_73	Your friend has 73 berries.
+has_74	Your friend has 74 berries.
+has_75	Your friend has 75 berries.
+has_76	Your friend has 76 berries.
+has_77	Your friend has 77 berries.
+has_78	Your friend has 78 berries.
+has_79	Your friend has 79 berries.
+has_80	Your friend has 80 berries.
+has_81	Your friend has 81 berries.
+has_82	Your friend has 82 berries.
+has_83	Your friend has 83 berries.
+has_84	Your friend has 84 berries.
+has_85	Your friend has 85 berries.
+has_86	Your friend has 86 berries.
+has_87	Your friend has 87 berries.
+has_88	Your friend has 88 berries.
+has_89	Your friend has 89 berries.
+has_90	Your friend has 90 berries.
+has_91	Your friend has 91 berries.
+has_92	Your friend has 92 berries.
+has_93	Your friend has 93 berries.
+has_94	Your friend has 94 berries.
+has_95	Your friend has 95 berries.
+has_96	Your friend has 96 berries.
+has_97	Your friend has 97 berries.
+has_98	Your friend has 98 berries.
+has_99	Your friend has 99 berries.
+has_125	Your friend has 125 berries.
+has_134	Your friend has 134 berries.
+has_136	Your friend has 136 berries.
+has_152	Your friend has 152 berries.
+come_1	Here comes 1 more. How many now?
+eats_1	Your friend eats 1. How many are left?
+come_2	Here come 2 more. How many now?
+eats_2	Your friend eats 2. How many are left?
+come_3	Here come 3 more. How many now?
+eats_3	Your friend eats 3. How many are left?
+come_4	Here come 4 more. How many now?
+eats_4	Your friend eats 4. How many are left?
+come_5	Here come 5 more. How many now?
+eats_5	Your friend eats 5. How many are left?
+come_6	Here come 6 more. How many now?
+eats_6	Your friend eats 6. How many are left?
+come_7	Here come 7 more. How many now?
+eats_7	Your friend eats 7. How many are left?
+come_8	Here come 8 more. How many now?
+eats_8	Your friend eats 8. How many are left?
+come_9	Here come 9 more. How many now?
+eats_9	Your friend eats 9. How many are left?
+come_10	Here come 10 more. How many now?
+eats_10	Your friend eats 10. How many are left?
+come_11	Here come 11 more. How many now?
+eats_11	Your friend eats 11. How many are left?
+come_12	Here come 12 more. How many now?
+eats_12	Your friend eats 12. How many are left?
+come_13	Here come 13 more. How many now?
+eats_13	Your friend eats 13. How many are left?
+come_14	Here come 14 more. How many now?
+eats_14	Your friend eats 14. How many are left?
+come_15	Here come 15 more. How many now?
+eats_15	Your friend eats 15. How many are left?
+come_16	Here come 16 more. How many now?
+eats_16	Your friend eats 16. How many are left?
+come_17	Here come 17 more. How many now?
+eats_17	Your friend eats 17. How many are left?
+come_18	Here come 18 more. How many now?
+eats_18	Your friend eats 18. How many are left?
+come_19	Here come 19 more. How many now?
+eats_19	Your friend eats 19. How many are left?
+come_20	Here come 20 more. How many now?
+eats_20	Your friend eats 20. How many are left?
+come_21	Here come 21 more. How many now?
+eats_21	Your friend eats 21. How many are left?
+come_22	Here come 22 more. How many now?
+eats_22	Your friend eats 22. How many are left?
+come_23	Here come 23 more. How many now?
+eats_23	Your friend eats 23. How many are left?
+come_24	Here come 24 more. How many now?
+eats_24	Your friend eats 24. How many are left?
+come_25	Here come 25 more. How many now?
+eats_25	Your friend eats 25. How many are left?
+come_26	Here come 26 more. How many now?
+eats_26	Your friend eats 26. How many are left?
+come_27	Here come 27 more. How many now?
+eats_27	Your friend eats 27. How many are left?
+come_28	Here come 28 more. How many now?
+eats_28	Your friend eats 28. How many are left?
+come_29	Here come 29 more. How many now?
+eats_29	Your friend eats 29. How many are left?
+come_30	Here come 30 more. How many now?
+eats_30	Your friend eats 30. How many are left?
+come_31	Here come 31 more. How many now?
+eats_31	Your friend eats 31. How many are left?
+come_32	Here come 32 more. How many now?
+eats_32	Your friend eats 32. How many are left?
+come_33	Here come 33 more. How many now?
+eats_33	Your friend eats 33. How many are left?
+come_34	Here come 34 more. How many now?
+eats_34	Your friend eats 34. How many are left?
+come_35	Here come 35 more. How many now?
+eats_35	Your friend eats 35. How many are left?
+come_36	Here come 36 more. How many now?
+eats_36	Your friend eats 36. How many are left?
+come_37	Here come 37 more. How many now?
+eats_37	Your friend eats 37. How many are left?
+come_38	Here come 38 more. How many now?
+eats_38	Your friend eats 38. How many are left?
+come_39	Here come 39 more. How many now?
+eats_39	Your friend eats 39. How many are left?
+come_40	Here come 40 more. How many now?
+eats_40	Your friend eats 40. How many are left?
+come_41	Here come 41 more. How many now?
+eats_41	Your friend eats 41. How many are left?
+come_42	Here come 42 more. How many now?
+eats_42	Your friend eats 42. How many are left?
+come_43	Here come 43 more. How many now?
+eats_43	Your friend eats 43. How many are left?
+come_44	Here come 44 more. How many now?
+eats_44	Your friend eats 44. How many are left?
+come_45	Here come 45 more. How many now?
+eats_45	Your friend eats 45. How many are left?
+come_46	Here come 46 more. How many now?
+eats_46	Your friend eats 46. How many are left?
+come_47	Here come 47 more. How many now?
+eats_47	Your friend eats 47. How many are left?
+come_48	Here come 48 more. How many now?
+eats_48	Your friend eats 48. How many are left?
+come_49	Here come 49 more. How many now?
+eats_49	Your friend eats 49. How many are left?
+come_50	Here come 50 more. How many now?
+eats_50	Your friend eats 50. How many are left?
+come_51	Here come 51 more. How many now?
+eats_51	Your friend eats 51. How many are left?
+come_52	Here come 52 more. How many now?
+eats_52	Your friend eats 52. How many are left?
+come_53	Here come 53 more. How many now?
+eats_53	Your friend eats 53. How many are left?
+come_54	Here come 54 more. How many now?
+eats_54	Your friend eats 54. How many are left?
+come_55	Here come 55 more. How many now?
+eats_55	Your friend eats 55. How many are left?
+come_56	Here come 56 more. How many now?
+eats_56	Your friend eats 56. How many are left?
+come_57	Here come 57 more. How many now?
+eats_57	Your friend eats 57. How many are left?
+come_58	Here come 58 more. How many now?
+eats_58	Your friend eats 58. How many are left?
+come_59	Here come 59 more. How many now?
+eats_59	Your friend eats 59. How many are left?
+come_60	Here come 60 more. How many now?
+eats_60	Your friend eats 60. How many are left?
+come_61	Here come 61 more. How many now?
+eats_61	Your friend eats 61. How many are left?
+come_62	Here come 62 more. How many now?
+eats_62	Your friend eats 62. How many are left?
+come_63	Here come 63 more. How many now?
+eats_63	Your friend eats 63. How many are left?
+come_64	Here come 64 more. How many now?
+eats_64	Your friend eats 64. How many are left?
+come_65	Here come 65 more. How many now?
+eats_65	Your friend eats 65. How many are left?
+come_66	Here come 66 more. How many now?
+eats_66	Your friend eats 66. How many are left?
+come_67	Here come 67 more. How many now?
+eats_67	Your friend eats 67. How many are left?
+come_68	Here come 68 more. How many now?
+eats_68	Your friend eats 68. How many are left?
+come_69	Here come 69 more. How many now?
+eats_69	Your friend eats 69. How many are left?
+come_70	Here come 70 more. How many now?
+eats_70	Your friend eats 70. How many are left?
+come_71	Here come 71 more. How many now?
+eats_71	Your friend eats 71. How many are left?
+come_72	Here come 72 more. How many now?
+eats_72	Your friend eats 72. How many are left?
+come_73	Here come 73 more. How many now?
+eats_73	Your friend eats 73. How many are left?
+come_74	Here come 74 more. How many now?
+eats_74	Your friend eats 74. How many are left?
+come_75	Here come 75 more. How many now?
+eats_75	Your friend eats 75. How many are left?
+come_76	Here come 76 more. How many now?
+eats_76	Your friend eats 76. How many are left?
+come_77	Here come 77 more. How many now?
+eats_77	Your friend eats 77. How many are left?
+come_78	Here come 78 more. How many now?
+eats_78	Your friend eats 78. How many are left?
+come_79	Here come 79 more. How many now?
+eats_79	Your friend eats 79. How many are left?
+come_80	Here come 80 more. How many now?
+eats_80	Your friend eats 80. How many are left?
+come_81	Here come 81 more. How many now?
+eats_81	Your friend eats 81. How many are left?
+come_82	Here come 82 more. How many now?
+eats_82	Your friend eats 82. How many are left?
+come_83	Here come 83 more. How many now?
+eats_83	Your friend eats 83. How many are left?
+come_84	Here come 84 more. How many now?
+eats_84	Your friend eats 84. How many are left?
+come_85	Here come 85 more. How many now?
+eats_85	Your friend eats 85. How many are left?
+come_86	Here come 86 more. How many now?
+eats_86	Your friend eats 86. How many are left?
+come_87	Here come 87 more. How many now?
+eats_87	Your friend eats 87. How many are left?
+come_88	Here come 88 more. How many now?
+eats_88	Your friend eats 88. How many are left?
+come_89	Here come 89 more. How many now?
+eats_89	Your friend eats 89. How many are left?
+come_90	Here come 90 more. How many now?
+eats_90	Your friend eats 90. How many are left?
+come_91	Here come 91 more. How many now?
+eats_91	Your friend eats 91. How many are left?
+come_92	Here come 92 more. How many now?
+eats_92	Your friend eats 92. How many are left?
+come_93	Here come 93 more. How many now?
+eats_93	Your friend eats 93. How many are left?
+come_94	Here come 94 more. How many now?
+eats_94	Your friend eats 94. How many are left?
+come_95	Here come 95 more. How many now?
+eats_95	Your friend eats 95. How many are left?
+come_96	Here come 96 more. How many now?
+eats_96	Your friend eats 96. How many are left?
+come_97	Here come 97 more. How many now?
+eats_97	Your friend eats 97. How many are left?
+come_98	Here come 98 more. How many now?
+eats_98	Your friend eats 98. How many are left?
+come_99	Here come 99 more. How many now?
+eats_99	Your friend eats 99. How many are left?
+make_2	Can you make 2?
+make_3	Can you make 3?
+make_4	Can you make 4?
+make_5	Can you make 5?
+make_6	Can you make 6?
+make_7	Can you make 7?
+make_8	Can you make 8?
+make_9	Can you make 9?
+make_10	Can you make 10?
+make_11	Can you make 11?
+make_12	Can you make 12?
+make_13	Can you make 13?
+make_14	Can you make 14?
+make_15	Can you make 15?
+make_16	Can you make 16?
+make_17	Can you make 17?
+make_18	Can you make 18?
+make_19	Can you make 19?
+make_20	Can you make 20?
+make_21	Can you make 21?
+make_23	Can you make 23?
+make_24	Can you make 24?
+make_25	Can you make 25?
+make_28	Can you make 28?
+make_30	Can you make 30?
+make_32	Can you make 32?
+make_35	Can you make 35?
+make_36	Can you make 36?
+make_40	Can you make 40?
+make_42	Can you make 42?
+make_45	Can you make 45?
+make_48	Can you make 48?
+make_50	Can you make 50?
+make_54	Can you make 54?
+make_56	Can you make 56?
+make_60	Can you make 60?
+make_63	Can you make 63?
+make_64	Can you make 64?
+make_72	Can you make 72?
+make_75	Can you make 75?
+make_100	Can you make 100?
+make_120	Can you make 120?
+make_125	Can you make 125?
+make_150	Can you make 150?
+f_1_2	One half.
+f_1_3	One third.
+f_2_3	Two thirds.
+f_1_4	One fourth.
+f_2_4	Two fourths.
+f_3_4	Three fourths.
+f_1_5	One fifth.
+f_2_5	Two fifths.
+f_3_5	Three fifths.
+f_4_5	Four fifths.
+f_1_6	One sixth.
+f_2_6	Two sixths.
+f_3_6	Three sixths.
+f_4_6	Four sixths.
+f_5_6	Five sixths.
+f_1_8	One eighth.
+f_2_8	Two eighths.
+f_3_8	Three eighths.
+f_4_8	Four eighths.
+f_5_8	Five eighths.
+f_6_8	Six eighths.
+f_7_8	Seven eighths.

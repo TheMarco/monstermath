@@ -1,0 +1,14 @@
+node_modules
+dist
+.DS_Store
+
+# Signed download links (they expire, and the files they point to are committed)
+scripts/art-urls*.txt
+scripts/anim-urls*.txt
+scripts/voice/urls-*.txt
+
+# First-version art and uncompressed voice recordings (superseded by public/ and art-src-v2/)
+art-src/
+
+# Curriculum overviews from the school (third-party documents)
+*.pdf

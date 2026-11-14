@@ -1,0 +1,35 @@
+hollow_tip	Welcome to Honey Hollow! The monsters here love honey bars, cut into equal pieces.
+wild_honey	A wild monster! It loves honey.
+fq_name	How much of the honey bar is gold? Pick how many pieces are gold, and how many pieces there are in all.
+fq_name_s	How much of the bar is gold?
+fq_build	Fill the honey bar to make this fraction.
+fq_build_cut	First cut the bar into equal pieces. Then fill it to make this fraction.
+fq_compare	Which bar has more honey? Or are they the same?
+fq_match	Fill the bottom bar, so it has the same amount of honey as the top bar.
+fq_times	Your friend eats the same piece of honey bar every day. How much is that in all? Press, add a piece, to find out.
+fq_times_s	How much honey in all?
+fq_tray	Your friend wants a piece of a piece. First cut the tray one way. Then cut it the other way.
+fq_tray_s	How much of the whole tray is that?
+f_all_pieces	All the pieces are down. Count them. The pieces are still the same size.
+f_tray_cut1	That is the first piece, in gold. Now take a part of the gold.
+f_tray_cut2	The dark gold is the piece of the piece. Count the dark pieces. Then count all the small pieces in the tray.
+f_count_with_me	Let us count together. The gold pieces go on top. The pieces in one whole go on the bottom.
+f_tap_glow	Let me help. Tap the pieces that glow.
+f_same_yes	Yes! Different pieces, same amount.
+f_show_bars	Here are the bars to help.
+fc_swapped	So close! The bottom number is how many pieces in all. The top number is how many are gold.
+fc_empty	Count the gold pieces, not the empty ones.
+fc_partpart	The bottom number counts all the pieces, gold and empty together.
+fc_count	Not yet. Count the pieces in the whole bar. Then count the gold ones.
+fc_cuts	Look at the bottom number. That is how many equal pieces the bar needs.
+fc_fill	Look at the top number. That is how many pieces to fill.
+fc_bigger_bottom	A bigger bottom number means more cuts. More cuts make smaller pieces.
+fc_look_bars	Not yet. Look at how far the gold goes in each bar.
+fc_match	Not yet. Make the gold go just as far as in the top bar.
+fc_times_both	The pieces stay the same size, so the bottom number stays the same. Only the top number grows.
+fc_times_added	It is times, not plus. Count every piece you put down.
+fc_times_other	Not yet. Put the pieces down, and count them.
+fc_tray_added	Do not add the bottom numbers. Count all the small pieces in the whole tray.
+fc_tray_one	That is only one of the two cuts. Cut the tray both ways, and count.
+fc_tray_other	Not yet. Cut the tray both ways. Then count the dark pieces, and all the small pieces.
+l_frac_1	Here is one whole honey bar.

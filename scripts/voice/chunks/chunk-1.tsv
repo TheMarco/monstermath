@@ -1,0 +1,145 @@
+welcome	Welcome to Monster Meadow! Three little monsters want a friend. Who do you pick?
+q_place	Your friend is hungry! Each crate holds ten berries. How many berries are here?
+q_add	Your friend has twenty-three berries. Here come fourteen more. How many now?
+q_addR	Your friend has twenty-seven berries. Here come fifteen more. How many now?
+q_sub	Your friend has forty-six berries, and eats twelve. How many are left?
+q_subR	Your friend has fifty-two berries, and eats twenty-seven. How many are left?
+q_array	Look at the rows of berries. Which one matches the picture?
+q_share	Twelve berries, shared by three friends. Which one matches the picture?
+m_hello	You have a new friend! Tap your friend to say hello.
+m_name	Does your friend need a new name? Type one, or keep this one.
+m_feed	Your friend is hungry! Tap the berries to feed your friend.
+m_more2	Nice. Now let us see what you two can do together.
+m_break2	Quick break! Give your partner a high five.
+i_intro2	Answer what you can. If you are not sure, that is okay. Just press, Not sure.
+i_next2	Nice. Next round!
+i_count	How many berries?
+i_carts	A cart holds one hundred berries. A crate holds ten. How many berries are here?
+i_bigger	Which number is bigger?
+i_in_all	How many berries in all?
+i_what_make	What does this make?
+i_missing	Which number is missing?
+i_each	The berries are shared equally. How many does each friend get?
+i_match_groups	Look at the groups of berries. Which one matches the picture?
+i_frac_part	How much of the bar is purple?
+i_frac_bigger	Which one is bigger?
+i_frac_same	Which one is the same amount?
+got1	Thanks!
+got2	Got it!
+got3	Okay!
+got4	Next one!
+got5	Noted!
+thats_okay	That is okay!
+first_friend	You made your first friend! Now let us go find more monsters.
+home_tip	This is your meadow. Something is hiding in the tall grass. Go and say hi!
+egg_ready	Your egg is ready to hatch! Tap it!
+egg_cold	Your egg needs to get warm. Every right answer warms it up.
+egg_hatched	Your egg hatched! Say hello to your new friend!
+wants_play	This friend wants to play with you today!
+day_done2	That is all of today done! Your first partner earned a bonus star. Come back tomorrow for more.
+no_berries	No berries left. Play a game to earn more!
+new_buddy	This is your buddy now! Your buddy helps you, and teaches you new things.
+all_full	So full! No more berries today.
+who_is_it	Who could it be? Go and look!
+met_this	You met this one. Keep going to make friends!
+t_wish	Wish granted!
+t_bond	You are closer friends now!
+t_level	Ranger level up!
+t_egg	You got a mystery egg!
+t_sticker	New sticker!
+wild2_any	A wild monster!
+wild2_add	A wild monster! It loves plus treats.
+wild2_sub	A wild monster! It loves minus treats.
+wild2_mul	A wild monster! It loves times treats.
+wild2_div	A wild monster! It loves sharing treats.
+lets_play	Let us play!
+how_to	Pick a number, then a sign, then another number.
+already	You found that one already. Try a new one!
+easy_again	True! But your friend has had that kind of easy treat.
+flip	A flip! Same parts, other way round.
+flip_have	True! That is a flip of one you have.
+tired2_add	That works. But that is a lot of plus treats. Try another kind!
+tired2_sub	That works. But that is a lot of minus treats. Try another kind!
+tired2_mul	That works. But that is a lot of times treats. Try another kind!
+tired2_div	That works. But that is a lot of sharing treats. Try another kind!
+easy_one	True! That is the easy one. Can you make a trickier treat?
+bigger_parts	True! Now try bigger parts.
+nice1	Nice one!
+nice2	Great treat!
+nice3	Good thinking!
+nice4	That works!
+double2	A double! Nice!
+round_number	A round number. Smart!
+new_kind	A new kind of treat!
+almost_add	Almost ready! This monster loves plus treats. Make one with plus.
+almost_sub	Almost ready! This monster loves minus treats. Make one with minus.
+almost_mul	Almost ready! This monster loves times treats. Make one with times.
+almost_div	Almost ready! This monster loves sharing treats. Make one with the share sign.
+zero_groups	You cannot share into zero groups. Try another number.
+not_even	That does not share evenly. Some are left over.
+too_much_away	That takes away too much.
+too_many	That is too many.
+not_enough	That is not enough.
+not_it	Not that one. Look at the bars and try again.
+hint_add	Start with this number. How many more do you need?
+hint_sub	Start with this number. How many do you take away?
+hint_mul	Look at the rows of berries. How many are in each row?
+hint_div	Look at the groups of berries. How many groups are there?
+no_hint	You found so many! Try any numbers you like.
+keep_going	Keep going! Your friend still wants treats.
+new_friend	You made a new friend!
+got_star	Your friend got a star!
+grew_up	Your friend grew up! Look how big and strong!
+full_today	That was so much fun! Your friend is full of stars for today. More stars tomorrow!
+how_many_now	How many now?
+how_many_left	How many are left?
+tip_add	Put the berries together. Then count the crates and the loose berries.
+tip_sub	Click the berries to feed your friend. Then count what is left.
+so_many_loose	So many loose berries! Ten fit in a crate. Pack a crate.
+now_count	Now count the crates and the loose berries.
+packed	Packed! Ten berries made one new crate. Now count.
+made_cart	Ten crates made one cart. That is one hundred!
+packed_back	Packed back into a crate. Now count what is left.
+opened	One crate opened. Now there are ten more loose berries.
+is_full	Your friend is full. Count what is left.
+crate_too_much	A whole crate is too much. Open a crate to get loose berries.
+all_eaten	All eaten! How many are left? Count them.
+need_open	No loose berries left. Open a crate!
+c_no_carry	Look at the loose berries. Ten of them fit in a crate. Pack a crate, then count again.
+c_need_open	There are not enough loose berries. Open a crate to get more.
+c_reversed	So close! Check which number is crates, and which is loose berries.
+c_grows	More berries are coming, so the pile grows. Put them together.
+c_shrinks	Your friend is eating berries, so the pile shrinks. Feed your friend, and count what is left.
+c_off_one	So close! Count the berries one more time.
+c_off_ten	So close! Count the crates one more time.
+c_other	Not yet. Let us use the berries to find out.
+c_count	Not yet. Count the crates, then the loose berries.
+c_together	Not yet. Put the berries together and count.
+c_here	Not yet. Here are the berries to help.
+yes	Yes! You got it!
+l_intro	Time for a tiny lesson. Watch me first!
+l_try	Not quite. Look at the picture, and try again.
+l_show_answer	Here is the answer. Look at the picture, and count with me.
+l_parts_1	Every number is made of parts. Here is twelve.
+l_parts_2	I can break it into ten and two. Ten plus two makes twelve.
+l_parts_3	Or six and six. A double!
+l_parts_4	I can also start bigger, and take some away. Fifteen minus three.
+l_parts_5	Your turn. Seven, and how many more, to make twelve?
+l_parts_6	Monsters love treats with real parts. Plus zero is true, but it is the easy one. Try bigger parts!
+l_pack_1	Watch me add. Twenty-seven berries, and fifteen more.
+l_pack_2	I put them together. Three crates, and twelve loose berries. That is too many loose ones!
+l_pack_3	Ten loose berries fit in one crate. I pack ten. Now there are four crates, and two loose berries.
+l_pack_4	Four crates and two loose berries is forty-two.
+l_pack_5	Your turn. Thirty-six and eighteen. Too many loose berries. Press, pack ten.
+l_pack_6	How many berries now? Count the crates, then the loose ones.
+l_pack_7	You packed a crate! Grown-ups call that regrouping.
+l_open_1	Watch me take away. Fifty-two berries. My friend eats twenty-seven.
+l_open_2	First the crates. Two crates gone.
+l_open_3	Now seven loose berries. But there are only two! So I open a crate.
+l_open_4	Now I can take seven. Two crates and five loose berries are left. Twenty-five.
+l_open_5	Your turn. Forty-three, take away eighteen. One crate is gone. Now eight loose berries, but there are only three. Press, open a crate.
+l_open_6	Now eight can go. How many berries are left? Count the crates, then the loose ones.
+l_open_7	You opened a crate! That is how to take away when there are not enough loose ones.
+l_rows_1	Look. Berries in rows. Three rows, with four berries in each row.
+l_rows_2	I could count four, and four, and four. That is twelve.
+l_rows_3	A faster way to say it: three times four. Three rows of four makes twelve.
