@@ -3955,3 +3955,43 @@ button.hpiece:hover {
   background: currentColor;
   transform: translate(-50%, -50%) rotate(-45deg);
 }
+
+/* ---- meadow layout: nothing overlaps ------------------------------------- */
+
+/* The level bar sits beside the Today card, clear of the buttons on the right. */
+.home-screen .rank {
+  left: 296px;
+  top: 16px;
+  transform: none;
+}
+
+/* Grown-ups moves under the top-right buttons, away from the place buttons. */
+.home-grownups {
+  position: absolute;
+  right: 22px;
+  top: 78px;
+  z-index: 20;
+}
+
+.home-grownups .hold {
+  font-size: 15px;
+  padding: 4px 12px;
+}
+
+/* All three places stand on one line. */
+.place-hollow {
+  bottom: 22px;
+}
+
+/* The middle place has friends right above it, so its next monster waits beside the button. */
+.place-hollow .peek {
+  left: auto;
+  right: 100%;
+  bottom: -6px;
+  margin-right: 10px;
+  transform: none;
+}
+
+.home-screen:has(.night-sky.on) .home-grownups {
+  z-index: 1450;
+}

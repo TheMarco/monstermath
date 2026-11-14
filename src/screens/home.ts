@@ -564,7 +564,7 @@ export const homeScreen: Screen = (app) => {
     place('place-canyon', 'Berry Canyon', 'berry', canyonNext, () => goCanyon(app)),
     place('place-hollow', 'Honey Hollow', 'drop', hollowNext, () => goHollow(app)),
     h('div', { class: `night-sky ${asleep ? 'on' : ''}`, 'aria-hidden': 'true' }, h('i', { class: 'moon' }), times(14, (i) => h('i', { class: 'night-star', style: `left:${(i * 83 + 40) % 1240}px;top:${(i * 47) % 190 + 14}px;animation-delay:${(i % 5) * 0.4}s` }))),
-    h('div', { class: 'corner-bc' }, holdButton('Grown-ups (hold)', () => app.go('grownups'))),
+    h('div', { class: 'home-grownups' }, holdButton('Grown-ups (hold)', () => app.go('grownups'))),
     cardHost,
   );
 
