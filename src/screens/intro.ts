@@ -19,6 +19,9 @@ import { keypad, pushDigit } from '../ui/keypad';
 import { arrayModel, berry, blocksView, dotsModel, fractionBar, groupsModel } from '../ui/models';
 import { aboutClip, nameClip } from '../voice/lines';
 
+/** Berries earned for each finished round of the first-day check. */
+const ROUND_BERRIES = 3;
+
 const YUM = ['Thanks!', 'Got it!', 'Okay!', 'Next one!', 'Noted!'];
 
 function drawVisual(v: Visual): HTMLElement {
@@ -287,6 +290,8 @@ export const introScreen: Screen = (app) => {
       if (run.done) {
         // Strand finished: store what she passed and move on. This is also the save point for a break.
         save.intakeLevels = { ...(save.intakeLevels ?? {}), [s.id]: run.passed };
+        // Berries for finishing the round, whatever the answers were: something to spend in the meadow.
+        save.berries = (save.berries ?? 0) + ROUND_BERRIES;
         strandIndex += 1;
         save.intakeAt = strandIndex;
         run = newRun();
@@ -309,7 +314,7 @@ export const introScreen: Screen = (app) => {
       const hearts = h('div', { class: 'meter' });
       const drawHearts = (): void => replace(hearts, times(3, (k) => icon('heart', k < taps ? 'on' : 'off')));
       replace(bubble, 'High five!');
-      replace(panel, h('div', { class: 'cuddle' }, h('h2', null, 'Quick break!'), h('p', null, `Tap ${name} for a high five.`), hearts));
+      replace(panel, h('div', { class: 'cuddle' }, h('h2', null, 'Quick break!'), h('p', null, `Tap ${name} for a high five.`), hearts, h('p', { class: 'cuddle-berries' }, times(ROUND_BERRIES, () => h('i', { class: 'berry' })), `${save.berries ?? 0} berries for the shop`)));
       drawHearts();
       say('m_break2');
       onKey = () => {};

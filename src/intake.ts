@@ -5,8 +5,9 @@ import { addStory, subStory } from './voice/lines';
 /**
  * The intake: six short staircases, one per strand. Each starts with an easy
  * win and climbs one level per right answer. A miss gets one more try at the
- * same level; a second miss ends the strand. What she passed sets where the
- * game starts, and gives her teacher a map.
+ * same level; a second miss ends the strand. A pick-one level can be passed by
+ * guessing, so it asks both of its questions and needs both right. What she
+ * passed sets where the game starts, and gives her teacher a map.
  */
 
 export type StrandId = 'place' | 'add' | 'sub' | 'mul' | 'div' | 'frac';
@@ -180,11 +181,18 @@ export function currentItem(strand: Strand, run: StrandRun): IntakeItem | null {
   return strand.levels[run.level]?.items[run.attempt] ?? null;
 }
 
+/** Two or three choices can be guessed, so these levels need both of their questions right. */
+export const isPickOne = (level: Level | undefined): boolean => Boolean(level?.items[0].choices);
+
 /** A third miss in one strand also ends it, so it cannot drag on. */
 export const MAX_MISSES = 3;
 
 export function advance(strand: Strand, run: StrandRun, correct: boolean): StrandRun {
   if (run.done) return run;
+  const pick = isPickOne(strand.levels[run.level]);
+  // A pick-one level: the first right answer brings the second question, and a miss ends the strand.
+  if (pick && correct && run.attempt === 0) return { ...run, attempt: 1 };
+  if (pick && !correct) return { ...run, misses: run.misses + 1, done: true };
   if (correct) {
     const level = run.level + 1;
     return { ...run, level, attempt: 0, passed: level, done: level >= strand.levels.length };

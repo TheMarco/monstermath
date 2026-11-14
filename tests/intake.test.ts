@@ -73,8 +73,27 @@ describe('intake staircases', () => {
   it('finishes when every level is passed', () => {
     const strand = STRANDS[0]!;
     let run = newRun();
-    for (let i = 0; i < strand.levels.length; i++) run = advance(strand, run, true);
+    let asked = 0;
+    while (!run.done) {
+      run = advance(strand, run, true);
+      asked += 1;
+    }
     expect(run).toMatchObject({ passed: strand.levels.length, done: true });
+    // One question per typed level and two for the pick-one level.
+    expect(asked).toBe(strand.levels.length + 1);
+  });
+
+  it('a pick-one level needs both of its questions right', () => {
+    const strand = STRANDS.find((s) => s.id === 'frac')!;
+    let run = advance(strand, newRun(), true);
+    expect(run).toMatchObject({ level: 0, attempt: 1, passed: 0, done: false });
+    expect(currentItem(strand, run)).toBe(strand.levels[0]!.items[1]);
+    expect(advance(strand, run, true)).toMatchObject({ level: 1, attempt: 0, passed: 1, done: false });
+    // Right then wrong: the level is not passed and the strand ends.
+    expect(advance(strand, run, false)).toMatchObject({ passed: 0, done: true });
+    // Wrong on the first question: no second question, because the level can no longer be passed.
+    run = advance(strand, newRun(), false);
+    expect(run).toMatchObject({ passed: 0, done: true });
   });
 
   it('sets the starting problem size from what she passed', () => {

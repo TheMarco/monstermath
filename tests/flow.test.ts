@@ -152,12 +152,16 @@ describe('first session', () => {
     expect(q('.feed-card')).not.toBeNull();
     // Answer every level of every strand correctly: the full staircase.
     for (const strand of STRANDS) {
-      for (const level of strand.levels) answer(level.items[0]);
+      for (const level of strand.levels) {
+        answer(level.items[0]);
+        // A pick-one level asks both of its questions.
+        if (level.items[0].choices) answer(level.items[1]);
+      }
     }
     expect(text('.party h2')).toBe('Puff is your friend!');
     const save = saved();
     expect(save.introDone).toBe(true);
-    expect(save.placement).toHaveLength(35);
+    expect(save.placement).toHaveLength(43);
     expect(save.intakeLevels).toEqual({ place: 5, add: 7, sub: 7, mul: 6, div: 5, frac: 5 });
     expect(save.startStep).toEqual({ add: 4, addR: 4, sub: 4, subR: 4 });
     expect(save.placement.every((p) => p.correct)).toBe(true);
@@ -534,8 +538,8 @@ describe('a child who finds the sums hard', () => {
     }
     const save = saved();
     expect(save.intakeLevels).toEqual({ place: 2, add: 1, sub: 0, mul: 0, div: 0, frac: 0 });
-    // 4 + 3 questions before the break, then two per remaining strand.
-    expect(save.placement).toHaveLength(15);
+    // 4 + 3 questions before the break, then two per typed strand and one for fractions (pick-one).
+    expect(save.placement).toHaveLength(14);
     // She passed sums within 10 only, so addition starts one rung up from the bottom.
     expect(save.startStep).toEqual({ add: 1, addR: 0, sub: 0, subR: 0 });
 

@@ -4512,3 +4512,11 @@ button.hpiece:hover {
   font-size: 14px;
   opacity: 1;
 }
+
+.cuddle .cuddle-berries {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 22px;
+  font-weight: 700;
+}

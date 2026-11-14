@@ -65,7 +65,8 @@ The three starters and the six egg monsters take any treat.
 
 **First-day check.** After picking a starter the child answers six short staircases
 (place value, addition, subtraction, multiplication, division, fractions). Each
-climbs one level per right answer and stops after two misses. The result sets
+climbs one level per right answer and stops after two misses. A pick-one level
+asks two questions and needs both right, so it cannot be passed on a guess. The result sets
 where each kind of problem starts and is shown on the grown-up page.
 
 **Treats (Tall Grass).** A monster shows a number and the child builds expressions
