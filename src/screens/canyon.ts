@@ -620,6 +620,7 @@ export const canyonScreen: Screen = (app, params) => {
     react('jump');
     floatUp(pet, 'heart', firstTry ? 3 : 1);
     toasts(el, gainLines(onTrip(save, firstTry)));
+    if (moved.moved > 0) sfx('level');
     if (moved.moved > 0) toasts(el, [{ text: 'Level up! The numbers grow with you.', kind: 'level', clip: 't_harder' }]);
     replace(bubble, `Yes! ${p.a} ${adding ? '+' : '−'} ${p.b} = ${p.answer}`);
     say(stretch && firstTry ? 'stretch_yes' : 'yes');

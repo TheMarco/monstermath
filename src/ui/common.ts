@@ -86,6 +86,7 @@ const ICONS: Record<string, string> = {
   back: '<path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>',
   speaker:
     '<path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path d="M16 8.5a5 5 0 010 7M18.5 6a8.5 8.5 0 010 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>',
+  note: '<path d="M9 18V5.5l10-2V16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><ellipse cx="6.5" cy="18" rx="3" ry="2.4" fill="currentColor"/><ellipse cx="16.5" cy="16" rx="3" ry="2.4" fill="currentColor"/>',
   mute: '<path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path d="M16.5 9.5l5 5m0-5l-5 5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>',
   heart:
     '<path d="M12 20.5s-7.5-4.6-7.5-10A4.5 4.5 0 0112 7.6a4.5 4.5 0 017.5 2.9c0 5.4-7.5 10-7.5 10z" fill="currentColor"/>',

@@ -547,6 +547,7 @@ export const hollowScreen: Screen = (app, params) => {
     react('jump');
     floatUp(pet, 'heart', firstTry ? 3 : 1);
     toasts(el, gainLines(onTrip(save, firstTry)));
+    if (moved.moved > 0) sfx('level');
     if (moved.moved > 0) toasts(el, [{ text: 'Level up! The problems grow with you.', kind: 'level', clip: 't_harder' }]);
     const equal = p.kind === 'same' && (p.mode === 'match' || p.answer === 'same');
     replace(bubble, equal ? 'Yes! Different pieces, same amount.' : 'Yes! You got it!');

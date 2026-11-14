@@ -3,7 +3,7 @@ import '@fontsource/lexend/600.css';
 import '@fontsource/lexend/700.css';
 import './style.css';
 
-import { audioSettings, hush, initAudio } from './audio';
+import { audioSettings, hush, initAudio, music, musicLevel, type Track } from './audio';
 import { befriendScreen } from './screens/befriend';
 import { canyonScreen } from './screens/canyon';
 import { grownupsScreen } from './screens/grownups';
@@ -16,7 +16,7 @@ import { playersScreen } from './screens/players';
 import { shopScreen } from './screens/shop';
 import { stickersScreen } from './screens/stickers';
 import { titleScreen } from './screens/title';
-import { freshSave, loadSave, persist, players, wipeSave } from './state';
+import { freshSave, loadSave, persist, players, today, wipeSave } from './state';
 import { loadAnimManifest } from './ui/anim';
 import { setCharmLookup } from './ui/charms';
 import { SPECIES, type SpeciesId, type Stage } from './data/monsters';
@@ -38,6 +38,25 @@ const SCREENS: Record<ScreenName, Screen> = {
   players: playersScreen,
 };
 
+/**
+ * The track and its loudness for each screen. Screens where the child listens
+ * to a problem play calmer music, lower. A lesson keeps the track it came from.
+ */
+const MUSIC: Record<ScreenName, [Track | null | 'keep', number]> = {
+  title: ['meadow', 1],
+  players: ['meadow', 1],
+  home: ['meadow', 1],
+  shop: ['meadow', 0.85],
+  journal: ['meadow', 0.85],
+  stickers: ['meadow', 0.85],
+  intro: ['meadow', 0.6],
+  befriend: ['play', 0.7],
+  canyon: ['think', 0.7],
+  hollow: ['think', 0.7],
+  lesson: ['keep', 0.5],
+  grownups: [null, 0],
+};
+
 export function startApp(stage: HTMLElement): App {
   let current: ScreenHandle | null = null;
 
@@ -48,6 +67,10 @@ export function startApp(stage: HTMLElement): App {
       hush();
       audioSettings.voice = app.save.settings.voice;
       audioSettings.sound = app.save.settings.sound;
+      audioSettings.music = app.save.settings.music !== false;
+      const [track, loud] = MUSIC[name];
+      if (track === 'keep') musicLevel(loud);
+      else music(name === 'home' && today(app.save).asleep ? 'night' : track, loud);
       const handle = SCREENS[name](app, params);
       stage.replaceChildren(handle.el);
       current = handle;

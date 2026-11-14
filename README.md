@@ -137,6 +137,14 @@ fed. A monster that has all its stars for the day dozes. When the day's goals
 are done, "Good night" puts the meadow to sleep, which gives the session a
 clear end.
 
+**Sound.** Every instruction is a recorded voice line. Music plays under it,
+at a low level, and drops further whenever a line is spoken, because music
+that competes with speech makes spoken instructions harder to follow. The
+problem screens use a slower, sparser track than the meadow. The note button on
+the meadow turns the music off and the speaker button turns off voice and
+effects. Tracks are in `public/music`, effects in `public/sound`; an effect
+whose file is missing falls back to a synthesized tone (`src/audio.ts`).
+
 ## Layout
 
 - `src/math` expression scoring, hints, regrouping problems, fractions, error patterns

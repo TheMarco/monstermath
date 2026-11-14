@@ -157,7 +157,7 @@ export interface Save {
   exprLog: ExprEvent[];
   tripLog: TripEvent[];
   days: Record<string, DayState>;
-  settings: { voice: boolean; sound: boolean; voiceName?: string };
+  settings: { voice: boolean; sound: boolean; voiceName?: string; music?: boolean };
   /** Trip types the placement check showed she can already do: fewer trips needed. */
   fast: Partial<Record<Delivery, boolean>>;
   seenTips: string[];

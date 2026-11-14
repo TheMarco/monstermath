@@ -48,7 +48,7 @@ export function playFx(id: SpeciesId, toStage: Stage, fx: Fx, size: number, onDo
   const at = (ms: number, fn: () => void): void => {
     window.setTimeout(fn, ms);
   };
-  sfx('charge');
+  sfx(hatch ? 'hatch' : 'charge');
   at(1000, () => box.classList.add('phase-white'));
   at(1700, () => {
     box.classList.add('phase-burst');

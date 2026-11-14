@@ -1,4 +1,4 @@
-import { cry, say, sfx } from '../audio';
+import { cry, music, say, sfx } from '../audio';
 import { ALL_SPECIES, lovesLabel, SPECIES, type Habitat, type SpeciesId, type Stage } from '../data/monsters';
 import {
   bondLevel,
@@ -173,6 +173,7 @@ export const homeScreen: Screen = (app) => {
 
     const doPet = (): void => {
       const result = pet(save, m.id);
+      sfx('heart');
       cry(ALL_SPECIES.indexOf(m.id));
       portrait.classList.remove('jump', 'spin');
       void portrait.offsetWidth;
@@ -413,6 +414,12 @@ export const homeScreen: Screen = (app) => {
     app.go('home');
   };
 
+  const toggleMusic = (): void => {
+    save.settings.music = save.settings.music === false;
+    app.commit();
+    app.go('home');
+  };
+
   const berryCount = h('span', { class: 'berry-count' });
   function drawBerries(): void {
     replace(berryCount, berry('tiny'), String(save.berries ?? 0));
@@ -453,6 +460,8 @@ export const homeScreen: Screen = (app) => {
     app.commit();
     cardHost.replaceChildren();
     el.querySelector('.night-sky')?.classList.add('on');
+    sfx('night');
+    music('night');
     say('good_night');
     el.querySelectorAll<HTMLElement>('.friend').forEach((friend, k) => {
       window.setTimeout(() => {
@@ -544,6 +553,11 @@ export const homeScreen: Screen = (app) => {
         'button',
         { class: 'btn btn-round', type: 'button', 'aria-label': 'Sound on or off', onclick: toggleSound },
         icon(save.settings.voice && save.settings.sound ? 'speaker' : 'mute'),
+      ),
+      h(
+        'button',
+        { class: `btn btn-round music-btn ${save.settings.music === false ? 'off' : ''}`, type: 'button', 'aria-label': 'Music on or off', 'aria-pressed': String(save.settings.music !== false), onclick: toggleMusic },
+        icon('note'),
       ),
     ),
     place('place-grass', 'Tall Grass', 'grass', grassNext, () => goGrass(app)),

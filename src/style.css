@@ -3933,3 +3933,25 @@ button.hpiece:hover {
 .gu-label {
   font-weight: 600;
 }
+
+/* ---- music toggle -------------------------------------------------------- */
+
+.music-btn {
+  position: relative;
+}
+
+.music-btn.off {
+  color: rgba(74, 44, 90, 0.35);
+}
+
+.music-btn.off::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 30px;
+  height: 3px;
+  border-radius: 2px;
+  background: currentColor;
+  transform: translate(-50%, -50%) rotate(-45deg);
+}

@@ -6,6 +6,7 @@ dist
 scripts/art-urls*.txt
 scripts/anim-urls*.txt
 scripts/voice/urls-*.txt
+scripts/audio-urls.txt
 
 # First-version art and uncompressed voice recordings (superseded by public/ and art-src-v2/)
 art-src/

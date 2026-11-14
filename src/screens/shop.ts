@@ -29,7 +29,7 @@ export const shopScreen: Screen = (app) => {
       return;
     }
     if (result !== 'ok') return;
-    sfx('win');
+    sfx('buy');
     say('shop_bought', firstOfKind ? tip : null);
     app.commit();
     draw();
