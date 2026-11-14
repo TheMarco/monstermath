@@ -1,5 +1,5 @@
 import { STARTERS } from '../data/monsters';
-import { friends } from '../state';
+import { currentPlayer, friends, players } from '../state';
 import { backdrop, button, holdButton, monsterImg, type Screen } from '../ui/common';
 import { h } from '../ui/dom';
 
@@ -31,6 +31,11 @@ export const titleScreen: Screen = (app) => {
       cast.map((c, i) => monsterImg(c.id, c.stage, 250, `calm bob bob-${i % 3}`)),
     ),
     button(returning ? 'Play' : 'Start', start, 'btn-primary btn-huge title-play'),
+    h(
+      'div',
+      { class: 'corner-bl' },
+      button(players().length > 1 ? `${currentPlayer().name}: change player` : 'Players', () => app.go('players'), 'btn-quiet btn-small title-players'),
+    ),
     h(
       'div',
       { class: 'corner-br' },

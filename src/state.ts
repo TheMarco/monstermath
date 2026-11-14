@@ -15,7 +15,10 @@ import type { FracError, FracKind } from './math/fractions';
 import type { Delivery, ErrorPattern } from './math/regroup';
 
 const KEY = 'monstermath.save.v1';
+const PLAYERS_KEY = 'monstermath.players.v1';
 const LOG_LIMIT = 3000;
+const FIRST = 'p1';
+export const NAME_MAX = 12;
 
 /** Replaceable clock so tests can move through days. */
 export const clock = { now: (): Date => new Date() };
@@ -144,6 +147,8 @@ export interface DayState {
 
 export interface Save {
   version: 1;
+  /** The player's name, copied from the player list so a backup file carries it. */
+  name?: string;
   started: string;
   starter: SpeciesId | null;
   introDone: boolean;
@@ -216,8 +221,97 @@ function storage(): Storage | null {
   }
 }
 
-export function loadSave(): Save {
-  const raw = storage()?.getItem(KEY);
+/** One child playing in this browser. Each has a separate save. */
+export interface Player {
+  id: string;
+  name: string;
+}
+
+interface Roster {
+  current: string;
+  list: Player[];
+}
+
+const isObj = (v: unknown): v is Record<string, unknown> => typeof v === 'object' && v !== null && !Array.isArray(v);
+
+export function cleanName(raw: unknown): string {
+  return typeof raw === 'string' ? raw.replace(/\s+/g, ' ').trim().slice(0, NAME_MAX) : '';
+}
+
+/** The first player keeps the key the game used before it had players, so that save needs no move. */
+function saveKey(id: string): string {
+  return id === FIRST ? KEY : `${KEY}.${id}`;
+}
+
+function roster(): Roster {
+  try {
+    const raw: unknown = JSON.parse(storage()?.getItem(PLAYERS_KEY) ?? 'null');
+    if (isObj(raw) && Array.isArray(raw.list)) {
+      const list = (raw.list as unknown[])
+        .filter((p): p is Record<string, unknown> => isObj(p) && typeof p.id === 'string' && /^[a-z0-9]+$/.test(p.id))
+        .map((p, i) => ({ id: p.id as string, name: cleanName(p.name) || `Player ${i + 1}` }));
+      const first = list[0];
+      if (first) return { current: list.some((p) => p.id === raw.current) ? (raw.current as string) : first.id, list };
+    }
+  } catch {
+    /* unreadable list: start over with the first player */
+  }
+  return { current: FIRST, list: [{ id: FIRST, name: 'Player 1' }] };
+}
+
+function writeRoster(r: Roster): void {
+  try {
+    storage()?.setItem(PLAYERS_KEY, JSON.stringify(r));
+  } catch {
+    /* storage full or blocked */
+  }
+}
+
+export function players(): Player[] {
+  return roster().list;
+}
+
+export function currentPlayer(): Player {
+  const r = roster();
+  return r.list.find((p) => p.id === r.current) ?? (r.list[0] as Player);
+}
+
+export function switchPlayer(id: string): void {
+  const r = roster();
+  if (!r.list.some((p) => p.id === id)) return;
+  writeRoster({ ...r, current: id });
+}
+
+/** Adds a player with an empty save and makes them the current one. */
+export function addPlayer(name: string): Player {
+  const r = roster();
+  const taken = new Set(r.list.map((p) => p.id));
+  let id = `p${Date.now().toString(36)}`;
+  while (taken.has(id) || id === FIRST) id += Math.floor(Math.random() * 36).toString(36);
+  const player = { id, name: cleanName(name) || `Player ${r.list.length + 1}` };
+  storage()?.removeItem(saveKey(id));
+  writeRoster({ current: id, list: [...r.list, player] });
+  return player;
+}
+
+export function renamePlayer(id: string, name: string): void {
+  const clean = cleanName(name);
+  if (!clean) return;
+  const r = roster();
+  writeRoster({ ...r, list: r.list.map((p) => (p.id === id ? { ...p, name: clean } : p)) });
+}
+
+/** Erases a player and their save. The last player cannot be removed, only reset. */
+export function removePlayer(id: string): void {
+  const r = roster();
+  if (r.list.length < 2 || !r.list.some((p) => p.id === id)) return;
+  storage()?.removeItem(saveKey(id));
+  const list = r.list.filter((p) => p.id !== id);
+  writeRoster({ current: r.current === id ? (list[0] as Player).id : r.current, list });
+}
+
+export function loadSave(id: string = currentPlayer().id): Save {
+  const raw = storage()?.getItem(saveKey(id));
   if (!raw) return freshSave();
   try {
     const parsed = JSON.parse(raw) as Save;
@@ -226,6 +320,58 @@ export function loadSave(): Save {
   } catch {
     return freshSave();
   }
+}
+
+/**
+ * Reads a backup file made on the grown-up page. Returns null when the text is
+ * not a MonsterMath save. Monsters this version does not know are dropped.
+ */
+export function readBackup(text: string): Save | null {
+  let raw: unknown;
+  try {
+    raw = JSON.parse(text);
+  } catch {
+    return null;
+  }
+  if (!isObj(raw) || raw.version !== 1 || !isObj(raw.monsters) || !isObj(raw.days) || !isObj(raw.settings)) return null;
+  if (!Array.isArray(raw.exprLog) || !Array.isArray(raw.tripLog) || !Array.isArray(raw.placement)) return null;
+  const parsed = raw as unknown as Save;
+  const save: Save = { ...freshSave(), ...parsed, ladder: parsed.ladder };
+  const monsters: Save['monsters'] = {};
+  for (const [id, m] of Object.entries(raw.monsters)) {
+    if (id in SPECIES && isObj(m)) monsters[id as SpeciesId] = { ...(m as unknown as MonsterState), id: id as SpeciesId };
+  }
+  save.monsters = monsters;
+  if (typeof save.starter !== 'string' || !(save.starter in SPECIES) || !monsters[save.starter]) {
+    save.starter = null;
+    save.introDone = false;
+  }
+  if (typeof save.buddy !== 'string' || !monsters[save.buddy]) delete save.buddy;
+  for (const key of ['seenTips', 'stickers', 'charms', 'decor', 'fracLog'] as const) {
+    if (save[key] !== undefined && !Array.isArray(save[key])) delete save[key];
+  }
+  save.seenTips ??= [];
+  save.stickers ??= [];
+  save.xp = Number(save.xp) || 0;
+  save.eggsOwed = Number(save.eggsOwed) || 0;
+  const name = cleanName(raw.name);
+  if (name) save.name = name;
+  else delete save.name;
+  return toLadders(save);
+}
+
+/**
+ * Puts a backup into this browser without touching anyone's progress: it fills
+ * the current player when they have not started yet, and otherwise becomes a
+ * new player. Either way that player is now the current one.
+ */
+export function adoptBackup(save: Save): Player {
+  const now = currentPlayer();
+  const untouched = !loadSave(now.id).starter;
+  const player = untouched ? now : addPlayer(save.name ?? '');
+  if (untouched && save.name) renamePlayer(now.id, save.name);
+  persist(save);
+  return currentPlayer().id === player.id ? currentPlayer() : player;
 }
 
 /**
@@ -257,15 +403,18 @@ export function persist(save: Save): void {
   if (save.exprLog.length > LOG_LIMIT) save.exprLog = save.exprLog.slice(-LOG_LIMIT);
   if (save.tripLog.length > LOG_LIMIT) save.tripLog = save.tripLog.slice(-LOG_LIMIT);
   if (save.fracLog && save.fracLog.length > LOG_LIMIT) save.fracLog = save.fracLog.slice(-LOG_LIMIT);
+  const player = currentPlayer();
+  save.name = player.name;
   try {
-    storage()?.setItem(KEY, JSON.stringify(save));
+    storage()?.setItem(saveKey(player.id), JSON.stringify(save));
   } catch {
     /* storage full or blocked: keep playing in memory */
   }
 }
 
+/** Erases the current player's progress. The player stays in the list. */
 export function wipeSave(): void {
-  storage()?.removeItem(KEY);
+  storage()?.removeItem(saveKey(currentPlayer().id));
 }
 
 export function today(save: Save): DayState {

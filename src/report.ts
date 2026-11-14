@@ -193,7 +193,7 @@ export function intakeWarning(save: Save): string | null {
   const low = belowFloor(save.intakeLevels);
   if (low.length === 0) return null;
   const names = low.map((id) => (id === 'add' ? 'addition' : 'subtraction')).join(' and ');
-  return `In ${names} she did not pass sums within 10. The game starts her there, with berries to count one by one. If that stays hard, she needs counting practice with real objects first, which a screen cannot replace.`;
+  return `In ${names} the check stopped before sums within 10. The game starts there, with berries to count one by one. If that stays hard, counting practice with real objects comes first, which a screen cannot replace.`;
 }
 
 /** How often each taught lesson has been seen, and how often she needed the step-by-step help. */
@@ -222,10 +222,10 @@ export function teacherSummary(save: Save): string {
   const days = daysPlayed(save);
   const all = exprStats(save);
   const lines: string[] = [];
-  lines.push('MonsterMath progress summary');
+  lines.push(save.name ? `MonsterMath progress summary for ${save.name}` : 'MonsterMath progress summary');
   lines.push(`Days played: ${days.length}${days.length ? ` (first ${days[0]}, latest ${days[days.length - 1]})` : ''}`);
   lines.push('');
-  lines.push('Where she is now (level on each skill ladder):');
+  lines.push('Current level on each skill ladder:');
   for (const row of levelRows(save)) {
     lines.push(`  ${row.skill}: level ${row.level}${row.working ? `. ${row.working}` : ''}. ${row.recent}.`);
   }

@@ -473,7 +473,7 @@ describe('first session', () => {
     const hold = q('.hold') as HTMLElement;
     hold.dispatchEvent(new Event('pointerdown'));
     wait(1600);
-    expect(text('.gu-top h1')).toBe('For grown-ups');
+    expect(text('.gu-top h1')).toBe('For grown-ups: Player 1');
     const page = text('.gu-scroll');
     expect(page).toContain('Addition with regrouping');
     expect(page).toContain('Added each column but dropped the extra ten');
@@ -580,7 +580,7 @@ describe('a child who finds the sums hard', () => {
     expect(saved().monsters.nub?.step).toBe(0);
 
     const { intakeWarning } = await import('../src/report');
-    expect(intakeWarning(saved())).toContain('In subtraction she did not pass sums within 10');
+    expect(intakeWarning(saved())).toContain('In subtraction the check stopped before sums within 10');
 
     // Stretch problems: after two clean trips at her rung, one comes from the rung above.
     click('Next trip');
@@ -613,5 +613,51 @@ describe('a child who finds the sums hard', () => {
     // A missed stretch problem never moves her down.
     expect(saved().monsters.nub?.step).toBe(0);
     expect(saved().monsters.nub?.recent).toEqual([1, 1, 2]);
+  });
+});
+
+describe('more than one player', () => {
+  it('adds a second player, asks who is playing, and loads a backup as a new player', async () => {
+    vi.useFakeTimers();
+    localStorage.clear();
+    const { startApp } = await import('../src/main');
+    const { freshSave, befriend, players, currentPlayer, persist } = await import('../src/state');
+    const first = freshSave();
+    first.starter = 'puff';
+    first.introDone = true;
+    befriend(first, 'puff');
+    persist(first);
+    document.body.innerHTML = '<div id="stage-wrap"><div id="stage"></div></div>';
+    const app = startApp(stage());
+    expect(q('.title-screen')).not.toBeNull();
+    click('Players');
+    expect(qa('.player-card')).toHaveLength(1);
+    click('New player');
+    const input = q<HTMLInputElement>('.player-input')!;
+    input.value = 'Sam';
+    click('OK');
+    expect(q('.title-screen')).not.toBeNull();
+    expect(currentPlayer().name).toBe('Sam');
+    expect(app.save.starter).toBeNull();
+    buttonByText('Start');
+
+    // A new visit with two players starts at the picker.
+    startApp(stage());
+    expect(text('.players-title')).toBe('Who is playing?');
+    expect(qa('.player-name').map((n) => n.textContent)).toEqual(['Player 1', 'Sam']);
+    (qa('.player-card')[0] as HTMLElement).click();
+    expect(currentPlayer().id).toBe('p1');
+    buttonByText('Play');
+    buttonByText('Player 1: change player');
+
+    // Removing a player from the grown-up page.
+    const app2 = startApp(stage());
+    (qa('.player-card')[1] as HTMLElement).click();
+    app2.go('grownups');
+    click('Remove Sam');
+    click('Click again to remove Sam and erase their progress');
+    expect(players()).toHaveLength(1);
+    expect(q('.players-screen')).not.toBeNull();
+    vi.useRealTimers();
   });
 });

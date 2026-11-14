@@ -3,18 +3,20 @@ import { OP_SYMBOL, type Kind } from '../math/expr';
 import { FRAC_ERROR_TEXT } from '../math/fractions';
 import { ERROR_TEXT } from '../math/regroup';
 import { daysAgo, exprStats, FRAC_TEXT, fracStats, levelRows, intakeRows, intakeWarning, tutoringRows, walkthroughCount, KIND_TEXT, monsterStatus, pct, teacherSummary, tripStats, TYPE_TEXT } from '../report';
-import { daysPlayed } from '../state';
+import { adoptBackup, currentPlayer, daysPlayed, NAME_MAX, players, readBackup, removePlayer, renamePlayer } from '../state';
 import { button, type Screen } from '../ui/common';
 import { h, replace } from '../ui/dom';
 
 /** Plain progress page for the parent. No game styling, no speech. */
-export const grownupsScreen: Screen = (app) => {
+export const grownupsScreen: Screen = (app, params) => {
   const { save } = app;
+  const player = currentPlayer();
+  const who = player.name;
   const days = daysPlayed(save);
   const all = exprStats(save);
   const week = exprStats(save, daysAgo(6));
   const trips = tripStats(save);
-  const note = h('span', { class: 'gu-note' });
+  const note = h('span', { class: 'gu-note' }, typeof params.note === 'string' ? params.note : '');
 
   const row = (...cells: Array<string | number>): HTMLElement => h('tr', null, cells.map((c) => h('td', null, String(c))));
   const head = (...cells: string[]): HTMLElement => h('tr', null, cells.map((c) => h('th', null, c)));
@@ -28,27 +30,71 @@ export const grownupsScreen: Screen = (app) => {
   };
 
   const download = (): void => {
+    app.commit();
     const blob = new Blob([JSON.stringify(save, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
-    const link = h('a', { href: url, download: 'monstermath-progress.json' });
+    const slug = who.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'player';
+    const link = h('a', { href: url, download: `monstermath-${slug}.json` });
     document.body.appendChild(link);
     link.click();
     link.remove();
     URL.revokeObjectURL(url);
   };
 
-  let armed = false;
-  const resetBtn = button('Reset all progress', () => {
-    if (!armed) {
-      armed = true;
-      replace(resetBtn, 'Click again to erase everything');
-      resetBtn.classList.add('btn-danger');
+  const loadText = (text: string): void => {
+    const backup = readBackup(text);
+    if (!backup) {
+      replace(note, 'That file is not a MonsterMath backup.');
       return;
     }
-    app.reset();
-  }, 'btn-small');
+    adoptBackup(backup);
+    app.reload();
+    app.go('grownups', { note: `Loaded the backup as ${currentPlayer().name}.` });
+  };
+  const picker = h('input', { type: 'file', accept: '.json,application/json', class: 'gu-file', 'aria-label': 'Backup file' });
+  picker.addEventListener('change', () => {
+    const file = picker.files?.[0];
+    picker.value = '';
+    if (!file) return;
+    if (file.size > 5_000_000) {
+      replace(note, 'That file is too large to be a MonsterMath backup.');
+      return;
+    }
+    file.text().then(loadText, () => replace(note, 'Could not read that file.'));
+  });
 
-  const openBtn = button(save.openAll ? 'Monsters: all open (click to follow her progress again)' : 'Open all monsters now', () => {
+  const nameInput = h('input', { class: 'gu-name', type: 'text', maxlength: String(NAME_MAX), value: who, 'aria-label': 'Player name', autocomplete: 'off', spellcheck: 'false' });
+  nameInput.addEventListener('keydown', (e) => e.stopPropagation());
+  const rename = (): void => {
+    renamePlayer(player.id, nameInput.value);
+    app.commit();
+    app.go('grownups');
+  };
+
+  const twice = (label: string, warning: string, act: () => void): HTMLButtonElement => {
+    let armed = false;
+    const btn: HTMLButtonElement = button(label, () => {
+      if (!armed) {
+        armed = true;
+        replace(btn, warning);
+        btn.classList.add('btn-danger');
+        return;
+      }
+      act();
+    }, 'btn-small');
+    return btn;
+  };
+  const resetBtn = twice(`Reset ${who}'s progress`, `Click again to erase ${who}'s progress`, () => app.reset());
+  const removeBtn =
+    players().length > 1
+      ? twice(`Remove ${who}`, `Click again to remove ${who} and erase their progress`, () => {
+          removePlayer(player.id);
+          app.reload();
+          app.go('players');
+        })
+      : null;
+
+  const openBtn = button(save.openAll ? 'Monsters: all open (click to follow progress again)' : 'Open all monsters now', () => {
     save.openAll = !save.openAll;
     app.commit();
     app.go('grownups');
@@ -61,7 +107,7 @@ export const grownupsScreen: Screen = (app) => {
       ? 'No number sentences yet.'
       : `Easy sentences (+0, +1, ×1 and the like) are ${Math.round(all.easyShare * 100)}% of all correct ones, and ${
           week.easyShare === null ? 'n/a' : `${Math.round(week.easyShare * 100)}%`
-        } over the last 7 days. This is the habit her teacher described; the share should fall over time.`;
+        } over the last 7 days. Leaning on easy sentences is a common way to avoid harder thinking; the share should fall over time.`;
 
   const el = h(
     'div',
@@ -72,7 +118,7 @@ export const grownupsScreen: Screen = (app) => {
       h(
         'div',
         { class: 'gu-top' },
-        h('h1', null, 'For grown-ups'),
+        h('h1', null, `For grown-ups: ${who}`),
         button('Back to the game', () => app.go(save.introDone ? 'home' : 'title'), 'btn-small'),
       ),
       h(
@@ -83,11 +129,11 @@ export const grownupsScreen: Screen = (app) => {
           : `Played on ${days.length} ${days.length === 1 ? 'day' : 'days'}. First ${days[0]}, latest ${days[days.length - 1]}. A session of 10 to 15 minutes a day is the target; the three "Today" goals take about that long.`,
       ),
 
-      h('h2', null, 'Where she is now'),
+      h('h2', null, `Where ${who} is now`),
       h(
         'p',
         null,
-        'Every skill is a ladder. She works at her level, and about one problem in four comes from the level above. She moves up when at least five of her last six problems were right the first time without help, and down after two misses in a row. A miss on a problem from the level above never counts against her.',
+        'Every skill is a ladder. Problems come from the current level, and about one in four comes from the level above. The level goes up when at least five of the last six problems were right the first time without help, and down after two misses in a row. A miss on a problem from the level above never counts.',
       ),
       h(
         'table',
@@ -98,7 +144,7 @@ export const grownupsScreen: Screen = (app) => {
       h(
         'p',
         null,
-        'A new monster comes out when the skill before it is secure (six or more problems, most of the recent ones right the first time). If her class has moved on and she needs a topic now, open everything: ',
+        'A new monster comes out when the skill before it is secure (six or more problems, most of the recent ones right the first time). If the class has moved on and a topic is needed now, open everything: ',
         openBtn,
       ),
 
@@ -186,7 +232,7 @@ export const grownupsScreen: Screen = (app) => {
       h(
         'p',
         null,
-        `Each lesson plays once before its skill, again whenever she presses "Teach me", and by itself (at most once a day) when she is stuck. Step-by-step help on a berry trip was used ${walkthroughCount(save)} times.`,
+        `Each lesson plays once before its skill, again whenever "Teach me" is pressed, and by itself (at most once a day) after two missed problems in a row. Step-by-step help on a berry trip was used ${walkthroughCount(save)} times.`,
       ),
       h('table', null, head('Lesson', 'What it teaches', 'Times seen'), tutoringRows(save).map((x) => row(x.lesson, x.teaches, x.seen))),
 
@@ -210,22 +256,34 @@ export const grownupsScreen: Screen = (app) => {
                 )
               : null,
             intakeWarning(save) ? h('p', null, intakeWarning(save)) : null,
-            h('p', null, 'Every question she was asked:'),
+            h('p', null, 'Every question asked:'),
             h(
               'table',
               null,
-              head('Question', 'Her answer', 'Expected'),
+              head('Question', 'Answer given', 'Expected'),
               save.placement.map((p) => row(p.prompt, p.unsure ? 'not sure' : (p.given ?? ''), p.correct ? 'correct' : p.expected)),
             ),
           ]
         : null,
 
-      h('h2', null, 'Share or reset'),
-      h('div', { class: 'gu-actions' }, button('Copy summary for the teacher', copy, 'btn-small'), button('Download data (JSON)', download, 'btn-small'), resetBtn, note),
+      h('h2', null, 'Player'),
+      h('div', { class: 'gu-actions' }, h('label', { class: 'gu-label' }, 'Name ', nameInput), button('Save name', rename, 'btn-small'), resetBtn, removeBtn),
+      h('p', { class: 'gu-small' }, 'Add another child with "Players" on the title screen. Each player has separate progress.'),
+
+      h('h2', null, 'Share and back up'),
+      h(
+        'div',
+        { class: 'gu-actions' },
+        button('Copy summary for the teacher', copy, 'btn-small'),
+        button('Save a backup file', download, 'btn-small'),
+        button('Load a backup file', () => picker.click(), 'btn-small'),
+        picker,
+        note,
+      ),
       h(
         'p',
         { class: 'gu-small' },
-        'Progress is stored in this browser on this computer only. Clearing the browser data erases it, so download a copy now and then.',
+        'Progress is stored in this browser on this computer only, and clearing the browser data erases it. A backup file holds one player. Loading one never overwrites anyone: it fills the current player if they have not started yet, and otherwise adds a new player. To move to another computer, save a backup here and load it on this page there.',
       ),
     ),
   );

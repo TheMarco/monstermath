@@ -12,9 +12,11 @@ export interface App {
   go(screen: ScreenName, params?: Record<string, unknown>): void;
   commit(): void;
   reset(): void;
+  /** Loads the current player's save again and shows the title. */
+  reload(): void;
 }
 
-export type ScreenName = 'title' | 'intro' | 'home' | 'befriend' | 'canyon' | 'journal' | 'stickers' | 'lesson' | 'grownups' | 'hollow' | 'shop';
+export type ScreenName = 'title' | 'intro' | 'home' | 'befriend' | 'canyon' | 'journal' | 'stickers' | 'lesson' | 'grownups' | 'hollow' | 'shop' | 'players';
 
 export interface ScreenHandle {
   el: HTMLElement;
