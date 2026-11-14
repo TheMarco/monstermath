@@ -4331,3 +4331,184 @@ button.hpiece:hover {
   font-size: 14px;
   color: #1f5a33;
 }
+
+/* ---- one visual system (2026-11) -------------------------------------------
+   Things to press: 4px ink line, 14px corners, a hard drop underneath.
+   Things to read: a cream or white panel with no ink line and a soft shadow.
+   Places to put an answer: a dashed line until they are filled.
+   --------------------------------------------------------------------------- */
+
+:root {
+  --soft: 0 3px 14px rgba(20, 19, 42, 0.22);
+  --line: inset 0 0 0 2px rgba(28, 27, 46, 0.1);
+}
+
+/* Press. */
+.btn,
+.btn-small,
+.btn-big,
+.btn-choice,
+.btn-place,
+.btn-round,
+.btn-back,
+.key {
+  border-radius: 14px;
+}
+
+.btn-huge {
+  border-radius: 20px;
+}
+
+.btn-quiet {
+  font-size: 18px;
+  background: #fff;
+  border-width: 4px;
+  box-shadow: 0 4px 0 var(--plum);
+}
+
+.pick-card,
+.player-card,
+.journal-tile,
+.sticker-tile.earned {
+  border: 4px solid var(--plum);
+  border-radius: 14px;
+  box-shadow: 0 4px 0 var(--plum);
+}
+
+.journal-tile.unknown {
+  border: 3px dashed rgba(28, 27, 46, 0.3);
+  box-shadow: none;
+}
+
+.sticker-tile {
+  border-radius: 14px;
+}
+
+.charm-pick {
+  border-width: 3px;
+  border-radius: 12px;
+}
+
+/* Read. */
+.card,
+.party {
+  border: 0;
+  border-radius: 20px;
+  box-shadow: var(--soft);
+}
+
+.bubble {
+  border: 0;
+  border-radius: 16px;
+  box-shadow: var(--soft);
+}
+
+.meter,
+.trip-meter,
+.toast {
+  border: 0;
+  box-shadow: var(--soft);
+}
+
+.target-badge {
+  border-width: 5px;
+  box-shadow: var(--soft);
+}
+
+.friend-name {
+  border-width: 2.5px;
+}
+
+/* Work areas inside a card: a plain white well, no dashes. */
+.feedback,
+.mat,
+.notation,
+.lesson-scene-host {
+  background: #fff;
+  border: 0;
+  border-radius: 14px;
+  box-shadow: var(--line);
+}
+
+.shop-tile {
+  border: 0;
+  border-radius: 14px;
+  box-shadow: var(--line);
+}
+
+/* Answer. */
+.entry,
+.slot {
+  border-radius: 14px;
+}
+
+/* ---- first-day check -------------------------------------------------------- */
+
+/* Digits in two rows of five, with erase at the end of both rows. */
+.keypad {
+  grid-template-columns: repeat(6, 62px);
+}
+
+.keypad .key-erase {
+  grid-column: 6;
+  grid-row: 1 / span 2;
+  height: auto;
+}
+
+/* "Take a break" sits under the monster, clear of the question card. */
+.feed-break {
+  left: 50px;
+  right: auto;
+  bottom: 22px;
+  width: 360px;
+  display: flex;
+  justify-content: center;
+}
+
+/* ---- title: a name beside Start --------------------------------------------- */
+
+.title-start {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 45px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 18px;
+}
+
+.title-name {
+  width: 280px;
+  height: 84px;
+  padding: 0 18px;
+  font: inherit;
+  font-size: 32px;
+  font-weight: 700;
+  text-align: center;
+  color: var(--plum);
+  background: #fff;
+  border: 4px dashed var(--plum);
+  border-radius: 14px;
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+.title-name:not(:placeholder-shown) {
+  border-style: solid;
+}
+
+.title-name::placeholder {
+  color: rgba(28, 27, 46, 0.4);
+  font-weight: 600;
+}
+
+/* The player switch is a real button, so it is easy to find. */
+.title-players {
+  font-size: 18px;
+}
+
+.hold {
+  font-size: 14px;
+  opacity: 1;
+}

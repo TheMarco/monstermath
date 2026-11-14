@@ -1,5 +1,5 @@
 import { STARTERS } from '../data/monsters';
-import { currentPlayer, friends, players } from '../state';
+import { currentPlayer, friends, NAME_MAX, players, renamePlayer } from '../state';
 import { backdrop, button, holdButton, monsterImg, type Screen } from '../ui/common';
 import { h } from '../ui/dom';
 
@@ -12,7 +12,20 @@ export const titleScreen: Screen = (app) => {
         .map((m) => ({ id: m.id, stage: m.stage }))
     : STARTERS.map((id) => ({ id, stage: 1 as const }));
 
+  // A new player with no name yet can type one beside Start. It is optional.
+  const unnamed = !returning && /^Player \d+$/.test(currentPlayer().name);
+  const nameInput = unnamed
+    ? h('input', { class: 'title-name', type: 'text', maxlength: String(NAME_MAX), placeholder: 'Your name', 'aria-label': 'Your name', autocomplete: 'off', spellcheck: 'false' })
+    : null;
+  nameInput?.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter') e.stopPropagation();
+  });
+
   const start = (): void => {
+    if (nameInput && nameInput.value.trim()) {
+      renamePlayer(currentPlayer().id, nameInput.value);
+      app.commit();
+    }
     if (returning) {
       app.go('home');
     } else {
@@ -30,7 +43,9 @@ export const titleScreen: Screen = (app) => {
       { class: 'title-cast' },
       cast.map((c, i) => monsterImg(c.id, c.stage, 250, `calm bob bob-${i % 3}`)),
     ),
-    button(returning ? 'Play' : 'Start', start, 'btn-primary btn-huge title-play'),
+    nameInput
+      ? h('div', { class: 'title-start' }, nameInput, button('Start', start, 'btn-primary btn-huge'))
+      : button(returning ? 'Play' : 'Start', start, 'btn-primary btn-huge title-play'),
     h(
       'div',
       { class: 'corner-bl' },
