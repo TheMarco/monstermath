@@ -4071,3 +4071,12 @@ button.hpiece:hover {
   font-size: 13px;
   padding: 2px 10px;
 }
+
+/* Today and the level are information, not buttons: a flat cream panel with no
+   dark line and no pressable drop under it. */
+.home-screen .today,
+.home-screen .rank {
+  background: rgba(255, 248, 236, 0.93);
+  border: 0;
+  box-shadow: 0 2px 10px rgba(40, 20, 50, 0.22);
+}
