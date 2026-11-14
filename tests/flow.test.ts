@@ -427,7 +427,7 @@ describe('first session', () => {
   it('spends berries on a charm and a decoration', () => {
     const before = saved().berries ?? 0;
     expect(before).toBeGreaterThanOrEqual(18);
-    click('Shop');
+    q('.shop-btn')!.click();
     const buys = qa('.shop-buy');
     (buys[0] as HTMLElement).click(); // the star charm
     expect(saved().charms).toEqual(['star']);

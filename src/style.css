@@ -3956,42 +3956,83 @@ button.hpiece:hover {
   transform: translate(-50%, -50%) rotate(-45deg);
 }
 
-/* ---- meadow layout: nothing overlaps ------------------------------------- */
+/* ---- meadow layout: one top row, one bottom row --------------------------- */
 
-/* The level bar sits beside the Today card, clear of the buttons on the right. */
+/* Top row: the Today card, the level and the buttons share one top edge and one height. */
 .home-screen .rank {
   left: 296px;
   top: 16px;
   transform: none;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  height: 48px;
+  padding: 0 16px;
+  border-width: 4px;
+  border-radius: 14px;
 }
 
-/* Grown-ups moves under the top-right buttons, away from the place buttons. */
+.home-screen .rank-bar {
+  width: 110px;
+}
+
+.home-screen .corner-tr {
+  top: 16px;
+  gap: 10px;
+}
+
+.home-screen .corner-tr .btn-small {
+  height: 48px;
+  border-radius: 14px;
+}
+
+/* The berry purse sits on the Shop button, where berries are spent. */
+.shop-btn .berry-count {
+  margin-left: 0;
+  padding-left: 0;
+  border-left: 0;
+  padding-right: 10px;
+  border-right: 2.5px solid rgba(74, 37, 69, 0.3);
+}
+
+/* Grown-ups: small and plain, under the buttons. */
 .home-grownups {
   position: absolute;
   right: 22px;
-  top: 78px;
+  top: 76px;
   z-index: 20;
 }
 
 .home-grownups .hold {
-  font-size: 15px;
-  padding: 4px 12px;
-}
-
-/* All three places stand on one line. */
-.place-hollow {
-  bottom: 22px;
-}
-
-/* The middle place has friends right above it, so its next monster waits beside the button. */
-.place-hollow .peek {
-  left: auto;
-  right: 100%;
-  bottom: -6px;
-  margin-right: 10px;
-  transform: none;
+  font-size: 13px;
+  padding: 2px 10px;
+  border-width: 2px;
+  border-radius: 10px;
+  opacity: 0.7;
 }
 
 .home-screen:has(.night-sky.on) .home-grownups {
   z-index: 1450;
+}
+
+/* Bottom row: three equal buttons on one line, each next monster waiting beside its button. */
+.home-screen .btn-place {
+  width: 280px;
+}
+
+.place-hollow {
+  bottom: 22px;
+}
+
+.home-screen .place .peek {
+  left: auto;
+  right: 100%;
+  bottom: -6px;
+  margin: 0 6px;
+  transform: none;
+}
+
+.home-screen .place-grass .peek {
+  left: 100%;
+  right: auto;
 }

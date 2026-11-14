@@ -399,7 +399,7 @@ export const homeScreen: Screen = (app) => {
         ? h(
             'div',
             { class: `peek ${next.ready ? '' : 'peek-soon'}` },
-            monsterImg(next.id, 1, next.ready ? 96 : 74, 'silhouette'),
+            monsterImg(next.id, 1, next.ready ? 84 : 68, 'silhouette'),
             h('span', { class: 'peek-mark' }, next.ready ? '?' : 'soon'),
           )
         : null,
@@ -540,13 +540,13 @@ export const homeScreen: Screen = (app) => {
     h(
       'div',
       { class: 'rank' },
-      h('span', { class: 'rank-label' }, icon('star', 'on'), `Ranger level ${rank.level}`, berryCount),
+      h('span', { class: 'rank-label' }, icon('star', 'on'), `Ranger level ${rank.level}`),
       h('span', { class: 'rank-bar' }, h('i', { style: `width:${Math.round((rank.into / rank.span) * 100)}%` })),
     ),
     h(
       'div',
       { class: 'corner-tr' },
-      button([berry('tiny'), 'Shop'], () => app.go('shop'), 'btn-small shop-btn'),
+      button([berryCount, 'Shop'], () => app.go('shop'), 'btn-small shop-btn'),
       button(`Stickers ${save.stickers.length}/${STICKERS.length}`, () => app.go('stickers'), 'btn-small'),
       button([icon('book'), 'Journal'], () => app.go('journal'), 'btn-small'),
       h(
