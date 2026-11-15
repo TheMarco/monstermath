@@ -660,6 +660,23 @@ describe('a child who finds the sums hard', () => {
     // A missed stretch problem never moves her down.
     expect(saved().monsters.nub?.step).toBe(0);
     expect(saved().monsters.nub?.recent).toEqual([1, 1, 2]);
+
+    // Three misses on one trip: the answer is shown, she copies it, and it earns nothing.
+    click('Next trip');
+    const hard = readProblem();
+    for (const off of [1, 2, 3]) {
+      pickAnswer(hard.a + hard.b + off);
+      click('Check');
+    }
+    expect(text('.cy-bubble')).toContain('Let me show you');
+    expect(qa('.ans-chip.shown').length).toBe(qa('.ans-row').length);
+    expect(qa<HTMLButtonElement>('.ans-chip').filter((c) => !c.disabled)).toHaveLength(qa('.ans-row').length);
+    const berries = saved().berries;
+    qa('.ans-chip.shown').forEach((c) => c.click());
+    click('Check');
+    expect(text('.cy-bubble')).toContain('Yes!');
+    expect(saved().tripLog.at(-1)).toMatchObject({ firstTry: false, helped: true });
+    expect(saved().berries).toBe(berries);
   });
 });
 

@@ -113,6 +113,8 @@ export const canyonScreen: Screen = (app, params) => {
   /** The step-by-step walkthrough is running. */
   let walking = false;
   let helped = false;
+  /** Three misses on one trip: the answer is shown and she copies it. */
+  let revealed = false;
   /** This trip comes from the rung above hers: a miss costs nothing and brings help at once. */
   let stretch = false;
   /** A lesson to replay before the next trip, set when the game sees a repeated struggle. */
@@ -173,6 +175,7 @@ export const canyonScreen: Screen = (app, params) => {
     showCounts = false;
     usedBlocks = false;
     answers = [];
+    revealed = false;
     errors = [];
     // Sums within 10 have no crates at all: that place starts at 0, so she only picks the loose berries.
     digits = [null, p.a < 10 && p.answer < 10 ? 0 : null, null];
@@ -472,6 +475,7 @@ export const canyonScreen: Screen = (app, params) => {
 
   function drawAnswer(): void {
     const cols = needH ? [0, 1, 2] : [1, 2];
+    const right = [Math.floor(p.answer / 100), Math.floor(p.answer / 10) % 10, p.answer % 10];
     replace(
       answer,
       cols.map((col) =>
@@ -483,9 +487,9 @@ export const canyonScreen: Screen = (app, params) => {
             h(
               'button',
               {
-                class: `ans-chip ${digits[col] === d ? 'on' : ''}`,
+                class: `ans-chip ${digits[col] === d ? 'on' : ''} ${revealed && !solved && right[col] === d ? 'shown' : ''}`,
                 type: 'button',
-                disabled: solved,
+                disabled: solved || (revealed && right[col] !== d),
                 onclick: () => {
                   if (solved) return;
                   sfx('tap');
@@ -560,6 +564,16 @@ export const canyonScreen: Screen = (app, params) => {
     react('tilt');
     const wasHidden = !shown;
     shown = true;
+    // A third miss: more tries would be guessing. Show the answer and let her copy it.
+    if (answers.length >= 3) {
+      revealed = true;
+      helped = true;
+      showCounts = true;
+      digits = [null, null, null];
+      coach('Let me show you. Press the glowing numbers.', 'show_you');
+      draw();
+      return;
+    }
     if (answers.length >= 2) showCounts = true;
     let text = coaching(p, pattern, name);
     let clip = COACH_CLIP[pattern];

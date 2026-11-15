@@ -95,7 +95,8 @@ same way the canyon does.
 
 **Teaching.** Each new skill starts with a short lesson from the buddy monster
 (watch, do one together, do one alone). "Teach me" replays it. Two misses on one
-problem bring step-by-step help, and two missed problems in a row replay the
+problem bring step-by-step help, a third miss shows the answer for the child to
+copy (which earns nothing), and two missed problems in a row replay the
 lesson (at most once a day).
 
 **Growing with the child (`src/ladder.ts`, `src/skill.ts`).** Every skill is a ladder.

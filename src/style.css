@@ -4607,3 +4607,11 @@ button.hpiece:hover {
   font-weight: 700;
   color: #6a6590;
 }
+
+/* ---- the answer is shown after three misses: the right chips glow ---- */
+
+.ans-chip.shown {
+  background: #fff3c4;
+  box-shadow: 0 0 0 4px #ffc21e;
+  animation: pulse 1.1s ease-in-out infinite;
+}

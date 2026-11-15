@@ -3,6 +3,7 @@ import { HOLLOW_ORDER, SPECIES, TRIPS_PER_ROUND, TRIPS_TO_BEFRIEND, type Species
 import { fracStartStep } from '../intake';
 import { LESSON_FOR_KIND, type LessonId } from '../lessons';
 import {
+  expectedFrac,
   bottomChoices,
   classifyFracError,
   classifyPick,
@@ -101,6 +102,8 @@ export const hollowScreen: Screen = (app, params) => {
   let solved = false;
   let partied = false;
   let helped = false;
+  /** Three misses on one problem: the answer is shown and she copies it. */
+  let revealed = false;
   /** Help is on: pieces are numbered, or the pieces to tap glow. */
   let counting = false;
   let lessonDue: LessonId | undefined;
@@ -165,6 +168,7 @@ export const hollowScreen: Screen = (app, params) => {
     barsShown = !('bare' in p && p.bare);
     tried = new Set();
     answers = [];
+    revealed = false;
     errors = [];
     solved = false;
     helped = false;
@@ -358,7 +362,7 @@ export const hollowScreen: Screen = (app, params) => {
     }
   }
 
-  function chipRow(cls: string, label: string, values: number[], current: number | null, set: (n: number) => void): HTMLElement {
+  function chipRow(cls: string, label: string, values: number[], current: number | null, set: (n: number) => void, right?: number): HTMLElement {
     return h(
       'div',
       { class: `ans-row ${cls}` },
@@ -367,9 +371,9 @@ export const hollowScreen: Screen = (app, params) => {
         h(
           'button',
           {
-            class: `ans-chip ${current === n ? 'on' : ''}`,
+            class: `ans-chip ${current === n ? 'on' : ''} ${revealed && !solved && right === n ? 'shown' : ''}`,
             type: 'button',
-            disabled: solved,
+            disabled: solved || (revealed && right !== n),
             onclick: () => {
               if (solved) return;
               sfx('tap');
@@ -388,10 +392,11 @@ export const hollowScreen: Screen = (app, params) => {
   function drawAnswer(): void {
     if (usesChips()) {
       const naming = p.kind === 'name';
+      const want = expectedFrac(p);
       replace(
         answer,
-        chipRow('pl-top', naming ? 'gold' : 'top', times(MAX_TOP, (i) => i + 1), top, (n) => (top = n)),
-        chipRow('pl-bottom', naming ? 'in all' : 'bottom', bottomChoices(p), bottom, (n) => (bottom = n)),
+        chipRow('pl-top', naming ? 'gold' : 'top', times(MAX_TOP, (i) => i + 1), top, (n) => (top = n), want?.n),
+        chipRow('pl-bottom', naming ? 'in all' : 'bottom', bottomChoices(p), bottom, (n) => (bottom = n), want?.d),
       );
     } else if (p.kind === 'same' && p.mode === 'compare') {
       const side = (which: Side, label: Child): HTMLElement => {
@@ -463,6 +468,23 @@ export const hollowScreen: Screen = (app, params) => {
     sfx('soft');
     react('tilt');
     barsShown = true;
+    // A third miss: more tries would be guessing. Show the answer and let her copy it.
+    if (answers.length >= 3 && !(p.kind === 'same' && p.mode === 'compare')) {
+      revealed = true;
+      helped = true;
+      if (usesChips()) {
+        top = null;
+        bottom = null;
+        coach('Let me show you. Press the glowing numbers.', 'show_you');
+      } else {
+        // Building and matching: the bar is set to the answer, and she checks it.
+        if (p.kind === 'name') cuts = p.f.d;
+        fill = new Set(times(p.kind === 'name' ? p.f.n : p.kind === 'same' && p.mode === 'match' ? p.answer : 0, (i) => i));
+        coach('Let me show you. Look at the bar, then press Check.', 'show_you');
+      }
+      draw();
+      return;
+    }
     const [t, c] = COACH[error];
     if (stretch && answers.length === 1) coach('That one was extra tricky. Let us look at it together.', 'stretch_miss');
     else coach(text ?? t, clip ?? c);
