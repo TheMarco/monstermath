@@ -71,7 +71,7 @@ export const LESSONS: Record<LessonId, Lesson> = {
     title: 'More and fewer',
     teaches: 'Comparing two amounts by lining them up one to one',
     steps: [
-      { clip: 'l_more_1', text: 'Here are two piles of berries. Which pile has more?', scene: { t: 'piles', a: 6, b: 4 } },
+      { clip: 'l_more_1', text: 'Two piles of berries. Which has more?', scene: { t: 'piles', a: 6, b: 4 } },
       { clip: 'l_more_2', text: 'I line them up, side by side.', scene: { t: 'piles', a: 6, b: 4, lined: true } },
       { clip: 'l_more_3', text: 'This row goes further. 6 is more than 4.', scene: { t: 'piles', a: 6, b: 4, lined: true, caption: '6 is more than 4' } },
       { clip: 'l_more_4', text: 'The other row has fewer. Fewer means not as many.', scene: { t: 'piles', a: 6, b: 4, lined: true, caption: '4 is fewer than 6' } },
@@ -85,7 +85,7 @@ export const LESSONS: Record<LessonId, Lesson> = {
     teaches: 'The pairs that make ten, and a teen number as ten and some ones',
     steps: [
       { clip: 'l_ten_1', text: 'A crate holds 10 berries. This crate has 6.', scene: { t: 'frame', have: 6 } },
-      { clip: 'l_ten_2', text: 'How many more fit? I count the empty spots. 1, 2, 3, 4.', scene: { t: 'frame', have: 6, added: 4 } },
+      { clip: 'l_ten_2', text: 'I count the empty spots. 1, 2, 3, 4.', scene: { t: 'frame', have: 6, added: 4 } },
       { clip: 'l_ten_3', text: '6 and 4 make 10.', scene: { t: 'frame', have: 6, added: 4, caption: '6 + 4 = 10' } },
       { clip: 'l_ten_4', text: 'Here is a full crate, and 3 loose berries. 10, and 3 more, is 13.', scene: { t: 'mat', tens: 1, ones: 3, caption: '10 + 3 = 13' } },
       { clip: 'l_ten_5', text: 'Your turn. This crate has 7. How many more fill it?', scene: { t: 'frame', have: 7, caption: '7 + ? = 10' }, ask: { kind: 'number', expected: 3 } },
