@@ -230,7 +230,7 @@ export const earlyScreen: Screen = (app, params) => {
     shown = true;
     if (p.kind === 'ten' && p.mode === 'split') packed = true;
     if (p.kind === 'count') coach(p.mode === 'howMany' ? 'Let us count together. Touch each berry once.' : 'Count each berry as it goes in the basket.', p.mode === 'howMany' ? 'eh_count' : 'eh_basket');
-    else if (p.kind === 'more') coach(p.mode === 'piles' ? 'Here they are, side by side. Which row goes further?' : 'Here are the berries. More crates means a bigger number.', p.mode === 'piles' ? 'eh_line' : 'eh_crates_first');
+    else if (p.kind === 'more') coach(p.mode === 'piles' ? 'Here they are, side by side. Which row goes further?' : 'Look at the crates first. More crates is more.', p.mode === 'piles' ? 'eh_line' : 'eh_crates_first');
     else if (p.kind === 'ten' && p.mode === 'fill') coach('Count the empty spots.', 'eh_empty');
     else if (p.kind === 'ten') coach('The crate is ten. Count on from ten.', 'eh_count_on');
     else if (p.mode === 'shift') coach(p.by > 0 ? 'Ten more is one more crate.' : 'Ten less is one crate less.', p.by > 0 ? 'eh_crate_more' : 'eh_crate_less');
@@ -447,7 +447,9 @@ export const earlyScreen: Screen = (app, params) => {
       replace(notation, p.mode === 'howMany' ? blank() : [word('make'), h('span', { class: 'e-pick' }, String(p.n))]);
     } else if (p.kind === 'more') {
       const sign = !solved ? '?' : p.a > p.b ? '>' : '<';
-      replace(notation, h('div', { class: 'e-sum' }, String(p.a), h('span', { class: 'e-sign' }, sign), String(p.b)));
+      // The piles are for looking at: their numbers only appear once she has chosen.
+      if (p.mode === 'piles' && !solved) replace(notation, h('span', { class: 'e-pick blank' }, '?'));
+      else replace(notation, h('div', { class: 'e-sum' }, String(p.a), h('span', { class: 'e-sign' }, sign), String(p.b)));
     } else if (p.kind === 'ten') {
       if (p.mode === 'fill') replace(notation, h('div', { class: 'e-sum' }, `${p.have} +`, blank()), h('div', { class: 'e-sum' }, `= ${p.whole}`));
       else if (p.mode === 'teen') replace(notation, h('div', { class: 'e-sum' }, `10 + ${p.n - 10}`), h('div', { class: 'e-sum' }, '=', blank()));
@@ -503,7 +505,7 @@ export const earlyScreen: Screen = (app, params) => {
         ),
       );
     } else if (how === 'side') {
-      replace(answer, h('span', { class: 'mat-note' }, p.kind === 'more' && p.mode === 'piles' ? 'Tap the pile.' : 'Tap the number.'));
+      replace(answer, null);
     } else {
       replace(answer, h('span', { class: 'mat-note' }, p.kind === 'count' ? 'Fill the basket, then press Check.' : 'Make the number, then press Check.'));
     }
@@ -580,7 +582,7 @@ export const earlyScreen: Screen = (app, params) => {
       return;
     }
     if (stretch && answers.length === 1) coach('That one was extra tricky. Let us look at it together.', 'stretch_miss');
-    else if (error === 'other-pile' && p.kind === 'more' && p.mode === 'numbers') coach('Not yet. Look at the crates first. More crates means a bigger number.', 'eh_crates_first');
+    else if (error === 'other-pile' && p.kind === 'more' && p.mode === 'numbers') coach('Not yet. Look at the crates first. More crates is more.', 'eh_crates_first');
     else if (error === 'other-pile' && p.kind === 'more' && p.mode === 'piles' && p.ask === 'fewer') coach(countCoaching(p, error), 'ec_fewer');
     else if (error === 'wrong-way' || error === 'changed-the-ones') coach(countCoaching(p, error), p.kind === 'place' && p.mode === 'shift' && p.by < 0 ? 'eh_crate_less' : 'eh_crate_more');
     else coach(countCoaching(p, error), COACH_CLIP[error]);

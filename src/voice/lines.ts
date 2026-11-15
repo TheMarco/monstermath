@@ -284,7 +284,7 @@ export const LINES = {
   eh_count: 'Let us count together. Touch each berry once.',
   eh_basket: 'Count each berry as it goes in the basket.',
   eh_line: 'Here they are, side by side. Which row goes further?',
-  eh_crates_first: 'Look at the crates first. More crates means a bigger number.',
+  eh_crates_first: 'Look at the crates first. More crates is more.',
   eh_empty: 'Count the empty spots.',
   eh_count_on: 'The crate is ten. Count on from ten.',
   eh_places: 'Count the crates. Then count the loose berries.',
