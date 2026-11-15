@@ -69,3 +69,17 @@ items/decor-crystal: a cluster of tall glowing aqua crystals growing out of a gr
 items/decor-picnic: a red and white checkered picnic blanket with a woven basket full of purple berries on it.
 items/decor-bush: a round green bush heavy with big purple berries.
 items/decor-campfire: a campfire with a ring of stones, crossed logs and a bright friendly flame.
+
+## Batch 4 (2026-11-14): six more decorations, three meadow looks
+
+Same model and decoration prompt as above (12 CU each, 108 CU in all). New
+DESCRIPTION lines: mushrooms (a ring of red toadstools), swing (log A-frame
+with a red seat), slide (yellow chute, blue ladder), windmill (white tower,
+red roof, cream sails), treehouse (cabin with a teal roof in a short tree),
+balloon (red, yellow and teal hot-air balloon resting on the ground).
+
+Meadow looks use the meadow background itself as the reference
+(`asset_4XAMYrf6L2MPwPMJG6SLxV6d`), 1536 by 864, opaque: "Redraw exactly the
+same scene, same composition ... at sunset / in autumn / on a bright snowy
+winter day ... Keep the wide center clearing empty." Download with
+`bash scripts/fetch-art-v4.sh`.
