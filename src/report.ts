@@ -115,6 +115,17 @@ export function monsterStatus(save: Save, id: SpeciesId): string {
   return `Friend, stage ${m.stage} of 3 (${m.stars} stars)` + size;
 }
 
+/** Where a friend's own skill stands, for the medals on its card: level 1 is the first. */
+export function skillLevel(save: Save, id: SpeciesId): { have: number; of: number } | null {
+  const m = save.monsters[id];
+  const sp = SPECIES[id];
+  if (!m) return null;
+  if (sp.habitat === 'canyon' && sp.delivery) return { have: (m.step ?? save.startStep?.[sp.delivery] ?? 0) + 1, of: RUNG_TEXT[sp.delivery].length };
+  if (sp.habitat === 'hollow' && sp.frac) return { have: (m.step ?? 0) + 1, of: FRAC_RUNG_TEXT[sp.frac].length };
+  if (m.pool !== undefined && sp.pools.length > 0) return { have: m.pool + 1, of: sp.pools.length };
+  return null;
+}
+
 export interface LevelRow {
   skill: string;
   monster: string;

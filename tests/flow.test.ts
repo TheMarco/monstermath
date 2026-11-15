@@ -475,19 +475,26 @@ describe('first session', () => {
     const before = saved().berries ?? 0;
     expect(before).toBeGreaterThanOrEqual(18);
     q('.shop-btn')!.click();
-    const buys = qa('.shop-buy');
-    (buys[0] as HTMLElement).click(); // the star charm
-    expect(saved().charms).toEqual(['star']);
-    (qa('.shop-grid')[1]?.querySelector('.shop-buy') as HTMLElement).click(); // the flowers
+    // The day's gift was already a charm; the shop sells the rest.
+    const owned = (saved().charms ?? []).length;
+    expect(owned).toBe(1);
+    (q('.shop-buy') as HTMLElement).click();
+    expect(saved().charms).toHaveLength(owned + 1);
+    click('Decorations');
+    (q('.shop-buy') as HTMLElement).click(); // the flowers
     expect(saved().decor?.map((d) => d.id)).toEqual(['flowers']);
-    expect(saved().berries).toBe(before - 18);
-    expect(qa('.shop-tile.owned')).toHaveLength(2);
+    expect(saved().berries).toBeLessThan(before - 15);
+    // A decoration can be put away to keep the meadow clear, and brought back.
+    click('Put away');
+    expect(saved().decor?.[0]?.away).toBe(true);
+    click('Put out');
+    expect(saved().decor?.[0]?.away).toBeUndefined();
     click('Meadow');
     expect(qa('.decor')).toHaveLength(1);
 
     openFriend('puff');
     (q('.charm-pick') as HTMLElement).click();
-    expect(saved().monsters.puff?.charm).toBe('star');
+    expect(saved().monsters.puff?.charm).toBeTruthy();
     expect(q('.friend-card .charm')).not.toBeNull();
     expect(q('.friend[data-id="puff"] .charm')).not.toBeNull();
     (q('.card-close') as HTMLElement).click();

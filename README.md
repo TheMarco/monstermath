@@ -118,11 +118,15 @@ picks the rung of the first thing the child has not shown yet. From there:
   (five or more wrong tries, or two hints).
 - The berry blocks start hidden only when recent trips of that kind were right
   the first time without help.
-- A new monster comes out when the skill before it is secure: six or more
-  problems, most recent ones right the first time, and at least one night since
-  that skill was first met. At most two new monsters can be befriended in a day,
-  and one egg hatches per day. Until then the place button leads to the friend
-  to practise with.
+- A new monster comes out when the skills before it are secure: three different
+  days with at least four problems, at least 70% right the first time. The dots
+  under a waiting monster count those days. Fraction times a whole number also
+  waits for multiplication; fraction times a fraction waits for that and for
+  comparing fractions. One new monster can be befriended per day, one egg
+  hatches per day, and a day gives six stars in all. Until then the place
+  button leads to the friend to practise with.
+- When the answer had to be shown twice in a row on a skill's easiest level,
+  the game sends the child to the friend whose skill comes before it.
 - A problem solved within three tries earns its reward, with or without help.
   One reached by trying more answers than that earns nothing and does not count
   toward a friendship, a star or the day's goals. The grown-up page has a
@@ -139,8 +143,11 @@ at 4 stars and again at 10, so growing needs return visits. "Today" sets three
 small goals that take 10 to 15 minutes.
 
 **Around the math.** Petting, feeding and ball deepen a bond. Berries earned by
-playing buy charms (worn floating over a monster's head) and meadow decorations
-(drag them to place them) in the Berry Shop. Friends in the meadow walk over to
+playing buy charms (worn floating over a monster's head), meadow decorations
+(drag them to place them; five stand in the meadow at once and the rest can be
+swapped in from the shop) and whole meadow looks in the Berry Shop. Finishing
+the day's goals gives a small gift. Each friend's card shows a medal for every
+level its skill has reached. Friends in the meadow walk over to
 each other to greet, chat and play tag, and react when one of them is petted or
 fed. Six friends are out in the meadow at a time: the buddy, the two who
 asked to play, the ones met or called out most recently, and the rest in

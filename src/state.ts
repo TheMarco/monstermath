@@ -184,7 +184,10 @@ export interface Save {
   fracLog?: FracEvent[];
   /** Charms she owns, and decorations placed in the meadow. */
   charms?: string[];
-  decor?: Array<{ id: string; x: number; y: number }>;
+  decor?: Array<{ id: string; x: number; y: number; away?: boolean }>;
+  /** Meadow looks she owns, and the one in use. */
+  themes?: string[];
+  theme?: string;
   /** Friends called out to the meadow, latest first. The meadow shows only a few at a time. */
   out?: SpeciesId[];
   /** The last day played before a long break that the game already eased off for. */
@@ -351,7 +354,7 @@ export function readBackup(text: string): Save | null {
     save.introDone = false;
   }
   if (typeof save.buddy !== 'string' || !monsters[save.buddy]) delete save.buddy;
-  for (const key of ['seenTips', 'stickers', 'charms', 'decor', 'fracLog', 'out'] as const) {
+  for (const key of ['seenTips', 'stickers', 'charms', 'decor', 'fracLog', 'out', 'themes'] as const) {
     if (save[key] !== undefined && !Array.isArray(save[key])) delete save[key];
   }
   save.seenTips ??= [];

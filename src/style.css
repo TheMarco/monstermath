@@ -4642,3 +4642,93 @@ button.hpiece:hover {
   background: #ffc21e;
   box-shadow: inset 0 0 0 2px var(--plum);
 }
+
+/* ---- shop: three tabs, a wrapping grid ---- */
+
+.shop-tabs {
+  display: flex;
+  gap: 10px;
+}
+
+.shop-tab.on {
+  background: var(--plum);
+  color: #fff;
+}
+
+.shop-grid {
+  grid-auto-flow: row;
+  grid-template-columns: repeat(7, 1fr);
+  grid-auto-columns: auto;
+  align-content: start;
+  flex: 1;
+  overflow-y: auto;
+  padding: 4px;
+}
+
+.shop-grid-looks {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.shop-tile {
+  padding: 8px 4px;
+}
+
+.shop-tile.away .decor-pic {
+  opacity: 0.45;
+}
+
+.shop-toggle {
+  font-size: 15px;
+  padding: 5px 10px;
+  white-space: nowrap;
+}
+
+.look-pic {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.look-pic img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.shop-note {
+  font-size: 17px;
+  color: #5b5870;
+}
+
+.shop-note.nudge {
+  color: #b3261e;
+  font-weight: 700;
+}
+
+/* ---- medals for a friend's skill level ---- */
+
+.skill-level {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.skill-level .medal {
+  width: 16px;
+  height: 20px;
+  border-radius: 3px 3px 8px 8px;
+  background: #e2ddec;
+}
+
+.skill-level .medal.on {
+  background: #4fb8e8;
+  box-shadow: inset 0 0 0 2px var(--plum);
+}
+
+.skill-level span {
+  margin-left: 4px;
+}

@@ -1,4 +1,5 @@
 import { say, sfx } from '../audio';
+import { levelRow } from '../ui/level';
 import { ALL_SPECIES, lovesLabel, SPECIES, type SpeciesId } from '../data/monsters';
 import { displayName, type MonsterState } from '../state';
 import { backButton, backdrop, button, growthRow, icon, monsterImg, type Screen } from '../ui/common';
@@ -85,6 +86,7 @@ export const journalScreen: Screen = (app, params) => {
         h('p', { class: 'page-what' }, `${sp.what}. ${sp.blurb}`),
         h('p', { class: 'page-loves' }, `Loves ${loves(id)}`),
         growthRow(m),
+        levelRow(save, id),
         h('div', { class: 'friend-buttons' }, button('Play', () => playWith(app, id), 'btn-primary'), button('All monsters', () => app.go('journal'))),
       ),
       h(

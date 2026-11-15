@@ -307,6 +307,10 @@ export function bg(name: BgName): string {
   return `${import.meta.env.BASE_URL}art/bg/${name}.jpg`;
 }
 
+export function themeArt(id: string): string {
+  return `${import.meta.env.BASE_URL}art/bg/meadow-${id}.jpg`;
+}
+
 export function decorArt(id: string): string {
   return `${import.meta.env.BASE_URL}art/items/decor-${id}.png`;
 }

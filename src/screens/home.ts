@@ -50,7 +50,9 @@ import {
 } from '../ui/common';
 import { playAnim } from '../ui/anim';
 import { charmIcon, dress } from '../ui/charms';
-import { DECOR, moveDecor } from '../shop';
+import { dayGift, DECOR, decorOut, moveDecor } from '../shop';
+import { levelRow } from '../ui/level';
+import { themeArt } from '../data/monsters';
 import { easeAfterBreak, nextWild, SECURE_DAYS, type NextWild } from '../skill';
 import { decorImg } from './shop';
 import { h, pick, replace, times } from '../ui/dom';
@@ -288,6 +290,7 @@ export const homeScreen: Screen = (app, params) => {
         h('p', { class: 'friend-what' }, wants ? `${name} wants to play today!` : `${sp.what}. ${loves}.`),
         bondHost,
         growthRow(m),
+        levelRow(save, m.id),
         h(
           'div',
           { class: 'friend-buttons' },
@@ -394,7 +397,7 @@ export const homeScreen: Screen = (app, params) => {
   const meadow = h(
     'div',
     { class: 'meadow' },
-    (save.decor ?? []).map(decorEl),
+    decorOut(save).map(decorEl),
     ordered.map((m, i) => {
       const slot = SLOTS[i] as [number, number, number];
       const [x, y, size] = slot;
@@ -539,10 +542,16 @@ export const homeScreen: Screen = (app, params) => {
       )
     : null;
 
+  /** The meadow look she chose lies over the plain meadow, which shows if its picture is missing. */
+  function themed(back: HTMLElement): HTMLElement {
+    if (save.theme) back.style.backgroundImage = `url("${themeArt(save.theme)}"), ${back.style.backgroundImage}`;
+    return back;
+  }
+
   const el: HTMLElement = h(
     'div',
     { class: 'screen home-screen' },
-    backdrop('meadow'),
+    themed(backdrop('meadow')),
     meadow,
     nest,
     h(
@@ -609,6 +618,7 @@ export const homeScreen: Screen = (app, params) => {
     day.rewarded = true;
     const starter = save.starter;
     const result = giveStar(save, starter, { bonus: true });
+    const gift = dayGift(save);
     app.commit();
     const name = displayName(save, starter);
     celebrate(el, {
@@ -619,6 +629,7 @@ export const homeScreen: Screen = (app, params) => {
       voice: ['day_done2'],
       lines: [
         `${name} got a bonus star.`,
+        gift.charm ? `And a gift: the ${gift.charm.name} charm!` : `And a gift: ${gift.berries} berries!`,
         'That is all of today done. Come back tomorrow for more stars!',
       ],
       buttons: [{ label: 'Okay', onClick: () => app.go('home'), primary: true }],

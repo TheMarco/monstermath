@@ -172,7 +172,7 @@ export const grownupsScreen: Screen = (app, params) => {
       h(
         'p',
         null,
-        'A new monster comes out when the skill before it is secure: six or more problems, most of the recent ones right the first time, and at least one night since it was first met. At most two new monsters can be befriended in a day, and one egg hatches per day. If the class has moved on and a topic is needed now, open everything: ',
+        'A new monster comes out when the skills before it are secure: three different days with at least four problems, most of them right the first time. The dots under a waiting monster show those days. One new monster can be befriended per day, one egg hatches per day, and a day gives six stars in all. If the class has moved on and a topic is needed now, open everything: ',
         openBtn,
       ),
       ),
