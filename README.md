@@ -74,7 +74,7 @@ easiest sums, or passing a whole topic of the check.
 **Where to start.** Without a choice the check asks about every topic. On the
 grown-up page, before the child begins, a grown-up can choose to start with
 counting (about kindergarten and grade 1), with adding and subtracting (about
-grades 1 and 2), or with bigger multiplying and dividing (about grades 4 and 5);
+grades 1 and 2), with times tables and first fractions (about grade 3), or with bigger multiplying and dividing (about grades 4 and 5);
 the check then only asks about that range. The last choice is for a child who
 already multiplies and divides with small numbers: the check asks about place
 value, multiplying, dividing and fractions, leaves out adding and subtracting,

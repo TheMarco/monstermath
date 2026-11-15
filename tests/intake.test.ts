@@ -152,6 +152,8 @@ describe('where the check begins', () => {
     const { strandPlan } = await import('../src/intake');
     expect(strandPlan('early', {}).map((s) => s.id)).toEqual(['count', 'place', 'add', 'sub']);
     expect(strandPlan('sums', {}).map((s) => s.id)).toEqual(['place', 'add', 'sub', 'mul']);
+    // About grade 3: every topic but counting, and counting is never added afterwards.
+    expect(strandPlan('middle', { place: 0, add: 0 }).map((s) => s.id)).toEqual(['place', 'add', 'sub', 'mul', 'div', 'frac']);
     expect(strandPlan('upper', {}).map((s) => s.id)).toEqual(['place', 'mul', 'div', 'frac']);
   });
 

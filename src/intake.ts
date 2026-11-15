@@ -197,18 +197,20 @@ export const COUNT_STRAND: Strand = {
 export const ALL_STRANDS: Strand[] = [COUNT_STRAND, ...STRANDS];
 
 /** Where a grown-up wants the first-day check to begin. Without a choice the game finds out. */
-export type StartPoint = 'early' | 'sums' | 'upper';
+export type StartPoint = 'early' | 'sums' | 'middle' | 'upper';
 
 export const START_POINTS: Array<{ id: StartPoint | 'auto'; label: string; asks: string }> = [
   { id: 'auto', label: 'Let the game find out', asks: 'Asks about every topic, easiest first, and stops each topic after two misses. Counting is added when the first sums do not go well.' },
   { id: 'early', label: 'Start with counting (about kindergarten and grade 1)', asks: 'Asks only about counting, numbers to 100, adding and subtracting.' },
   { id: 'sums', label: 'Start with adding and subtracting (about grades 1 and 2)', asks: 'Asks about numbers, adding, subtracting and equal groups. Leaves out division and fractions.' },
+  { id: 'middle', label: 'Start with times tables and first fractions (about grade 3)', asks: 'Asks about numbers, adding, subtracting, equal groups, sharing and fractions. Leaves out counting.' },
   { id: 'upper', label: 'Start with bigger multiplying and dividing (about grades 4 and 5)', asks: 'For a child who already multiplies and divides with small numbers. Asks about numbers, multiplying, dividing and fractions. Leaves out adding and subtracting. The Bakery monsters come out without waiting for the other places.' },
 ];
 
 const PLAN: Record<StartPoint, StrandId[]> = {
   early: ['count', 'place', 'add', 'sub'],
   sums: ['place', 'add', 'sub', 'mul'],
+  middle: ['place', 'add', 'sub', 'mul', 'div', 'frac'],
   upper: ['place', 'mul', 'div', 'frac'],
 };
 
