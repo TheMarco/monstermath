@@ -5101,3 +5101,26 @@ button.e-cell.empty {
   width: 50px;
   height: 44px;
 }
+
+.lesson-piles {
+  align-items: flex-end;
+}
+
+.lesson-pile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  font-size: 32px;
+}
+
+.lesson-piles.lined .lesson-pile {
+  flex-direction: row;
+  align-items: center;
+  gap: 16px;
+}
+
+.lesson-scene .e-cell.empty {
+  background: rgba(255, 255, 255, 0.85);
+  border: 3px dashed rgba(74, 37, 69, 0.45);
+}

@@ -2,6 +2,7 @@ import { say, sfx } from '../audio';
 import { TRIPS_PER_ROUND, TRIPS_TO_BEFRIEND, SPECIES, type SpeciesId, type Stage } from '../data/monsters';
 import { earlyStartStep } from '../intake';
 import { record, wantsStretch, type Mark } from '../ladder';
+import { LESSON_FOR_COUNT, type LessonId } from '../lessons';
 import {
   classifyCountError,
   COUNT_KINDS,
@@ -17,6 +18,7 @@ import {
 } from '../math/count';
 import { toBlocks } from '../math/regroup';
 import { gainLines, onRound, onTrip } from '../rewards';
+import { teach, teachIfDue } from '../tutor';
 import { befriend, dayKey, displayName, freshSave, giveStar, growth, growthLine, monster, today, type EarlyProgress } from '../state';
 import { backButton, backdrop, button, celebrate, floatUp, icon, monsterImg, speaker, starRow, toasts, type Screen } from '../ui/common';
 import { h, replace, times, type Child } from '../ui/dom';
@@ -74,6 +76,7 @@ export const earlyScreen: Screen = (app, params) => {
   if (practice && typeof params.rung === 'number') tryStore[ownKind] = { step: params.rung };
   const name = displayName(save, id);
   const goal = TRIPS_TO_BEFRIEND * 2;
+  const here = { screen: 'early' as const, params: practice ? { id, kind: ownKind, practice: true } : { id, kind: ownKind } };
 
   function progress(kind: CountKind): EarlyProgress {
     const store = practice ? tryStore : (save.early ??= {});
@@ -112,6 +115,7 @@ export const earlyScreen: Screen = (app, params) => {
   let helped = false;
   /** Three misses on one problem: the answer is shown and she copies it. */
   let revealed = false;
+  let lessonDue: LessonId | undefined;
   let gone = false;
 
   const pet = monsterImg(id, m.stage, 220, 'bob');
@@ -175,6 +179,11 @@ export const earlyScreen: Screen = (app, params) => {
   }
 
   function newProblem(): void {
+    if (lessonDue) {
+      const due = lessonDue;
+      lessonDue = undefined;
+      if (teachIfDue(app, due, here)) return;
+    }
     const at = progress(ownKind);
     const rung = at.step ?? 0;
     stretch = wantsStretch({ rung, recent: (at.recent ?? []) as Mark[] }, countTop(ownKind));
@@ -627,6 +636,8 @@ export const earlyScreen: Screen = (app, params) => {
     const moved = record({ rung: before, recent: (at.recent ?? []) as Mark[] }, countTop(p.kind), firstTry, stretch);
     at.step = moved.rung;
     at.recent = moved.recent;
+    // Stepping down means repeated misses: reteach the idea before the next problem.
+    if (moved.moved < 0 && !practice) lessonDue = LESSON_FOR_COUNT[p.kind];
     at.shownRun = revealed ? (at.shownRun ?? 0) + 1 : 0;
     sfx('yes');
     react('jump');
@@ -730,7 +741,12 @@ export const earlyScreen: Screen = (app, params) => {
       pet,
       h('div', { class: 'nameplate' }, wild ? `Wild ${sp.name}` : name),
       status,
-      h('div', { class: 'cy-help' }, button('Show me', helpNow, 'btn-small help-walk')),
+      h(
+        'div',
+        { class: 'cy-help' },
+        button('Show me', helpNow, 'btn-small help-walk'),
+        button('Teach me', () => (practice ? app.go('lesson', { id: LESSON_FOR_COUNT[ownKind], back: here, preview: true }) : teach(app, LESSON_FOR_COUNT[ownKind], here)), 'btn-small teach'),
+      ),
     ),
     h(
       'div',

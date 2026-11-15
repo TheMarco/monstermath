@@ -1,4 +1,5 @@
 import type { SpeciesId } from './data/monsters';
+import type { CountKind } from './math/count';
 import type { BarPart } from './ui/models';
 
 /**
@@ -8,13 +9,17 @@ import type { BarPart } from './ui/models';
  * shown and explained.
  */
 
-export type LessonId = 'parts' | 'pack' | 'open' | 'rows' | 'share' | 'frac' | 'same' | 'ftimes' | 'ftray';
+export type LessonId = 'count' | 'more' | 'ten' | 'place' | 'parts' | 'pack' | 'open' | 'rows' | 'share' | 'frac' | 'same' | 'ftimes' | 'ftray';
 
 export type Scene =
   | { t: 'mat'; tens: number; ones: number; moreTens?: number; moreOnes?: number; caption?: string }
   | { t: 'array'; rows: number; cols: number; caption?: string }
   | { t: 'groups'; total: number; groups: number; caption?: string }
   | { t: 'dots'; n: number; caption?: string }
+  /** Two piles of berries, loose or lined up side by side. */
+  | { t: 'piles'; a: number; b: number; lined?: boolean; caption?: string }
+  /** A crate as a frame of ten spots: some filled, some just added. */
+  | { t: 'frame'; have: number; added?: number; caption?: string }
   | { t: 'bar'; parts: BarPart[]; caption?: string }
   | { t: 'fbar'; parts: number; shaded: number; caption?: string }
   | { t: 'fbars'; bars: Array<{ parts: number; shaded: number }>; caption?: string }
@@ -48,6 +53,58 @@ const bar = (a: number, b: number, bLabel = String(b)): BarPart[] => [
 ];
 
 export const LESSONS: Record<LessonId, Lesson> = {
+  count: {
+    id: 'count',
+    title: 'Counting berries',
+    teaches: 'Counting a set: one number for each object, and the last number says how many',
+    steps: [
+      { clip: 'l_count_1', text: 'Here are some berries. I touch each one, and say one number.', scene: { t: 'dots', n: 5 } },
+      { clip: 'l_count_2', text: '1, 2, 3, 4, 5.', scene: { t: 'dots', n: 5, caption: '1, 2, 3, 4, 5' } },
+      { clip: 'l_count_3', text: 'The last number I say is how many there are. 5 berries.', scene: { t: 'dots', n: 5, caption: '5' } },
+      { clip: 'l_count_4', text: 'It does not matter which berry I start with. It is still 5.', scene: { t: 'dots', n: 5, caption: '5' } },
+      { clip: 'l_count_5', text: 'Your turn. Count each berry once. How many are there?', scene: { t: 'dots', n: 7 }, ask: { kind: 'number', expected: 7 } },
+      { clip: 'l_count_6', text: '7! The last number you say is how many.', scene: { t: 'dots', n: 7, caption: '7' } },
+    ],
+  },
+  more: {
+    id: 'more',
+    title: 'More and fewer',
+    teaches: 'Comparing two amounts by lining them up one to one',
+    steps: [
+      { clip: 'l_more_1', text: 'Here are two piles of berries. Which pile has more?', scene: { t: 'piles', a: 6, b: 4 } },
+      { clip: 'l_more_2', text: 'I line them up, side by side.', scene: { t: 'piles', a: 6, b: 4, lined: true } },
+      { clip: 'l_more_3', text: 'This row goes further. 6 is more than 4.', scene: { t: 'piles', a: 6, b: 4, lined: true, caption: '6 is more than 4' } },
+      { clip: 'l_more_4', text: 'The other row has fewer. Fewer means not as many.', scene: { t: 'piles', a: 6, b: 4, lined: true, caption: '4 is fewer than 6' } },
+      { clip: 'l_more_5', text: 'Your turn. Which is more?', scene: { t: 'piles', a: 5, b: 8 }, ask: { kind: 'choice', choices: ['5', '8'], expected: '8' } },
+      { clip: 'l_more_6', text: 'Yes. 8 is more than 5.', scene: { t: 'piles', a: 5, b: 8, lined: true, caption: '8 is more than 5' } },
+    ],
+  },
+  ten: {
+    id: 'ten',
+    title: 'Filling a crate',
+    teaches: 'The pairs that make ten, and a teen number as ten and some ones',
+    steps: [
+      { clip: 'l_ten_1', text: 'A crate holds 10 berries. This crate has 6.', scene: { t: 'frame', have: 6 } },
+      { clip: 'l_ten_2', text: 'How many more fit? I count the empty spots. 1, 2, 3, 4.', scene: { t: 'frame', have: 6, added: 4 } },
+      { clip: 'l_ten_3', text: '6 and 4 make 10.', scene: { t: 'frame', have: 6, added: 4, caption: '6 + 4 = 10' } },
+      { clip: 'l_ten_4', text: 'Here is a full crate, and 3 loose berries. 10, and 3 more, is 13.', scene: { t: 'mat', tens: 1, ones: 3, caption: '10 + 3 = 13' } },
+      { clip: 'l_ten_5', text: 'Your turn. This crate has 7. How many more fill it?', scene: { t: 'frame', have: 7, caption: '7 + ? = 10' }, ask: { kind: 'number', expected: 3 } },
+      { clip: 'l_ten_6', text: '7 and 3 make 10.', scene: { t: 'frame', have: 7, added: 3, caption: '7 + 3 = 10' } },
+    ],
+  },
+  place: {
+    id: 'place',
+    title: 'Crates and loose berries',
+    teaches: 'Place value: the tens digit counts crates of ten, the ones digit counts loose berries',
+    steps: [
+      { clip: 'l_place_1', text: 'Each crate holds 10 berries. 3 crates: 10, 20, 30.', scene: { t: 'mat', tens: 3, ones: 0, caption: '30' } },
+      { clip: 'l_place_2', text: 'And 4 loose berries. 34.', scene: { t: 'mat', tens: 3, ones: 4, caption: '34' } },
+      { clip: 'l_place_3', text: 'The first number says how many crates. The second says how many loose berries.', scene: { t: 'mat', tens: 3, ones: 4, caption: '34' } },
+      { clip: 'l_place_4', text: '4 crates and 3 loose berries is 43. The same two numbers, but a different amount!', scene: { t: 'mat', tens: 4, ones: 3, caption: '43' } },
+      { clip: 'l_place_5', text: 'Your turn. How many berries? Count the crates first.', scene: { t: 'mat', tens: 2, ones: 6 }, ask: { kind: 'number', expected: 26 } },
+      { clip: 'l_place_6', text: '26. 2 crates and 6 loose berries.', scene: { t: 'mat', tens: 2, ones: 6, caption: '26' } },
+    ],
+  },
   parts: {
     id: 'parts',
     title: 'Numbers are made of parts',
@@ -301,6 +358,9 @@ export const LESSON_FOR_KIND: Partial<Record<string, LessonId>> = {
   times: 'ftimes',
   tray: 'ftray',
 };
+
+/** The lesson for each early-number idea. */
+export const LESSON_FOR_COUNT: Record<CountKind, LessonId> = { count: 'count', more: 'more', ten: 'ten', place: 'place' };
 
 export interface LessonLog {
   seen: number;

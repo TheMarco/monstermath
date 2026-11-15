@@ -39,6 +39,27 @@ function drawScene(scene: Scene): HTMLElement {
     case 'dots':
       picture = h('div', { class: 'lesson-dots' }, dotsModel(scene.n));
       break;
+    case 'piles': {
+      const pile = (n: number, cls: string): HTMLElement =>
+        h('div', { class: 'lesson-pile' }, h('div', { class: scene.lined ? 'e-line' : 'e-rows' }, times(n, () => h('span', { class: `eb ${cls}` }))), h('b', null, String(n)));
+      picture = h('div', { class: `e-versus lesson-piles ${scene.lined ? 'lined' : ''}` }, pile(scene.a, ''), pile(scene.b, 'alt'));
+      break;
+    }
+    case 'frame': {
+      const { have, added = 0 } = scene;
+      picture = h(
+        'div',
+        { class: 'e-frame' },
+        times(10, (i) =>
+          i < have
+            ? h('span', { class: 'e-cell' }, h('span', { class: 'eb' }))
+            : i < have + added
+              ? h('span', { class: 'e-cell' }, h('span', { class: 'eb alt' }, String(i - have + 1)))
+              : h('span', { class: 'e-cell empty' }),
+        ),
+      );
+      break;
+    }
     case 'bar':
       picture = barModel(scene.parts, 520);
       break;
@@ -80,9 +101,12 @@ export const lessonScreen: Screen = (app, params) => {
   const dots = h('div', { class: 'feed-progress' });
 
   function finish(): void {
-    save.lessons ??= {};
-    markLesson(save.lessons, lesson.id, dayKey());
-    app.commit();
+    // A grown-up looking at a lesson does not count as the child having had it.
+    if (params.preview !== true) {
+      save.lessons ??= {};
+      markLesson(save.lessons, lesson.id, dayKey());
+      app.commit();
+    }
     app.go(back.screen, back.params ?? {});
   }
 
@@ -199,7 +223,7 @@ export const lessonScreen: Screen = (app, params) => {
   const el = h(
     'div',
     { class: 'screen lesson-screen', 'data-lesson': lesson.id },
-    backdrop(['frac', 'same', 'ftimes', 'ftray'].includes(lesson.id) ? 'hollow' : 'meadow'),
+    backdrop(['frac', 'same', 'ftimes', 'ftray'].includes(lesson.id) ? 'hollow' : ['count', 'more', 'ten', 'place'].includes(lesson.id) ? 'canyon' : 'meadow'),
     h(
       'div',
       { class: 'card lesson-card' },

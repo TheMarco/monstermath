@@ -1,6 +1,7 @@
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { earlyStartStep } from '../src/intake';
 import { tuning } from '../src/ladder';
+import { LESSONS } from '../src/lessons';
 import { COUNT_KINDS, countTop, type CountKind } from '../src/math/count';
 import { countStats, teacherSummary } from '../src/report';
 import type { Save } from '../src/state';
@@ -188,6 +189,56 @@ describe('the early number games', () => {
     expect(teacherSummary(save)).toContain('Counting a set: level 2 of 5 (Counts up to 10 berries), 5 problems, 100% right on the first try');
     app.go('grownups');
     expect(stage().textContent).toContain('Early numbers (counting, comparing, ten, tens and ones)');
+  });
+});
+
+describe('lessons for the early number ideas', () => {
+  it('the pictures agree with the numbers', () => {
+    for (const id of ['count', 'more', 'ten', 'place'] as const) {
+      for (const step of LESSONS[id].steps) {
+        const { scene, ask } = step;
+        if (ask?.kind !== 'number' && ask?.kind !== 'choice') continue;
+        if (scene.t === 'dots' && ask.kind === 'number') expect(ask.expected).toBe(scene.n);
+        if (scene.t === 'frame' && ask.kind === 'number') expect(scene.have + ask.expected).toBe(10);
+        if (scene.t === 'mat' && ask.kind === 'number') expect(ask.expected).toBe(scene.tens * 10 + scene.ones);
+        if (scene.t === 'piles' && ask.kind === 'choice') expect(ask.expected).toBe(String(Math.max(scene.a, scene.b)));
+      }
+    }
+  });
+
+  it('"Teach me" plays the lesson and comes back; a grown-up trying it leaves no trace', () => {
+    for (const kind of COUNT_KINDS) {
+      app.go('early', { id: 'puff', kind, practice: true, rung: 0 });
+      click('Teach me');
+      expect(q('.lesson-screen')?.getAttribute('data-lesson')).toBe(kind);
+      const lesson = LESSONS[kind];
+      for (const step of lesson.steps) {
+        expect(q('.lesson-scene')).not.toBeNull();
+        if (!step.ask) (q('.lesson-next') as HTMLElement).click();
+        else if (step.ask.kind === 'choice') (q(`[data-choice="${step.ask.expected}"]`) as HTMLElement).click();
+        else if (step.ask.kind === 'number') {
+          String(step.ask.expected).split('').forEach((k) => window.dispatchEvent(new KeyboardEvent('keydown', { key: k })));
+          click('OK');
+        }
+      }
+      expect(q('.early-screen')).not.toBeNull();
+    }
+    app.commit();
+    expect(saved().lessons).toBeUndefined();
+  });
+
+  it('with a real friend the lesson counts as taught', () => {
+    app.go('early', { id: 'tup', kind: 'ten' });
+    click('Teach me');
+    for (const step of LESSONS.ten.steps) {
+      if (!step.ask) (q('.lesson-next') as HTMLElement).click();
+      else if (step.ask.kind === 'number') {
+        String(step.ask.expected).split('').forEach((k) => window.dispatchEvent(new KeyboardEvent('keydown', { key: k })));
+        click('OK');
+      }
+    }
+    expect(q('.early-screen')).not.toBeNull();
+    expect(saved().lessons?.ten?.seen).toBe(1);
   });
 });
 
