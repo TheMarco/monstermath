@@ -1,4 +1,5 @@
 import { ALL_SPECIES, SPECIES } from '../data/monsters';
+import { START_POINTS, type StartPoint } from '../intake';
 import { COUNT_KINDS, type CountKind } from '../math/count';
 import { OP_SYMBOL, type Kind } from '../math/expr';
 import { FRAC_ERROR_TEXT } from '../math/fractions';
@@ -112,6 +113,25 @@ export const grownupsScreen: Screen = (app, params) => {
           app.go('players');
         })
       : null;
+
+  // The start point can only be chosen before the first question of the check.
+  const startLocked = save.introDone || (save.intakeAt ?? 0) > 0 || save.placement.length > 0;
+  const startNow = save.startAt ?? 'auto';
+  const startSelect = h(
+    'select',
+    {
+      class: 'gu-select gu-start',
+      disabled: startLocked,
+      onchange: () => {
+        const value = startSelect.value;
+        if (value === 'auto') delete save.startAt;
+        else save.startAt = value as StartPoint;
+        app.commit();
+        app.go('grownups');
+      },
+    },
+    START_POINTS.map((s) => h('option', { value: s.id, selected: s.id === startNow }, s.label)),
+  );
 
   const tryLevel = h('select', { class: 'gu-select' }, [1, 2, 3, 4, 5, 6].map((n) => h('option', { value: String(n - 1) }, String(n))));
   const TRY_LABEL: Record<CountKind, string> = { count: 'Counting', more: 'Comparing', ten: 'Making ten', place: 'Tens and ones' };
@@ -297,6 +317,23 @@ export const grownupsScreen: Screen = (app, params) => {
             ),
           )
         : null,
+
+      card(
+        'Where to start',
+        h(
+          'p',
+          { class: 'gu-small' },
+          `The first-day check finds where each kind of problem should start for ${who}. If you already know roughly where that is, choose it here before ${who} begins, and the check only asks about that range. The child never sees a grade.`,
+        ),
+        h('div', { class: 'gu-actions' }, h('label', { class: 'gu-label' }, 'First-day check ', startSelect)),
+        h(
+          'p',
+          { class: 'gu-small' },
+          startLocked
+            ? `The check has started for ${who}, so this is fixed. To begin from another point, add a new player with "Players" on the title screen.`
+            : (START_POINTS.find((s) => s.id === startNow)?.asks ?? ''),
+        ),
+      ),
 
       card(
         'Early number games (in the making)',

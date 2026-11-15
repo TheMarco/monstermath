@@ -183,6 +183,41 @@ describe('the early number games', () => {
   });
 });
 
+describe('a first-day check that starts with counting', () => {
+  it('asks counting first, leaves out the later topics, and still ends with a first friend', () => {
+    app.save.startAt = 'early';
+    app.go('intro');
+    (qa('.pick-card')[0] as HTMLElement).click();
+    click('Pick Puff');
+    for (let k = 0; k < 3; k++) (q('.meet-card .pet-target') as HTMLElement).click();
+    vi.advanceTimersByTime(1100);
+    click('This name!');
+    for (let k = 0; k < 5; k++) (q('.big-berry') as HTMLElement).click();
+    click('Let us go!');
+
+    expect(qa('.feed-progress i')).toHaveLength(4);
+    expect(text('.feed-show')).toBe('How many berries?');
+    expect(qa('.feed-visual .berry')).toHaveLength(4);
+    // She counts the first set, then is not sure about anything else.
+    '4'.split('').forEach((k) => window.dispatchEvent(new KeyboardEvent('keydown', { key: k })));
+    click('Feed');
+    vi.advanceTimersByTime(1000);
+    for (let i = 0; i < 40 && !q('.party'); i++) {
+      if (q('.cuddle')) {
+        for (let k = 0; k < 3; k++) (q('.feed-left .pet-target') as HTMLElement).click();
+      } else {
+        click('Not sure');
+      }
+      vi.advanceTimersByTime(1000);
+    }
+    expect(text('.party')).toContain('is your friend!');
+    const save = saved();
+    expect(save.introDone).toBe(true);
+    expect(save.intakeLevels).toEqual({ count: 1, place: 0, add: 0, sub: 0 });
+    expect(save.startAt).toBe('early');
+  });
+});
+
 describe('where the early number ladders start', () => {
   it('starts at the bottom without a first-day check, and higher for what was shown', () => {
     for (const kind of COUNT_KINDS) expect(earlyStartStep(undefined, kind)).toBe(0);

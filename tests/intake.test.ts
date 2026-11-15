@@ -132,3 +132,36 @@ describe('intake staircases', () => {
   });
 });
 
+
+describe('where the check begins', () => {
+  it('asks every topic when no start point is chosen, and adds counting only when the first sums went badly', async () => {
+    const { strandPlan, COUNT_STRAND } = await import('../src/intake');
+    expect(strandPlan(undefined, {}).map((s) => s.id)).toEqual(['place', 'add', 'sub', 'mul', 'div', 'frac']);
+    // Part way through, the list does not change, so a break resumes at the right round.
+    expect(strandPlan(undefined, { place: 0, add: 0 })).toHaveLength(6);
+    const strong = { place: 5, add: 7, sub: 7, mul: 6, div: 5, frac: 5 };
+    expect(strandPlan(undefined, strong)).toHaveLength(6);
+    const low = { place: 1, add: 0, sub: 0, mul: 0, div: 0, frac: 0 };
+    expect(strandPlan(undefined, low).at(-1)).toBe(COUNT_STRAND);
+    expect(strandPlan(undefined, { ...low, count: 2 })).toHaveLength(7);
+  });
+
+  it('a grown-up can start with counting, or with adding and subtracting', async () => {
+    const { strandPlan } = await import('../src/intake');
+    expect(strandPlan('early', {}).map((s) => s.id)).toEqual(['count', 'place', 'add', 'sub']);
+    expect(strandPlan('sums', {}).map((s) => s.id)).toEqual(['place', 'add', 'sub', 'mul']);
+  });
+
+  it('the counting round has sound answers and recorded speech', async () => {
+    const { COUNT_STRAND } = await import('../src/intake');
+    const recorded = new Set(recordingScript().map(([key]) => key));
+    for (const level of COUNT_STRAND.levels) {
+      for (const item of level.items) {
+        if (item.choices) expect(item.choices).toContain(item.expected);
+        if (item.visual?.type === 'dots') expect(item.expected).toBe(String(item.visual.n));
+        for (const clip of item.clips) if (clip) expect(recorded.has(clip)).toBe(true);
+      }
+      expect(level.items[0]).not.toEqual(level.items[1]);
+    }
+  });
+});

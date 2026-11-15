@@ -11,7 +11,7 @@ import { addStory, subStory } from './voice/lines';
  * passed sets where the game starts, and gives her teacher a map.
  */
 
-export type StrandId = 'place' | 'add' | 'sub' | 'mul' | 'div' | 'frac';
+export type StrandId = 'count' | 'place' | 'add' | 'sub' | 'mul' | 'div' | 'frac';
 
 export type Visual =
   | { type: 'dots'; n: number }
@@ -165,6 +165,63 @@ export const STRANDS: Strand[] = [
   },
 ];
 
+/**
+ * Counting, for a child who is not yet adding. It is asked when a grown-up
+ * chose to start with counting, or after the other rounds when the first
+ * numbers and sums did not go well.
+ */
+export const COUNT_STRAND: Strand = {
+  id: 'count',
+  name: 'Counting',
+  levels: [
+    level('Counts up to 5 objects', 'K',
+      { show: 'How many berries?', expected: '4', clips: ['i_count'], visual: { type: 'dots', n: 4 } },
+      { show: 'How many berries?', expected: '5', clips: ['i_count'], visual: { type: 'dots', n: 5 } }),
+    level('Counts up to 10 objects', 'K',
+      { show: 'How many berries?', expected: '8', clips: ['i_count'], visual: { type: 'dots', n: 8 } },
+      { show: 'How many berries?', expected: '6', clips: ['i_count'], visual: { type: 'dots', n: 6 } }),
+    level('Says which number is bigger, up to 10', 'K',
+      pickOne('Which is bigger?', '8', ['5', '8'], 'i_bigger'),
+      pickOne('Which is bigger?', '7', ['7', '4'], 'i_bigger')),
+    level('Counts up to 20 objects', 'K-1',
+      { show: 'How many berries?', expected: '13', clips: ['i_count'], visual: { type: 'dots', n: 13 } },
+      { show: 'How many berries?', expected: '16', clips: ['i_count'], visual: { type: 'dots', n: 16 } }),
+    level('Finds how many more make 10', '1',
+      { show: '6 + ? = 10', expected: '4', clips: ['i_missing'] },
+      { show: '7 + ? = 10', expected: '3', clips: ['i_missing'] }),
+  ],
+};
+
+/** Every strand, in the order the grown-up page lists them. */
+export const ALL_STRANDS: Strand[] = [COUNT_STRAND, ...STRANDS];
+
+/** Where a grown-up wants the first-day check to begin. Without a choice the game finds out. */
+export type StartPoint = 'early' | 'sums';
+
+export const START_POINTS: Array<{ id: StartPoint | 'auto'; label: string; asks: string }> = [
+  { id: 'auto', label: 'Let the game find out', asks: 'Asks about every topic, easiest first, and stops each topic after two misses. Counting is added when the first sums do not go well.' },
+  { id: 'early', label: 'Start with counting (about kindergarten and grade 1)', asks: 'Asks only about counting, numbers to 100, adding and subtracting.' },
+  { id: 'sums', label: 'Start with adding and subtracting (about grades 1 and 2)', asks: 'Asks about numbers, adding, subtracting and equal groups. Leaves out division and fractions.' },
+];
+
+const PLAN: Record<StartPoint, StrandId[]> = {
+  early: ['count', 'place', 'add', 'sub'],
+  sums: ['place', 'add', 'sub', 'mul'],
+};
+
+/**
+ * The rounds of the first-day check, in order. The list only ever grows at
+ * its end, so a child who takes a break comes back to the right round.
+ */
+export function strandPlan(start: StartPoint | undefined, levels: IntakeLevels): Strand[] {
+  const byId = (id: StrandId): Strand => ALL_STRANDS.find((s) => s.id === id) as Strand;
+  if (start) return PLAN[start].map(byId);
+  const asked = STRANDS.every((s) => levels[s.id] !== undefined);
+  // Not reading teen numbers, or not adding within 10: find out where counting stands.
+  const low = (levels.place ?? 0) < 2 || (levels.add ?? 0) < 1;
+  return asked && low ? [...STRANDS, COUNT_STRAND] : STRANDS;
+}
+
 export interface StrandRun {
   level: number;
   /** 0 for the first question at a level, 1 for the retry. */
@@ -240,9 +297,10 @@ export function fracStartStep(levels: IntakeLevels | undefined, kind: FracKind):
 export function earlyStartStep(levels: IntakeLevels | undefined, kind: CountKind): number {
   const place = levels?.place ?? 0;
   const add = levels?.add ?? 0;
-  if (kind === 'count') return place >= 1 ? 3 : 0;
-  if (kind === 'more') return place >= 4 ? 5 : place >= 3 ? 4 : place >= 1 ? 2 : 0;
-  if (kind === 'ten') return place >= 2 ? 3 : add >= 1 ? 1 : 0;
+  const count = levels?.count ?? 0;
+  if (kind === 'count') return Math.max(place >= 1 ? 3 : 0, count >= 4 ? 4 : count >= 2 ? 2 : count);
+  if (kind === 'more') return Math.max(place >= 4 ? 5 : place >= 3 ? 4 : place >= 1 ? 2 : 0, count >= 3 ? 3 : count >= 1 ? 1 : 0);
+  if (kind === 'ten') return Math.max(place >= 2 ? 3 : add >= 1 ? 1 : 0, count >= 5 ? 2 : 0);
   return place >= 5 ? 4 : place >= 3 ? 3 : 0;
 }
 

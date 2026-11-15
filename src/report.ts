@@ -2,7 +2,7 @@ import { ALL_SPECIES, CANYON_ORDER, GRASS_ORDER, HOLLOW_ORDER, SPECIES, type Spe
 import { OP_SYMBOL, type Kind } from './math/expr';
 import { FRAC_ERROR_TEXT, FRAC_KINDS, FRAC_RUNG_TEXT, type FracError, type FracKind } from './math/fractions';
 import { ERROR_TEXT, RUNG_TEXT, type Delivery, type ErrorPattern } from './math/regroup';
-import { belowFloor, reached, STRANDS } from './intake';
+import { ALL_STRANDS, belowFloor, reached, STRANDS } from './intake';
 import { LESSONS } from './lessons';
 import { daysPlayed, type Save } from './state';
 
@@ -192,7 +192,7 @@ export interface IntakeRow {
 /** One row per strand: the highest level passed, and the level that stopped her. */
 export function intakeRows(save: Save): IntakeRow[] {
   const levels = save.intakeLevels ?? {};
-  return STRANDS.filter((s) => levels[s.id] !== undefined).map((s) => {
+  return ALL_STRANDS.filter((s) => levels[s.id] !== undefined).map((s) => {
     const info = reached(s, levels[s.id] ?? 0);
     return { strand: s.name, reached: info.reached, next: info.next ?? 'Passed every level in the check' };
   });

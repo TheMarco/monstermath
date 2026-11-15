@@ -6,7 +6,7 @@ import {
   newRun,
   fastTrack,
   startSteps,
-  STRANDS,
+  strandPlan,
   type IntakeItem,
   type Strand,
   type StrandRun,
@@ -218,7 +218,9 @@ export const introScreen: Screen = (app) => {
   function feedStep(starter: SpeciesId, fresh: boolean): void {
     const name = displayName(save, starter);
     const voiceIndex = ALL_SPECIES.indexOf(starter);
-    let strandIndex = Math.min(save.intakeAt ?? 0, STRANDS.length);
+    /** The rounds to ask. Counting can be added at the end, once the other rounds are in. */
+    const plan = (): Strand[] => strandPlan(save.startAt, save.intakeLevels ?? {});
+    let strandIndex = Math.min(save.intakeAt ?? 0, plan().length);
     let run: StrandRun = newRun();
     let busy = false;
     let asked = 0;
@@ -251,12 +253,12 @@ export const introScreen: Screen = (app) => {
       ),
     );
 
-    const strand = (): Strand | undefined => STRANDS[strandIndex];
+    const strand = (): Strand | undefined => plan()[strandIndex];
 
     function drawProgress(): void {
       replace(
         progress,
-        times(STRANDS.length, (i) => h('i', { class: i < strandIndex ? 'done' : i === strandIndex ? 'now' : '' })),
+        times(plan().length, (i) => h('i', { class: i < strandIndex ? 'done' : i === strandIndex ? 'now' : '' })),
       );
     }
 

@@ -194,6 +194,8 @@ export interface Save {
   /** Intake: levels passed per strand, and the strand to resume at if she took a break. */
   intakeLevels?: Partial<Record<string, number>>;
   intakeAt?: number;
+  /** Where a grown-up chose to begin the first-day check. Unset: the game finds out. */
+  startAt?: 'early' | 'sums';
   /** Where each kind of berry trip starts, from the first-day check (0 easiest to 2). */
   startStep?: Partial<Record<Delivery, number>>;
   /** Ranger points: every heart and berry trip counts. */
