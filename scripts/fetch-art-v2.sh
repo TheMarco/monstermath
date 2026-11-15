@@ -22,7 +22,7 @@ cat scripts/art-urls-v2-*.txt | while read -r name url; do
   esac
   echo "ok      $name"
 done
-echo "Monster pictures: $(ls art-src-v2/monsters/*.png 2>/dev/null | wc -l | tr -d ' ') of 81. Backgrounds: $(ls art-src-v2/bg/*.png 2>/dev/null | wc -l | tr -d ' ') of 4. Decorations: $(ls art-src-v2/items/decor-*.png 2>/dev/null | wc -l | tr -d ' ') of 8."
+echo "Monster pictures: $(ls art-src-v2/monsters/*.png 2>/dev/null | wc -l | tr -d ' ') of 84. Backgrounds: $(ls art-src-v2/bg/*.png 2>/dev/null | wc -l | tr -d ' ') of 4. Decorations: $(ls art-src-v2/items/decor-*.png 2>/dev/null | wc -l | tr -d ' ') of 8."
 # The pilot animation was made from the old Puff picture; remove it so it does not play over the new one.
 if [ -d public/art/anim ] && [ ! -f public/art/anim/.v2 ]; then
   rm -f public/art/anim/*.mp4
