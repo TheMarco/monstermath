@@ -172,7 +172,7 @@ export const grownupsScreen: Screen = (app, params) => {
       h(
         'p',
         null,
-        'A new monster comes out when the skill before it is secure (six or more problems, most of the recent ones right the first time). If the class has moved on and a topic is needed now, open everything: ',
+        'A new monster comes out when the skill before it is secure: six or more problems, most of the recent ones right the first time, and at least one night since it was first met. At most two new monsters can be befriended in a day, and one egg hatches per day. If the class has moved on and a topic is needed now, open everything: ',
         openBtn,
       ),
       ),

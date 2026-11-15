@@ -44,8 +44,14 @@ function settleEgg(save: Save): void {
   }
 }
 
+/** One egg hatches per day: a warm egg waits for tomorrow when one has already hatched today. */
+export function hatchedToday(save: Save): boolean {
+  const day = dayKey();
+  return EGG_ORDER.some((id) => save.monsters[id]?.friend && save.monsters[id]?.friendOn === day);
+}
+
 export function eggReady(save: Save): boolean {
-  return !!save.egg && save.egg.warmth >= EGG_WARMTH;
+  return !!save.egg && save.egg.warmth >= EGG_WARMTH && !hatchedToday(save);
 }
 
 /** Hatch the warm egg into the next egg monster. */

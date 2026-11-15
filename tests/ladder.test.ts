@@ -2,7 +2,8 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { record, steadiness, tuning, wantsStretch, type Mark, type Progress } from '../src/ladder';
 import type { Delivery } from '../src/math/regroup';
 import { levelRows } from '../src/report';
-import { nextWild, secure } from '../src/skill';
+import type { SpeciesId } from '../src/data/monsters';
+import { metToday, nextWild, secure } from '../src/skill';
 import { befriend, canyonQueue, clock, freshSave, hollowQueue, monster, type Save } from '../src/state';
 
 const at = (rung: number, ...recent: Mark[]): Progress => ({ rung, recent });
@@ -99,11 +100,38 @@ function trips(save: Save, type: Delivery, results: boolean[]): void {
   }
 }
 
+/** Pretend a friend was made on an earlier day. */
+function met(save: Save, id: SpeciesId, day: string): void {
+  (save.monsters[id] as { friendOn?: string }).friendOn = day;
+}
+
 describe('the next monster comes out when the skill before it is secure', () => {
+  it('a skill met today is not secure until tomorrow, however well it went', () => {
+    const save = freshSave();
+    befriend(save, 'nub');
+    trips(save, 'add', [true, true, true, true, true, true, true, true]);
+    expect(secure(save, 'nub')).toBe(false);
+    expect(nextWild(save, canyonQueue(save))).toEqual({ id: 'plum', ready: false, needs: 'nub' });
+    met(save, 'nub', '2026-11-01');
+    expect(secure(save, 'nub')).toBe(true);
+  });
+
+  it('two new friends a day, then the next one waits for tomorrow', () => {
+    const save = freshSave();
+    befriend(save, 'dab');
+    expect(nextWild(save, canyonQueue(save))).toEqual({ id: 'nub', ready: true });
+    befriend(save, 'moss');
+    expect(metToday(save)).toBe(2);
+    expect(nextWild(save, canyonQueue(save))).toEqual({ id: 'nub', ready: false });
+    met(save, 'dab', '2026-11-01');
+    expect(nextWild(save, canyonQueue(save))).toEqual({ id: 'nub', ready: true });
+  });
+
   it('holds Plum back until plain addition is secure', () => {
     const save = freshSave();
     expect(nextWild(save, canyonQueue(save))).toEqual({ id: 'nub', ready: true });
     befriend(save, 'nub');
+    met(save, 'nub', '2026-11-01');
     trips(save, 'add', [true, false, true, false, true]);
     expect(secure(save, 'nub')).toBe(false);
     expect(nextWild(save, canyonQueue(save))).toEqual({ id: 'plum', ready: false, needs: 'nub' });
@@ -116,6 +144,8 @@ describe('the next monster comes out when the skill before it is secure', () => 
     const save = freshSave();
     befriend(save, 'nub');
     befriend(save, 'plum');
+    met(save, 'nub', '2026-11-01');
+    met(save, 'plum', '2026-11-01');
     trips(save, 'add', [true, true, true, true, true, true]);
     // Regrouping is shaky, but taking away only needs plain addition.
     trips(save, 'addR', [false, false, false]);

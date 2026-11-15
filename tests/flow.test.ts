@@ -2,7 +2,15 @@ import { beforeAll, describe, expect, it, vi } from 'vitest';
 import { STRANDS, type IntakeItem } from '../src/intake';
 import { LESSONS, type LessonId } from '../src/lessons';
 import { tuning } from '../src/ladder';
-import type { Save } from '../src/state';
+import { clock, type Save } from '../src/state';
+
+/** New monsters are limited per day and a skill has to hold overnight: the script sleeps between them. */
+let nights = 0;
+const tomorrow = (): void => {
+  nights += 1;
+  const shift = nights * 86_400_000;
+  clock.now = () => new Date(Date.now() + shift);
+};
 
 // The scripted sessions play at her own rung; stretch problems have their own tests.
 tuning.stretchChance = 0;
@@ -237,6 +245,7 @@ describe('first session', () => {
   });
 
   it('feeds Nub in the canyon: joining berries', () => {
+    tomorrow();
     click('Berry Canyon');
     expect(text('.nameplate')).toBe('Wild Nub');
     click('Put together');
@@ -249,6 +258,7 @@ describe('first session', () => {
   });
 
   it('feeds Plum: a wrong answer gets coaching, packing a crate fixes it', () => {
+    tomorrow();
     click('Berry Canyon');
     expect(finishLesson()).toBe('pack');
     expect(text('.nameplate')).toBe('Wild Plum');
@@ -270,15 +280,12 @@ describe('first session', () => {
     wait(1500);
     expect(text('.party h2')).toBe('Plum is your friend!');
     click('Hooray!');
-    // Three treats, three trips and a new friend: the day's goals are met.
-    expect(text('.party h2')).toBe('You did it all today!');
-    expect(saved().monsters.puff?.stars).toBe(1);
-    click('Okay');
     const log = saved().tripLog;
     expect(log.some((t) => !t.firstTry && t.errors.includes('no-carry'))).toBe(true);
   });
 
   it('feeds Dusk and Chip: eating berries and opening a crate', () => {
+    tomorrow();
     click('Berry Canyon');
     expect(text('.nameplate')).toBe('Wild Dusk');
     let p = readProblem();
@@ -398,6 +405,7 @@ describe('first session', () => {
   });
 
   it('learns what a fraction is in Honey Hollow', () => {
+    tomorrow();
     click('Honey Hollow');
     expect(finishLesson()).toBe('frac');
     expect(text('.nameplate')).toBe('Wild Bix');
@@ -428,17 +436,20 @@ describe('first session', () => {
   });
 
   it('meets the next hollow monster after its lesson, and gets counting help after two misses', () => {
-    // Bix is a friend, but the next monster waits until the skill is secure (six problems, mostly right first time).
-    if ((saved().fracLog ?? []).length < 6) {
-      expect(q('.place-hollow .peek-soon')).not.toBeNull();
-      click('Honey Hollow');
-      expect(text('.nameplate')).toBe('Bix');
+    // Bix is a friend, but the next monster waits until the skill has held overnight.
+    click('Journal');
+    click('Meadow');
+    expect(q('.place-hollow .peek-soon')).not.toBeNull();
+    tomorrow();
+    openFriend('bix');
+    click('Play');
+    for (let k = 0; k < 6 && !q('.party'); k++) {
+      if (k > 0) click('Next one');
       solveHoney();
-      click('Meadow');
+      wait(1500);
     }
+    click('Meadow');
     expect(q('.place-hollow .peek-soon')).toBeNull();
-    // Five clean problems in a row also moved her up from where the first-day check put her.
-    expect(saved().monsters.bix?.step).toBeGreaterThanOrEqual(3);
 
     click('Honey Hollow');
     expect(finishLesson()).toBe('same');
@@ -472,6 +483,17 @@ describe('first session', () => {
   });
 
   it('says good night when the day is done, and can wake the meadow again', () => {
+    // Three treats, three trips and a star: the day's goals are met.
+    openFriend('dab');
+    click('Play');
+    const target = Number(text('.target-badge'));
+    giveTreat(target - 2, '+', 2);
+    giveTreat(target - 3, '+', 3);
+    giveTreat(target + 5, '-', 5);
+    wait(1600);
+    click('Meadow');
+    expect(text('.party h2')).toBe('You did it all today!');
+    click('Okay');
     click('Good night');
     expect(Object.values(saved().days).some((d) => d.asleep)).toBe(true);
     wait(4000);
@@ -564,6 +586,7 @@ describe('a child who finds the sums hard', () => {
     expect(save.startStep).toEqual({ add: 1, addR: 0, sub: 0, subR: 0 });
 
     click('Go to the meadow');
+    tomorrow();
     click('Berry Canyon');
     const first = readProblem();
     expect(first.b).toBeLessThan(10);

@@ -117,9 +117,14 @@ picks the rung of the first thing the child has not shown yet. From there:
   (five or more wrong tries, or two hints).
 - The berry blocks start hidden only when recent trips of that kind were right
   the first time without help.
-- A new monster comes out when the skill before it is secure (six or more
-  problems, most recent ones right the first time). Until then the place button
-  leads to the friend to practise with. The grown-up page has a
+- A new monster comes out when the skill before it is secure: six or more
+  problems, most recent ones right the first time, and at least one night since
+  that skill was first met. At most two new monsters can be befriended in a day,
+  and one egg hatches per day. Until then the place button leads to the friend
+  to practise with.
+- A problem solved within three tries earns its reward, with or without help.
+  One reached by trying more answers than that earns nothing and does not count
+  toward a friendship, a star or the day's goals. The grown-up page has a
   switch that opens every monster, for when the class has moved on.
 - Each day the friend whose skill has gone worst lately asks to play first.
 - After a break of a week or more every rung steps down one.

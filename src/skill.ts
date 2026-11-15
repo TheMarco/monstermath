@@ -1,4 +1,4 @@
-import { SPECIES, type SpeciesId } from './data/monsters';
+import { EGG_ORDER, SPECIES, type SpeciesId } from './data/monsters';
 import type { Delivery } from './math/regroup';
 import { clock, dayKey, daysPlayed, friends, isFriend, monster, type MonsterState, type Save } from './state';
 
@@ -176,6 +176,9 @@ export const SECURE_RATE = 0.7;
 export function secure(save: Save, id: SpeciesId): boolean {
   if (!isFriend(save, id)) return false;
   const sp = SPECIES[id];
+  const passedCheck = sp.habitat === 'canyon' && !!sp.delivery && !!save.fast[sp.delivery];
+  // A skill met today is not secure yet: it has to hold after a night's sleep.
+  if (!passedCheck && save.monsters[id]?.friendOn === dayKey()) return false;
   let marks: boolean[];
   if (sp.habitat === 'canyon' && sp.delivery) {
     if (save.fast[sp.delivery]) return true;
@@ -189,6 +192,14 @@ export function secure(save: Save, id: SpeciesId): boolean {
   return marks.length >= SECURE_PROBLEMS && recent.filter(Boolean).length / recent.length >= SECURE_RATE;
 }
 
+/** New monsters she can befriend in the places per day. The starter and egg monsters are not counted. */
+export const NEW_FRIENDS_PER_DAY = 2;
+
+export function metToday(save: Save): number {
+  const day = dayKey();
+  return friends(save).filter((m) => m.friendOn === day && m.id !== save.starter && !EGG_ORDER.includes(m.id)).length;
+}
+
 export interface NextWild {
   id: SpeciesId;
   /** False when the skill before it still needs practice. */
@@ -200,6 +211,13 @@ export interface NextWild {
 /** The next monster to meet in a place, in teaching order, and whether she is ready for it. */
 export function nextWild(save: Save, order: SpeciesId[]): NextWild | null {
   const waiting = order.filter((id) => !isFriend(save, id));
+  // Enough new friends for one day: the next one waits until tomorrow.
+  if (!save.openAll && metToday(save) >= NEW_FRIENDS_PER_DAY) {
+    // One she has already started with can still be finished.
+    const begun = waiting.find((id) => (save.monsters[id]?.trips ?? 0) > 0 || save.monsters[id]?.current);
+    if (begun && (!NEEDS[begun] || secure(save, NEEDS[begun] as SpeciesId))) return { id: begun, ready: true };
+    return waiting[0] ? { id: waiting[0], ready: false } : null;
+  }
   for (const id of waiting) {
     const needs = NEEDS[id];
     if (save.openAll || !needs || secure(save, needs)) return { id, ready: true };

@@ -591,6 +591,7 @@ export const canyonScreen: Screen = (app, params) => {
   function succeed(): void {
     solved = true;
     const firstTry = answers.length === 1 && !helped;
+    const worked = answers.length <= 3;
     walking = false;
     const o = monster(save, owner(p.type));
     const before = rungFor(p.type);
@@ -600,7 +601,7 @@ export const canyonScreen: Screen = (app, params) => {
     o.step = moved.rung;
     o.recent = moved.recent;
     const day = today(save);
-    day.trips += 1;
+    if (worked) day.trips += 1;
     save.tripLog.push({
       t: Date.now(),
       day: dayKey(),
@@ -618,15 +619,18 @@ export const canyonScreen: Screen = (app, params) => {
     });
     sfx('yes');
     react('jump');
-    floatUp(pet, 'heart', firstTry ? 3 : 1);
-    toasts(el, gainLines(onTrip(save, firstTry)));
+    if (worked) floatUp(pet, 'heart', firstTry ? 3 : 1);
+    // Working it out earns the reward, with or without help. Trying answers until one fits does not.
+    if (worked) toasts(el, gainLines(onTrip(save, firstTry)));
     if (moved.moved > 0) sfx('level');
     if (moved.moved > 0) toasts(el, [{ text: 'Level up! The numbers grow with you.', kind: 'level', clip: 't_harder' }]);
     replace(bubble, `Yes! ${p.a} ${adding ? '+' : '−'} ${p.b} = ${p.answer}`);
     say(stretch && firstTry ? 'stretch_yes' : 'yes');
 
     if (wild) {
-      m.trips = Math.min(goal, m.trips + (firstTry ? 2 : 1));
+      // Friendship grows from problems she worked out: two for a first try, one for a
+      // later try, none when the answer was reached by trying many.
+      m.trips = Math.min(goal, m.trips + (firstTry ? 2 : worked ? 1 : 0));
       if (m.trips >= goal) {
         befriend(save, id);
         m.rounds += 1;
@@ -647,7 +651,7 @@ export const canyonScreen: Screen = (app, params) => {
         return;
       }
     } else {
-      m.roundTrips += 1;
+      if (worked) m.roundTrips += 1;
       if (m.roundTrips >= TRIPS_PER_ROUND) {
         m.roundTrips = 0;
         m.rounds += 1;
