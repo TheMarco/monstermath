@@ -42,7 +42,7 @@ export const journalScreen: Screen = (app, params) => {
                 }
               },
             },
-            monsterImg(id, m?.stage ?? 1, 86, known ? '' : 'silhouette'),
+            monsterImg(id, m?.stage ?? 1, 72, known ? '' : 'silhouette'),
             h('span', { class: 'tile-name' }, known ? displayName(save, id) : '???'),
             known && m ? h('span', { class: 'tile-stars' }, icon('star', 'on'), String(m.stars)) : null,
           );
@@ -60,6 +60,7 @@ export const journalScreen: Screen = (app, params) => {
     const trips = save.tripLog.filter((t) => t.monster === id).length;
     const counted = (save.countLog ?? []).filter((t) => t.monster === id).length;
     const honey = (save.fracLog ?? []).filter((t) => t.monster === id).length;
+    const baked = (save.upperLog ?? []).filter((t) => t.monster === id).length;
 
     const nameInput = h('input', {
       class: 'name-input',
@@ -99,6 +100,8 @@ export const journalScreen: Screen = (app, params) => {
             ? [h('h3', null, 'Honey problems solved'), h('p', { class: 'big-number' }, String(honey))]
           : sp.habitat === 'early'
             ? [h('h3', null, 'Berry problems solved'), h('p', { class: 'big-number' }, String(counted))]
+          : sp.habitat === 'upper'
+            ? [h('h3', null, 'Bakery problems solved'), h('p', { class: 'big-number' }, String(baked))]
           : [
               h('h3', null, 'Numbers we made'),
               targets.length === 0

@@ -154,3 +154,14 @@ l_share_4	Look, it is the rows again! Three rows of four is twelve. Sharing is t
 l_share_5	Your turn. Ten berries, two friends. Which treat matches?
 l_share_6	How many does each friend get?
 l_share_7	That is division: sharing equally.
+show_you	Let me show you.
+w_add	Let us do it together. First, put the berries together.
+w_pack	More than nine loose berries. Ten of them go in a crate.
+w_sub	Let us do it together. First, feed the crates.
+w_open	Not enough loose berries. So we open a crate.
+w_feed	Now feed the loose berries.
+w_count	Now count. Crates first, then the loose berries. Pick the numbers below.
+help_hint	Here is a little help.
+hollow_tip	Welcome to Honey Hollow! The monsters here love honey bars, cut into equal pieces.
+wild_honey	A wild monster! It loves honey.
+fq_name	How much of the honey bar is gold? Pick how many pieces are gold, and how many pieces there are in all.

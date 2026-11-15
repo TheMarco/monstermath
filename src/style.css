@@ -5161,3 +5161,701 @@ button.e-cell.empty {
   right: 5px;
   font-size: 14px;
 }
+
+/* ---- the bakery: buns on trays, baskets, loaves and crumbs (2026-11) ---- */
+
+:root {
+  --bun: #e8a04a;
+  --bun-dark: #a85f17;
+  --tenths: #d6336c;
+  --hundredths: #1c7ed6;
+}
+
+/* The parts of a tray or a share. Each keeps one colour in the picture and in the sum. */
+.tone-0 {
+  --tone: #ffe59a;
+  --tone-mid: #f0b400;
+  --tone-ink: #7a5200;
+}
+
+.tone-1 {
+  --tone: #c4e4ff;
+  --tone-mid: #3aa0ff;
+  --tone-ink: #0b5699;
+}
+
+.tone-2 {
+  --tone: #d2f0c2;
+  --tone-mid: #5fb944;
+  --tone-ink: #2b6b1d;
+}
+
+.tone-3 {
+  --tone: #ffcfe0;
+  --tone-mid: #ff5fa2;
+  --tone-ink: #a01c52;
+}
+
+.bun {
+  display: inline-block;
+  width: var(--bu, 16px);
+  height: var(--bu, 16px);
+  flex: none;
+  border-radius: 50% 50% 38% 38%;
+  background: var(--bun);
+  border: 2px solid var(--plum);
+}
+
+.bun-ten {
+  display: inline-grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1px;
+  width: calc(var(--bu, 16px) * 2.8);
+  height: calc(var(--bu, 16px) * 1.15);
+  padding: 2px;
+  flex: none;
+  background: #f6f1e7;
+  border: 2px solid var(--plum);
+  border-radius: 5px;
+}
+
+.bun-ten i {
+  border-radius: 50%;
+  background: var(--bun);
+}
+
+.bun-rack {
+  display: inline-grid;
+  place-items: center;
+  width: calc(var(--bu, 16px) * 3.2);
+  height: calc(var(--bu, 16px) * 1.15);
+  flex: none;
+  background: var(--bun-dark);
+  border: 2px solid var(--plum);
+  border-radius: 5px;
+  color: #fff;
+  font-size: calc(var(--bu, 16px) * 0.74);
+  font-weight: 700;
+  line-height: 1;
+}
+
+.bun[class*='tone-'],
+.bun-ten[class*='tone-'],
+.bun-rack[class*='tone-'] {
+  box-shadow: 0 0 0 3px var(--tone-mid);
+}
+
+.bun.over {
+  box-shadow: 0 0 0 3px #ffc21e;
+}
+
+/* Multiplying: the tray. */
+.bk-tray {
+  display: grid;
+  gap: 5px;
+  align-items: stretch;
+}
+
+.bk-head,
+.bk-side,
+.bk-corner {
+  display: grid;
+  place-items: center;
+  padding: 0 4px;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.bk-corner {
+  color: rgba(28, 27, 46, 0.4);
+}
+
+.bk-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px;
+  background: var(--tone);
+  border: 3px solid var(--plum);
+  border-radius: 12px;
+}
+
+.bk-cell.lit {
+  box-shadow: 0 0 0 4px #ffc21e;
+}
+
+.bk-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.bk-row {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.bk-product {
+  min-width: 52px;
+  padding: 0 8px;
+  background: #fff;
+  border: 2.5px solid var(--plum);
+  border-radius: 10px;
+  color: var(--tone-ink);
+  font-size: 22px;
+  line-height: 1.25;
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* Bigger trays name their parts. The dots are the buns, too many to count. */
+.bk-cell.plain {
+  width: 132px;
+  height: 86px;
+  gap: 4px;
+  background-color: var(--tone);
+  background-image: radial-gradient(circle, rgba(168, 95, 23, 0.3) 5px, transparent 6px);
+  background-size: 22px 22px;
+}
+
+.bk-cell.plain.wide {
+  width: 250px;
+}
+
+.bk-cell.plain.tall {
+  height: 140px;
+}
+
+.bk-eq,
+.bk-val {
+  padding: 0 8px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 8px;
+  font-size: 21px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.bk-val {
+  min-width: 64px;
+  font-size: 32px;
+  line-height: 1.15;
+  text-align: center;
+  color: var(--tone-ink);
+}
+
+/* Dividing: the pile and the baskets. */
+.share {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.sh-pile {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  max-width: 540px;
+  min-height: 40px;
+  padding: 8px 12px;
+  background: #f6f1e7;
+  border: 3px solid var(--plum);
+  border-radius: 12px;
+}
+
+.sh-pile.loose {
+  max-width: 280px;
+}
+
+.sh-pile.empty {
+  background: transparent;
+  border-style: dashed;
+}
+
+.sh-left {
+  margin-left: 8px;
+  font-size: 19px;
+}
+
+.sh-baskets {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+}
+
+.sh-basket {
+  min-height: 76px;
+  padding: 6px 3px 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  background: #f1d9b5;
+  border: 3px solid var(--plum);
+  border-radius: 8px 8px 20px 20px;
+}
+
+.sh-in {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.sh-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+.sh-count {
+  padding: 0 8px;
+  background: #fff;
+  border-radius: 8px;
+  font-size: 18px;
+  line-height: 1.3;
+}
+
+/* Fractions: loaves. */
+.loaves {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.loaf-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.loaf-name {
+  width: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  font-size: 30px;
+  font-weight: 700;
+}
+
+.loaf-sign {
+  margin-right: 8px;
+  font-size: 34px;
+}
+
+.loaf-same {
+  font-size: 24px;
+}
+
+.loaf {
+  display: flex;
+  flex: none;
+  overflow: hidden;
+  background: #fbf3e2;
+  border: 4px solid var(--plum);
+  border-radius: 18px 18px 8px 8px;
+}
+
+.slice {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  place-items: center;
+  border-left: 4px solid var(--plum);
+  color: var(--plum);
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 700;
+}
+
+.slice:first-child {
+  border-left: 0;
+}
+
+.slice.fine {
+  border-left: 2px dashed rgba(28, 27, 46, 0.6);
+}
+
+.slice.on-a {
+  background: var(--bun);
+}
+
+.slice.on-b {
+  background: #ff9dbb;
+}
+
+.slice.on-gone {
+  background: repeating-linear-gradient(45deg, #efeaf4 0 6px, #cdc5da 6px 9px);
+}
+
+.lesson-scene .fbars-row > .frac {
+  min-width: 52px;
+}
+
+/* Room between the bubble and the helper, so a charm on its head does not cover the last line. */
+.lesson-screen[data-lesson='mult'] .lesson-left,
+.lesson-screen[data-lesson='div'] .lesson-left,
+.lesson-screen[data-lesson='fadd'] .lesson-left,
+.lesson-screen[data-lesson='dec'] .lesson-left {
+  gap: 34px;
+}
+
+/* Decimals: trays of one hundred squares, filled strip by strip. */
+.pl-d1 {
+  color: var(--tenths);
+}
+
+.pl-d2 {
+  color: var(--hundredths);
+}
+
+.crumbs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.crumb-tray {
+  display: grid;
+  grid-template-rows: repeat(10, 1fr);
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: 1px 2px;
+  padding: 3px;
+  flex: none;
+  background: #8d889c;
+  border: 3px solid var(--plum);
+  border-radius: 8px;
+}
+
+.crumb {
+  background: #fbf3e2;
+}
+
+.crumb.one {
+  background: var(--ones);
+}
+
+.crumb.tenth {
+  background: var(--tenths);
+}
+
+.crumb.hund {
+  background: var(--hundredths);
+}
+
+.crumb.gone {
+  background: repeating-linear-gradient(45deg, #fff 0 3px, #a9a2b8 3px 5px);
+}
+
+.crumb-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.crumb-legend {
+  display: flex;
+  gap: 16px;
+  font-size: 19px;
+  font-weight: 700;
+}
+
+.crumb-sum {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.crumb-sign {
+  font-size: 46px;
+  line-height: 1;
+}
+
+.crumb-pair {
+  display: flex;
+  align-items: flex-end;
+  gap: 44px;
+}
+
+.crumb-one {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  font-size: 32px;
+}
+
+.crumb-icon {
+  display: inline-block;
+  flex: none;
+  background: currentColor;
+  border-radius: 2px;
+}
+
+.crumb-icon.o {
+  width: 16px;
+  height: 16px;
+}
+
+.crumb-icon.d1 {
+  width: 6px;
+  height: 16px;
+}
+
+.crumb-icon.d2 {
+  width: 6px;
+  height: 6px;
+}
+
+.upper-screen .e-side {
+  gap: 10px;
+}
+
+.upper-screen .e-numeral {
+  font-size: 64px;
+}
+
+/* The sum beside the picture: one box for each number she types. */
+.upper-note {
+  gap: 6px;
+  padding: 10px;
+}
+
+.u-head {
+  margin-bottom: 4px;
+  font-size: 34px;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.u-line {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 3px 6px;
+  background: var(--tone, transparent);
+  border-radius: 10px;
+}
+
+.u-line.part + .u-line.total {
+  margin-top: 4px;
+  padding-top: 8px;
+  border-top: 4px solid var(--plum);
+  border-radius: 0;
+}
+
+.u-label {
+  font-size: 20px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.u-box {
+  width: 84px;
+  height: 44px;
+  padding: 0;
+  flex: none;
+  background: #fff;
+  border: 3px dashed rgba(28, 27, 46, 0.45);
+  border-radius: 10px;
+  color: var(--plum);
+  font: inherit;
+  font-size: 26px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.u-box.on {
+  border: 3px solid var(--plum);
+  box-shadow: 0 0 0 4px var(--yellow);
+}
+
+.u-box.ok {
+  background: #e3f6e7;
+  border: 3px solid #2f9e44;
+  cursor: default;
+}
+
+.u-box.bad {
+  background: #fff3c4;
+}
+
+.u-box.shown {
+  background: #fff3c4;
+  border: 3px solid var(--plum);
+  box-shadow: 0 0 0 4px #ffc21e;
+}
+
+.u-pad {
+  display: grid;
+  place-items: center;
+}
+
+.u-pad .keypad {
+  grid-template-columns: repeat(6, 58px);
+  gap: 6px;
+}
+
+.u-pad .key {
+  width: 58px;
+  height: 48px;
+  font-size: 28px;
+}
+
+.u-pad .keypad .key-erase {
+  height: auto;
+}
+
+.u-fsum {
+  font-size: 40px;
+}
+
+.upper-note .frac.big {
+  font-size: 54px;
+}
+
+.upper-note .frac.big .frac-n {
+  color: var(--tens);
+  border-bottom-color: var(--plum);
+}
+
+.upper-note .frac.big .frac-d {
+  color: var(--hundreds);
+}
+
+.upper-note .frac.big.no-top .frac-n,
+.upper-note .frac.big.no-bottom .frac-d {
+  color: rgba(74, 37, 69, 0.35);
+}
+
+.upper-note .e-sum {
+  flex-wrap: nowrap;
+  font-size: 30px;
+  white-space: nowrap;
+}
+
+.upper-note .e-sum.u-fsum {
+  font-size: 40px;
+}
+
+.u-dec .u-point {
+  color: var(--plum);
+}
+
+.e-digit.pl-d1 {
+  color: var(--tenths);
+}
+
+.e-digit.pl-d2 {
+  color: var(--hundredths);
+}
+
+.u-dec .e-digit.blank {
+  color: rgba(74, 37, 69, 0.35);
+}
+
+.u-slices .ans-label {
+  width: 76px;
+}
+
+.u-slices .ans-chip {
+  width: 40px;
+}
+
+.upper-screen .ans-row.pl-o .ans-label,
+.upper-screen .ans-row.pl-d1 .ans-label,
+.upper-screen .ans-row.pl-d2 .ans-label {
+  width: 132px;
+  font-size: 17px;
+}
+
+.upper-screen .ans-row.pl-o .ans-chip,
+.upper-screen .ans-row.pl-d1 .ans-chip,
+.upper-screen .ans-row.pl-d2 .ans-chip {
+  width: 43px;
+}
+
+.ans-row.pl-d1 .ans-chip.on {
+  background: var(--tenths);
+  border-color: var(--tenths);
+  color: #fff;
+}
+
+.ans-row.pl-d2 .ans-chip.on {
+  background: var(--hundredths);
+  border-color: var(--hundredths);
+  color: #fff;
+}
+
+/* ---- five places along the bottom: each next monster waits left of its button ---- */
+
+.home-screen .place {
+  right: auto;
+  bottom: 22px;
+  transform: none;
+}
+
+.home-screen .place-grass {
+  left: 78px;
+}
+
+.home-screen .place-hollow {
+  left: 328px;
+}
+
+.home-screen .place-early {
+  left: 578px;
+}
+
+.home-screen .place-canyon {
+  left: 828px;
+}
+
+.home-screen .place-upper {
+  left: 1078px;
+}
+
+.home-screen .btn-place {
+  width: 184px;
+  font-size: 18px;
+  padding: 9px 6px;
+}
+
+.home-screen .btn-place .icon {
+  width: 24px;
+  height: 24px;
+}
+
+.home-screen .place .peek,
+.home-screen .place-grass .peek {
+  left: auto;
+  right: 100%;
+  bottom: -6px;
+  margin: 0 1px;
+  transform: none;
+}
+
+.place-upper .icon-bun {
+  color: var(--bun-dark);
+}
+
+/* ---- 29 monsters: four rows of nine in the journal ---- */
+
+.journal-tile {
+  height: 118px;
+  padding: 6px 2px 4px;
+}

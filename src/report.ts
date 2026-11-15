@@ -3,6 +3,7 @@ import { COUNT_ERROR_TEXT, COUNT_KINDS, COUNT_RUNG_TEXT, type CountError, type C
 import { OP_SYMBOL, type Kind } from './math/expr';
 import { FRAC_ERROR_TEXT, FRAC_KINDS, FRAC_RUNG_TEXT, type FracError, type FracKind } from './math/fractions';
 import { ERROR_TEXT, RUNG_TEXT, type Delivery, type ErrorPattern } from './math/regroup';
+import { UPPER_ERROR_TEXT, UPPER_KINDS, UPPER_RUNG_TEXT, type UpperError, type UpperKind } from './math/upper';
 import { ALL_STRANDS, belowFloor, reached, STRANDS } from './intake';
 import { LESSONS } from './lessons';
 import { daysPlayed, type Save } from './state';
@@ -140,6 +141,44 @@ export function countStats(save: Save): CountStats[] {
   });
 }
 
+export const UPPER_TEXT: Record<UpperKind, string> = {
+  mult: 'Multiplying in parts',
+  div: 'Dividing in parts',
+  fadd: 'Adding and taking away fractions',
+  dec: 'Decimals',
+};
+
+export interface UpperStats {
+  kind: UpperKind;
+  problems: number;
+  firstTry: number;
+  helped: number;
+  /** "2 of 5", and what that level covers. Empty when she has not played this idea. */
+  level: string;
+  working: string;
+  errors: Array<{ pattern: UpperError; count: number }>;
+}
+
+/** Bakery work, one row per idea. */
+export function upperStats(save: Save): UpperStats[] {
+  return UPPER_KINDS.map((kind) => {
+    const log = (save.upperLog ?? []).filter((u) => u.kind === kind);
+    const counts = new Map<UpperError, number>();
+    for (const u of log) for (const e of u.errors) counts.set(e, (counts.get(e) ?? 0) + 1);
+    const step = save.upper?.[kind]?.step;
+    const rungs = UPPER_RUNG_TEXT[kind];
+    return {
+      kind,
+      problems: log.length,
+      firstTry: log.filter((u) => u.firstTry).length,
+      helped: log.filter((u) => u.helped).length,
+      level: step === undefined ? '' : `${step + 1} of ${rungs.length}`,
+      working: step === undefined ? '' : (rungs[step] ?? ''),
+      errors: [...counts.entries()].map(([pattern, count]) => ({ pattern, count })).sort((x, y) => y.count - x.count),
+    };
+  });
+}
+
 export function monsterStatus(save: Save, id: SpeciesId): string {
   const m = save.monsters[id];
   if (!m) return 'Not met';
@@ -162,6 +201,7 @@ export function skillLevel(save: Save, id: SpeciesId): { have: number; of: numbe
   if (sp.habitat === 'canyon' && sp.delivery) return { have: (m.step ?? save.startStep?.[sp.delivery] ?? 0) + 1, of: RUNG_TEXT[sp.delivery].length };
   if (sp.habitat === 'hollow' && sp.frac) return { have: (m.step ?? 0) + 1, of: FRAC_RUNG_TEXT[sp.frac].length };
   if (sp.habitat === 'early' && sp.count) return { have: (save.early?.[sp.count]?.step ?? 0) + 1, of: COUNT_RUNG_TEXT[sp.count].length };
+  if (sp.habitat === 'upper' && sp.upper) return { have: (save.upper?.[sp.upper]?.step ?? 0) + 1, of: UPPER_RUNG_TEXT[sp.upper].length };
   if (m.pool !== undefined && sp.pools.length > 0) return { have: m.pool + 1, of: sp.pools.length };
   return null;
 }
@@ -324,6 +364,15 @@ export function teacherSummary(save: Save): string {
       if (s.problems === 0) continue;
       lines.push(`  ${COUNT_TEXT[s.kind]}: level ${s.level} (${s.working}), ${s.problems} problems, ${pct(s.firstTry, s.problems)} right on the first try, counting help on ${s.helped}.`);
       for (const e of s.errors) lines.push(`    ${e.count}x ${COUNT_ERROR_TEXT[e.pattern]}`);
+    }
+  }
+  if ((save.upperLog ?? []).length > 0) {
+    lines.push('');
+    lines.push('Bakery (multiplying and dividing in parts, fractions, decimals):');
+    for (const s of upperStats(save)) {
+      if (s.problems === 0) continue;
+      lines.push(`  ${UPPER_TEXT[s.kind]}: level ${s.level} (${s.working}), ${s.problems} problems, ${pct(s.firstTry, s.problems)} right on the first try, picture help on ${s.helped}.`);
+      for (const e of s.errors) lines.push(`    ${e.count}x ${UPPER_ERROR_TEXT[e.pattern]}`);
     }
   }
   lines.push('');

@@ -4,7 +4,7 @@ import type { Delivery } from '../src/math/regroup';
 import { levelRows } from '../src/report';
 import type { SpeciesId } from '../src/data/monsters';
 import { goodDays, metToday, missing, nextWild, secure } from '../src/skill';
-import { befriend, canyonQueue, clock, earlyQueue, freshSave, giveStar, hollowQueue, monster, starsLeftToday, type Save } from '../src/state';
+import { befriend, canyonQueue, clock, earlyQueue, freshSave, giveStar, hollowQueue, monster, starsLeftToday, upperQueue, type Save } from '../src/state';
 
 const at = (rung: number, ...recent: Mark[]): Progress => ({ rung, recent });
 
@@ -192,6 +192,41 @@ describe('the next monster comes out when the skill before it is secure', () => 
     }
     expect(secure(save, 'fig')).toBe(true);
     expect(nextWild(save, earlyQueue(save))).toEqual({ id: 'flam', ready: true });
+  });
+
+  it('the Bakery waits for rows and crates, unless a grown-up starts her there', () => {
+    const save = freshSave();
+    // Belch stands on equal rows (Glim) and packing a crate (Plum).
+    expect(missing(save, 'belch')).toEqual(['glim', 'plum']);
+    expect(nextWild(save, upperQueue(save))).toEqual({ id: 'belch', ready: false, needs: 'glim', progress: 0 });
+    expect(missing(save, 'drift')).toEqual(['belch', 'fenn']);
+    expect(missing(save, 'bug')).toEqual(['tam']);
+    expect(missing(save, 'cook')).toEqual(['bix']);
+
+    // Started at the Bakery: the other places are taken as known, so only Drift waits, for Belch.
+    save.startAt = 'upper';
+    expect(nextWild(save, upperQueue(save))).toEqual({ id: 'belch', ready: true });
+    expect(missing(save, 'drift')).toEqual(['belch']);
+    expect(missing(save, 'bug')).toEqual([]);
+    expect(missing(save, 'cook')).toEqual([]);
+    // That choice opens nothing outside the Bakery.
+    expect(missing(save, 'plum')).toEqual(['nub']);
+
+    befriend(save, 'belch');
+    met(save, 'belch', '2026-11-01');
+    // Drift is not ready, so Bug is next in line.
+    expect(nextWild(save, upperQueue(save))).toEqual({ id: 'bug', ready: true });
+    befriend(save, 'bug');
+    met(save, 'bug', '2026-11-01');
+    befriend(save, 'cook');
+    met(save, 'cook', '2026-11-01');
+    expect(nextWild(save, upperQueue(save))).toEqual({ id: 'drift', ready: false, needs: 'belch', progress: 0 });
+    for (const day of ['2026-11-02', '2026-11-03', '2026-11-04']) {
+      for (let i = 0; i < 4; i++) (save.upperLog ??= []).push({ t: 0, day, monster: 'belch', kind: 'mult', text: '30 × 4', answers: ['120'], firstTry: true, errors: [], helped: false, rung: 0 });
+    }
+    expect(goodDays(save, 'belch')).toBe(3);
+    expect(secure(save, 'belch')).toBe(true);
+    expect(nextWild(save, upperQueue(save))).toEqual({ id: 'drift', ready: true });
   });
 
   it('a day gives six stars in all, then everyone is sleepy', () => {

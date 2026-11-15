@@ -1,0 +1,34 @@
+uc_past_one	Ten strips fill a whole tray. That makes one.
+uc_other	Not yet. Let us use the picture to find out.
+l_mult_1	A tray of buns. Three rows of twelve. I split it in a tens part, and a ones part.
+l_mult_2	The tens part is three rows of ten. That is thirty.
+l_mult_3	The ones part is three rows of two. That is six.
+l_mult_4	I add the parts. Thirty and six is thirty-six.
+l_mult_5	Your turn. Four rows of thirteen. The parts are forty, and twelve. How many buns in all?
+l_mult_6	Fifty-two! A big tray is easy in parts.
+l_div_1	Forty-eight buns, and four baskets. Every basket gets the same.
+l_div_2	First I share the trays of ten. Each basket gets one tray. That is ten.
+l_div_3	Then I share the eight loose buns. Each basket gets two more.
+l_div_4	Ten and two is twelve. Forty-eight divided by four is twelve.
+l_div_5	Your turn. Fourteen buns, four baskets. Each basket gets three. How many are left?
+l_div_6	Two are left. Not enough to give every basket one more.
+l_fadd_1	A loaf cut in four slices. One slice here, and two slices there.
+l_fadd_2	The slices are the same size. So I just count them. One and two is three fourths.
+l_fadd_3	Now one half, and one fourth. The slices are not the same size!
+l_fadd_4	I cut the half again. One half is two fourths.
+l_fadd_5	Your turn. Two fourths and one fourth. How many fourths is that?
+l_fadd_6	Three fourths. Same size slices first. Then count.
+l_dec_1	This full tray is one. It has one hundred small squares.
+l_dec_2	A strip is ten squares. Ten strips fill the tray. One strip is one tenth.
+l_dec_3	Three strips is three tenths. We write zero point three.
+l_dec_4	One small square is one hundredth. Four strips and seven squares is zero point four seven.
+l_dec_5	Your turn. Which one is more?
+l_dec_6	Yes. Five strips is more than four strips and five squares.
+name_belch	Belch!
+about2_belch	Belch. A burp pod beast. Has two pods on its head. They burp. Loves big trays.
+name_drift	Drift!
+about2_drift	Drift. A dandelion lion. A flower with a puffy tail. The seeds drift away. Loves fair shares.
+name_bug	Bug!
+about2_bug	Bug. A bun pug. Part pug, part warm bun. Loves slices.
+name_cook	Cook!
+about2_cook	Cook. A sail hound. Has eight legs and a sail on its back. Loves crumbs.

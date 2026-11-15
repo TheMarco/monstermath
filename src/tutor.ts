@@ -40,5 +40,5 @@ export const STUCK_AFTER = 3;
 /** Go and play with a friend in the place where it lives. */
 export function playWithFriend(app: App, id: SpeciesId): void {
   const habitat = SPECIES[id].habitat;
-  app.go(habitat === 'canyon' ? 'canyon' : habitat === 'hollow' ? 'hollow' : habitat === 'early' ? 'early' : 'befriend', { id });
+  app.go(habitat === 'canyon' ? 'canyon' : habitat === 'hollow' ? 'hollow' : habitat === 'early' ? 'early' : habitat === 'upper' ? 'upper' : 'befriend', { id });
 }

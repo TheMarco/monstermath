@@ -73,10 +73,15 @@ easiest sums, or passing a whole topic of the check.
 
 **Where to start.** Without a choice the check asks about every topic. On the
 grown-up page, before the child begins, a grown-up can choose to start with
-counting (about kindergarten and grade 1) or with adding and subtracting (about
-grades 1 and 2); the check then only asks about that range. The child never sees
-a grade. A counting round is also added at the end of the full check when the
-first sums did not go well. To begin again from another point, add a new player.
+counting (about kindergarten and grade 1), with adding and subtracting (about
+grades 1 and 2), or with bigger multiplying and dividing (about grades 4 and 5);
+the check then only asks about that range. The last choice is for a child who
+already multiplies and divides with small numbers: the check asks about place
+value, multiplying, dividing and fractions, leaves out adding and subtracting,
+and the Bakery monsters come out without waiting for the other places. The child
+never sees a grade. A counting round is also added at the end of the full check
+when the first sums did not go well. To begin again from another point, add a
+new player.
 
 **Early numbers (Berry Patch).** For a child who is not yet adding within 10
 there are four ideas, each with its own ladder, all drawn with the canyon's
@@ -91,6 +96,42 @@ ones), drawn from a child's own drawings. Flam and Kelp come out once counting
 with Fig is secure, Beary once making ten with Kelp is. The grown-up page has
 buttons that open each of the four games for a look; nothing is saved from
 there.
+
+**Bakery.** Work for grades 4 and 5, in four games with five levels each, all
+drawn with buns on baking trays: a tray of ten buns is a ten, a rack is a
+hundred, a loaf is cut into equal slices, and a tray of one hundred small
+squares is one whole.
+
+- Big trays (Belch): multiplying in parts with the area model. The tray is
+  split into a tens part and a ones part; the child fills in each part, then
+  the total. From 30 × 4 up to 23 × 45 with a four-part tray.
+- Sharing fairly (Drift): buns shared equally into baskets. Leftovers within
+  the times tables (17 ÷ 5 is 3, and 2 left), tens (120 ÷ 4), then two and
+  three digits divided in parts (84 ÷ 4 as 80 ÷ 4 and 4 ÷ 4).
+- Slices (Bug): adding and taking away fractions of a loaf. Same size slices
+  first, then one slice size that fits in the other (1/2 + 1/4), then two
+  sizes that both have to be cut again (1/2 + 1/3). "Cut to match" cuts the
+  loaves into the same slices. An equal fraction in smaller numbers is also
+  right.
+- Crumbs (Cook): decimals. Reading tenths and hundredths from a tray, which of
+  two decimals is more (0.5 or 0.45), and adding and taking away, also past 1.
+  Decimals are kept as whole hundredths in the code, so no sum goes through
+  floating point.
+
+A miss gets one spoken line about the picture. A second miss, or "Show me",
+makes the picture do the work: every part of the tray shows its product, the
+buns go into the baskets, the slices are counted, the strips and squares are
+named. After a third miss the answer is shown for the child to copy. The
+grown-up page names the error patterns it saw, such as 20 × 4 = 8, giving the
+leftover as the answer, adding the bottom numbers, or lining up 0.25 + 0.4 as
+0.29. The problems are in `src/math/upper.ts`, the screen in
+`src/screens/upper.ts` and the pictures in `src/ui/bakery.ts`.
+
+Belch comes out once equal rows (Glim) and packing a crate (Plum) are secure,
+Drift once Belch and sharing (Fenn) are, Bug once equal fractions (Tam) are,
+and Cook once naming fractions (Bix) is. When the first-day check started at
+the Bakery, only Drift waits, for Belch. The grown-up page has buttons that open each of the four
+games at a chosen level; nothing is saved from there.
 
 **Treats (Tall Grass).** A monster shows a number and the child builds expressions
 that equal it. Hearts depend on the thinking: `n + 0` earns 1, a real addition
@@ -188,8 +229,8 @@ whose file is missing falls back to a synthesized tone (`src/audio.ts`).
 
 ## Layout
 
-- `src/math` expression scoring, hints, early number problems, regrouping problems, fractions, error patterns
-- `src/screens` players, title, intro (first-day check), home, treats, early numbers, canyon, hollow, lesson, shop, journal, stickers, grown-ups
+- `src/math` expression scoring, hints, early number problems, regrouping problems, fractions, Bakery problems, error patterns
+- `src/screens` players, title, intro (first-day check), home, treats, early numbers, canyon, hollow, bakery (`upper.ts`), lesson, shop, journal, stickers, grown-ups
 - `src/data/monsters.ts` the monsters, their skills and number pools
 - `src/lessons.ts`, `src/tutor.ts` the taught lessons and when they play
 - `src/rewards.ts`, `src/shop.ts` levels, eggs, bonds, stickers, charms, decorations

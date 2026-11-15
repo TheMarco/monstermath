@@ -30,6 +30,7 @@ import {
   grassQueue,
   hollowQueue,
   earlyQueue,
+  upperQueue,
   MEADOW_MAX,
   meadowFriends,
   starsLeftToday,
@@ -90,13 +91,13 @@ function pips(done: number, goal: number): HTMLElement {
 }
 
 /** The place a monster plays in: starters and egg monsters eat treats in the grass. */
-type Place = 'grass' | 'canyon' | 'hollow' | 'early';
+type Place = 'grass' | 'canyon' | 'hollow' | 'early' | 'upper';
 
 function placeOf(habitat: Habitat): Place {
-  return habitat === 'canyon' || habitat === 'hollow' || habitat === 'early' ? habitat : 'grass';
+  return habitat === 'canyon' || habitat === 'hollow' || habitat === 'early' || habitat === 'upper' ? habitat : 'grass';
 }
 
-const SCREEN_OF = { grass: 'befriend', canyon: 'canyon', hollow: 'hollow', early: 'early' } as const;
+const SCREEN_OF = { grass: 'befriend', canyon: 'canyon', hollow: 'hollow', early: 'early', upper: 'upper' } as const;
 
 /** Which friend to play with when every monster of a place is already a friend. */
 function friendToPlay(save: Save, habitat: Place): SpeciesId | null {
@@ -116,8 +117,10 @@ function goPlace(app: App, place: Place, order: SpeciesId[]): void {
   const next = nextWild(app.save, order);
   if (next?.ready) goWithLesson(app, SCREEN_OF[place], next.id);
   else {
+    // The friend to practise with can live in another place: the Bakery waits for skills from the grass and the canyon.
     const id = next?.needs && app.save.monsters[next.needs]?.friend ? next.needs : friendToPlay(app.save, place);
-    if (id) app.go(SCREEN_OF[place], { id });
+    if (id) playWith(app, id);
+    else say('gate_tip');
   }
 }
 
@@ -135,6 +138,10 @@ export function goHollow(app: App): void {
 
 export function goEarly(app: App): void {
   goPlace(app, 'early', earlyQueue(app.save));
+}
+
+export function goUpper(app: App): void {
+  goPlace(app, 'upper', upperQueue(app.save));
 }
 
 export function playWith(app: App, id: SpeciesId): void {
@@ -442,8 +449,9 @@ export const homeScreen: Screen = (app, params) => {
   const canyonNext = nextWild(save, canyonQueue(save));
   const hollowNext = nextWild(save, hollowQueue(save));
   const earlyNext = nextWild(save, earlyQueue(save));
+  const upperNext = nextWild(save, upperQueue(save));
   /** A monster that is waiting for her to practise a little more first. */
-  const gated = [earlyNext, grassNext, canyonNext, hollowNext].find((n) => n && !n.ready && n.needs && save.monsters[n.needs]?.friend);
+  const gated = [earlyNext, grassNext, canyonNext, hollowNext, upperNext].find((n) => n && !n.ready && n.needs && save.monsters[n.needs]?.friend);
 
   const place = (cls: string, label: string, iconName: string, next: NextWild | null, go: () => void): HTMLElement =>
     h(
@@ -453,7 +461,7 @@ export const homeScreen: Screen = (app, params) => {
         ? h(
             'div',
             { class: `peek ${next.ready ? '' : 'peek-soon'}` },
-            monsterImg(next.id, 1, next.ready ? 84 : 68, 'silhouette'),
+            monsterImg(next.id, 1, next.ready ? 62 : 54, 'silhouette'),
             h('span', { class: 'peek-mark' }, next.ready ? '?' : 'soon'),
             // How close it is: one paw print for each good day with the friend to practise with.
             !next.ready && next.needs ? h('span', { class: 'peek-steps' }, times(SECURE_DAYS, (i) => h('i', { class: i < (next.progress ?? 0) ? 'on' : '' }))) : null,
@@ -623,9 +631,10 @@ export const homeScreen: Screen = (app, params) => {
       ),
     ),
     place('place-grass', 'Tall Grass', 'grass', grassNext, () => goGrass(app)),
-    place('place-canyon', 'Berry Canyon', 'berry', canyonNext, () => goCanyon(app)),
     place('place-hollow', 'Honey Hollow', 'drop', hollowNext, () => goHollow(app)),
     place('place-early', 'Berry Patch', 'berry', earlyNext, () => goEarly(app)),
+    place('place-canyon', 'Berry Canyon', 'berry', canyonNext, () => goCanyon(app)),
+    place('place-upper', 'Bakery', 'bun', upperNext, () => goUpper(app)),
     h('div', { class: `night-sky ${asleep ? 'on' : ''}`, 'aria-hidden': 'true' }, h('i', { class: 'moon' }), times(14, (i) => h('i', { class: 'night-star', style: `left:${(i * 83 + 40) % 1240}px;top:${(i * 47) % 190 + 14}px;animation-delay:${(i % 5) * 0.4}s` }))),
     h('div', { class: 'home-grownups' }, holdButton('Grown-ups (hold)', () => app.go('grownups'))),
     all.length > MEADOW_MAX

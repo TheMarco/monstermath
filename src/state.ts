@@ -3,6 +3,7 @@ import {
   GRASS_ORDER,
   HOLLOW_ORDER,
   EARLY_ORDER,
+  UPPER_ORDER,
   SPECIES,
   STARS_PER_DAY,
   STARS_TO_EVOLVE,
@@ -15,6 +16,7 @@ import type { CountError, CountKind } from './math/count';
 import type { Expr, Kind, Op } from './math/expr';
 import type { FracError, FracKind } from './math/fractions';
 import type { Delivery, ErrorPattern } from './math/regroup';
+import type { UpperError, UpperKind } from './math/upper';
 
 const KEY = 'monstermath.save.v1';
 const PLAYERS_KEY = 'monstermath.players.v1';
@@ -146,7 +148,24 @@ export interface CountEvent {
   helped?: boolean;
 }
 
-/** Where she is on one early-number ladder (see ladder.ts). */
+export interface UpperEvent {
+  t: number;
+  day: string;
+  monster: SpeciesId;
+  kind: UpperKind;
+  /** The problem in short text: "23 × 4", "17 ÷ 5", "1/2 + 1/4", "Read 0.47". */
+  text: string;
+  /** Every answer checked, in order. The last one is correct. */
+  answers: string[];
+  firstTry: boolean;
+  errors: UpperError[];
+  rung?: number;
+  stretch?: boolean;
+  /** She asked for, or was given, the picture help. */
+  helped?: boolean;
+}
+
+/** Where she is on one early-number or Bakery ladder (see ladder.ts). */
 export interface EarlyProgress {
   step?: number;
   recent?: number[];
@@ -196,7 +215,7 @@ export interface Save {
   intakeLevels?: Partial<Record<string, number>>;
   intakeAt?: number;
   /** Where a grown-up chose to begin the first-day check. Unset: the game finds out. */
-  startAt?: 'early' | 'sums';
+  startAt?: 'early' | 'sums' | 'upper';
   /** Where each kind of berry trip starts, from the first-day check (0 easiest to 2). */
   startStep?: Partial<Record<Delivery, number>>;
   /** Ranger points: every heart and berry trip counts. */
@@ -214,6 +233,9 @@ export interface Save {
   /** Early number work: her rung on each idea's ladder, and every problem she finished. */
   early?: Partial<Record<CountKind, EarlyProgress>>;
   countLog?: CountEvent[];
+  /** The Bakery: her rung on each idea's ladder, and every problem she finished. */
+  upper?: Partial<Record<UpperKind, EarlyProgress>>;
+  upperLog?: UpperEvent[];
   /** Charms she owns, and decorations placed in the meadow. */
   charms?: string[];
   decor?: Array<{ id: string; x: number; y: number; away?: boolean }>;
@@ -388,7 +410,7 @@ export function readBackup(text: string): Save | null {
     save.introDone = false;
   }
   if (typeof save.buddy !== 'string' || !monsters[save.buddy]) delete save.buddy;
-  for (const key of ['seenTips', 'stickers', 'charms', 'decor', 'fracLog', 'countLog', 'out', 'rest', 'themes'] as const) {
+  for (const key of ['seenTips', 'stickers', 'charms', 'decor', 'fracLog', 'countLog', 'upperLog', 'out', 'rest', 'themes'] as const) {
     if (save[key] !== undefined && !Array.isArray(save[key])) delete save[key];
   }
   save.seenTips ??= [];
@@ -445,6 +467,7 @@ export function persist(save: Save): void {
   if (save.tripLog.length > LOG_LIMIT) save.tripLog = save.tripLog.slice(-LOG_LIMIT);
   if (save.fracLog && save.fracLog.length > LOG_LIMIT) save.fracLog = save.fracLog.slice(-LOG_LIMIT);
   if (save.countLog && save.countLog.length > LOG_LIMIT) save.countLog = save.countLog.slice(-LOG_LIMIT);
+  if (save.upperLog && save.upperLog.length > LOG_LIMIT) save.upperLog = save.upperLog.slice(-LOG_LIMIT);
   const player = currentPlayer();
   save.name = player.name;
   try {
@@ -566,6 +589,10 @@ export function hollowQueue(save: Save): SpeciesId[] {
 
 export function earlyQueue(save: Save): SpeciesId[] {
   return EARLY_ORDER.filter((id) => !isFriend(save, id));
+}
+
+export function upperQueue(save: Save): SpeciesId[] {
+  return UPPER_ORDER.filter((id) => !isFriend(save, id));
 }
 
 export type StarResult = 'star' | 'grown' | 'full-today';

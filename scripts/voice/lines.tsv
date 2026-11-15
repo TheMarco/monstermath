@@ -292,6 +292,67 @@ l_place_3	The first number says how many crates. The second number says how many
 l_place_4	Four crates and three loose berries is forty-three. The same two numbers, but a different amount!
 l_place_5	Your turn. How many berries? Count the crates first.
 l_place_6	Twenty-six. Two crates, and six loose berries.
+upper_tip	Welcome to the Bakery! The monsters here love warm buns.
+uq_mult	Buns in equal rows. How many buns in all?
+uq_div	Share the buns fairly. How many go in each basket?
+uq_div_left	Share the buns fairly. How many in each basket? And how many are left?
+uq_fadd	Put the slices together. How much of a loaf is that?
+uq_fsub	Some slices get eaten. How much of the loaf is left?
+uq_dec_read	A full tray is one. How much is here?
+uq_dec_more	Which one is more?
+uq_dec_add	Put them together. How much in all?
+uq_dec_sub	Some gets eaten. How much is left?
+uh_mult	Look. Each part of the tray shows its buns. Add the parts.
+uh_div	Look. Every basket gets the same. Count one basket.
+uh_div_parts	Share the big part first. Then share the rest.
+uh_slices	The slices are the same size now. Count them.
+uh_slices_left	The crossed slices are eaten. Count what is left.
+uh_dec_read	A strip is one tenth. A small square is one hundredth.
+uh_dec_more	Look at the trays. Which one is fuller?
+uh_dec_sum	Ten strips fill a tray. Count the full trays first, then the strips.
+uh_dec_left	The crossed squares are eaten. Count what is left.
+uh_cut	Cut! Now the slices are the same size.
+uc_tens	So close! Those are tens. Look at the trays of ten again.
+uc_rows	These are equal rows. That is times, not plus.
+uc_part	One part is not right yet. Look at that part again.
+uc_total	The parts are right! Add them up one more time.
+uc_leftover	That is how many are left. How many are in each basket?
+uc_left_big	You can still share those. Every basket can get one more.
+uc_share	We are sharing. Each basket gets less than the whole pile.
+uc_basket	So close! Count one basket again.
+uc_bottoms	The slices stay the same size. Only the top numbers are added.
+uc_recut	The slices are not the same size yet. Cut the loaf to match first.
+uc_first	Start with the first loaf. Take the second one away from it.
+uc_sign	Look at the sign again. Is it plus, or take away?
+uc_tenths	A strip is one tenth. A small square is one hundredth. Look again.
+uc_longer	More digits does not mean more. Look at the tenths first.
+uc_line_up	Tenths go with tenths. Hundredths go with hundredths.
+uc_past_one	Ten strips fill a whole tray. That makes one.
+uc_other	Not yet. Let us use the picture to find out.
+l_mult_1	A tray of buns. Three rows of twelve. I split it in a tens part, and a ones part.
+l_mult_2	The tens part is three rows of ten. That is thirty.
+l_mult_3	The ones part is three rows of two. That is six.
+l_mult_4	I add the parts. Thirty and six is thirty-six.
+l_mult_5	Your turn. Four rows of thirteen. The parts are forty, and twelve. How many buns in all?
+l_mult_6	Fifty-two! A big tray is easy in parts.
+l_div_1	Forty-eight buns, and four baskets. Every basket gets the same.
+l_div_2	First I share the trays of ten. Each basket gets one tray. That is ten.
+l_div_3	Then I share the eight loose buns. Each basket gets two more.
+l_div_4	Ten and two is twelve. Forty-eight divided by four is twelve.
+l_div_5	Your turn. Fourteen buns, four baskets. Each basket gets three. How many are left?
+l_div_6	Two are left. Not enough to give every basket one more.
+l_fadd_1	A loaf cut in four slices. One slice here, and two slices there.
+l_fadd_2	The slices are the same size. So I just count them. One and two is three fourths.
+l_fadd_3	Now one half, and one fourth. The slices are not the same size!
+l_fadd_4	I cut the half again. One half is two fourths.
+l_fadd_5	Your turn. Two fourths and one fourth. How many fourths is that?
+l_fadd_6	Three fourths. Same size slices first. Then count.
+l_dec_1	This full tray is one. It has one hundred small squares.
+l_dec_2	A strip is ten squares. Ten strips fill the tray. One strip is one tenth.
+l_dec_3	Three strips is three tenths. We write zero point three.
+l_dec_4	One small square is one hundredth. Four strips and seven squares is zero point four seven.
+l_dec_5	Your turn. Which one is more?
+l_dec_6	Yes. Five strips is more than four strips and five squares.
 name_puff	Puff!
 about2_puff	Puff. A storm ram. Carries a storm in its fleece. Charges like thunder. Loves all kinds of treats.
 name_pim	Pim!
@@ -330,6 +391,14 @@ name_kelp	Kelp!
 about2_kelp	Kelp. A pumpkin sprout. A pumpkin head on a body of vines. Grins all day. Loves a full crate.
 name_beary	Beary!
 about2_beary	Beary. A berry wing bear. Has wings as red as berries. Hugs with its vines. Loves crates and loose berries.
+name_belch	Belch!
+about2_belch	Belch. A burp pod beast. Has two pods on its head. They burp. Loves big trays.
+name_drift	Drift!
+about2_drift	Drift. A dandelion lion. A flower with a puffy tail. The seeds drift away. Loves fair shares.
+name_bug	Bug!
+about2_bug	Bug. A bun pug. Part pug, part warm bun. Loves slices.
+name_cook	Cook!
+about2_cook	Cook. A sail hound. Has eight legs and a sail on its back. Loves crumbs.
 name_tup	Tup!
 about2_tup	Tup. An ember cat. Ears and a tail of flame. Always ready to pounce. Loves all kinds of treats.
 name_jam	Jam!

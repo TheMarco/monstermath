@@ -1,6 +1,7 @@
 import type { CountKind } from './math/count';
 import type { FracKind } from './math/fractions';
 import type { Delivery } from './math/regroup';
+import type { UpperKind } from './math/upper';
 import { addStory, subStory } from './voice/lines';
 
 /**
@@ -196,17 +197,19 @@ export const COUNT_STRAND: Strand = {
 export const ALL_STRANDS: Strand[] = [COUNT_STRAND, ...STRANDS];
 
 /** Where a grown-up wants the first-day check to begin. Without a choice the game finds out. */
-export type StartPoint = 'early' | 'sums';
+export type StartPoint = 'early' | 'sums' | 'upper';
 
 export const START_POINTS: Array<{ id: StartPoint | 'auto'; label: string; asks: string }> = [
   { id: 'auto', label: 'Let the game find out', asks: 'Asks about every topic, easiest first, and stops each topic after two misses. Counting is added when the first sums do not go well.' },
   { id: 'early', label: 'Start with counting (about kindergarten and grade 1)', asks: 'Asks only about counting, numbers to 100, adding and subtracting.' },
   { id: 'sums', label: 'Start with adding and subtracting (about grades 1 and 2)', asks: 'Asks about numbers, adding, subtracting and equal groups. Leaves out division and fractions.' },
+  { id: 'upper', label: 'Start with bigger multiplying and dividing (about grades 4 and 5)', asks: 'For a child who already multiplies and divides with small numbers. Asks about numbers, multiplying, dividing and fractions. Leaves out adding and subtracting. The Bakery monsters come out without waiting for the other places.' },
 ];
 
 const PLAN: Record<StartPoint, StrandId[]> = {
   early: ['count', 'place', 'add', 'sub'],
   sums: ['place', 'add', 'sub', 'mul'],
+  upper: ['place', 'mul', 'div', 'frac'],
 };
 
 /**
@@ -304,9 +307,26 @@ export function earlyStartStep(levels: IntakeLevels | undefined, kind: CountKind
   return place >= 5 ? 4 : place >= 3 ? 3 : 0;
 }
 
-/** The game's easiest sums are within 10, with berries to count. Below that it has nothing to offer. */
+/**
+ * Where each Bakery idea starts on its ladder. The first-day check has no
+ * question at Bakery size, so the most it can show is that the first rung is
+ * already known: the hardest times facts for big trays, the hardest division
+ * facts for sharing, equal fractions for slices. Decimals always start at the
+ * first rung.
+ */
+export function upperStartStep(levels: IntakeLevels | undefined, kind: UpperKind): number {
+  if (kind === 'mult') return (levels?.mul ?? 0) >= 5 ? 1 : 0;
+  if (kind === 'div') return (levels?.div ?? 0) >= 5 ? 1 : 0;
+  if (kind === 'fadd') return (levels?.frac ?? 0) >= 4 ? 1 : 0;
+  return 0;
+}
+
+/**
+ * The game's easiest sums are within 10, with berries to count. Below that it
+ * has nothing to offer. A topic the check did not ask about says nothing.
+ */
 export function belowFloor(levels: IntakeLevels): StrandId[] {
-  return (['add', 'sub'] as StrandId[]).filter((id) => (levels[id] ?? 0) < 1);
+  return (['add', 'sub'] as StrandId[]).filter((id) => levels[id] !== undefined && (levels[id] ?? 0) < 1);
 }
 
 export function reached(strand: Strand, passed: number): { reached: string; next: string | null } {

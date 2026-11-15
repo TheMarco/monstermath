@@ -1,14 +1,3 @@
-show_you	Let me show you.
-w_add	Let us do it together. First, put the berries together.
-w_pack	More than nine loose berries. Ten of them go in a crate.
-w_sub	Let us do it together. First, feed the crates.
-w_open	Not enough loose berries. So we open a crate.
-w_feed	Now feed the loose berries.
-w_count	Now count. Crates first, then the loose berries. Pick the numbers below.
-help_hint	Here is a little help.
-hollow_tip	Welcome to Honey Hollow! The monsters here love honey bars, cut into equal pieces.
-wild_honey	A wild monster! It loves honey.
-fq_name	How much of the honey bar is gold? Pick how many pieces are gold, and how many pieces there are in all.
 fq_name_s	How much of the bar is gold?
 fq_build	Fill the honey bar to make this fraction.
 fq_build_cut	First cut the bar into equal pieces. Then fill it to make this fraction.
@@ -136,21 +125,43 @@ l_place_3	The first number says how many crates. The second number says how many
 l_place_4	Four crates and three loose berries is forty-three. The same two numbers, but a different amount!
 l_place_5	Your turn. How many berries? Count the crates first.
 l_place_6	Twenty-six. Two crates, and six loose berries.
-name_puff	Puff!
-about2_puff	Puff. A storm ram. Carries a storm in its fleece. Charges like thunder. Loves all kinds of treats.
-name_pim	Pim!
-about2_pim	Pim. A spore hare. Grows mushrooms on its back. Fast on its feet. Loves all kinds of treats.
-name_bop	Bop!
-about2_bop	Bop. A tide otter. Rides its own wave. Never sits still. Loves all kinds of treats.
-name_dab	Dab!
-about2_dab	Dab. A lotus duck. Wears a lily pad. Loves plus treats.
-name_moss	Moss!
-about2_moss	Moss. A moss armadillo. Carries a garden on its shell. Loves minus treats.
-name_glim	Glim!
-about2_glim	Glim. A lantern beetle. Lights up the night. Loves times treats.
-name_fenn	Fenn!
-about2_fenn	Fenn. A fern fox. Has a fern for a tail. Loves sharing treats.
-name_nub	Nub!
-about2_nub	Nub. A stone pup. Tough as a boulder. Loves a big pile.
-name_plum	Plum!
-about2_plum	Plum. An orchard bird. Quick wings and sharp eyes. Loves a full crate.
+upper_tip	Welcome to the Bakery! The monsters here love warm buns.
+uq_mult	Buns in equal rows. How many buns in all?
+uq_div	Share the buns fairly. How many go in each basket?
+uq_div_left	Share the buns fairly. How many in each basket? And how many are left?
+uq_fadd	Put the slices together. How much of a loaf is that?
+uq_fsub	Some slices get eaten. How much of the loaf is left?
+uq_dec_read	A full tray is one. How much is here?
+uq_dec_more	Which one is more?
+uq_dec_add	Put them together. How much in all?
+uq_dec_sub	Some gets eaten. How much is left?
+uh_mult	Look. Each part of the tray shows its buns. Add the parts.
+uh_div	Look. Every basket gets the same. Count one basket.
+uh_div_parts	Share the big part first. Then share the rest.
+uh_slices	The slices are the same size now. Count them.
+uh_slices_left	The crossed slices are eaten. Count what is left.
+uh_dec_read	A strip is one tenth. A small square is one hundredth.
+uh_dec_more	Look at the trays. Which one is fuller?
+uh_dec_sum	Ten strips fill a tray. Count the full trays first, then the strips.
+uh_dec_left	The crossed squares are eaten. Count what is left.
+uh_cut	Cut! Now the slices are the same size.
+uc_tens	So close! Those are tens. Look at the trays of ten again.
+uc_rows	These are equal rows. That is times, not plus.
+uc_part	One part is not right yet. Look at that part again.
+uc_total	The parts are right! Add them up one more time.
+uc_leftover	That is how many are left. How many are in each basket?
+uc_left_big	You can still share those. Every basket can get one more.
+uc_share	We are sharing. Each basket gets less than the whole pile.
+uc_basket	So close! Count one basket again.
+uc_bottoms	The slices stay the same size. Only the top numbers are added.
+uc_recut	The slices are not the same size yet. Cut the loaf to match first.
+uc_first	Start with the first loaf. Take the second one away from it.
+uc_sign	Look at the sign again. Is it plus, or take away?
+uc_tenths	A strip is one tenth. A small square is one hundredth. Look again.
+uc_longer	More digits does not mean more. Look at the tenths first.
+uc_line_up	Tenths go with tenths. Hundredths go with hundredths.
+uc_past_one	Ten strips fill a whole tray. That makes one.
+uc_other	Not yet. Let us use the picture to find out.
+l_mult_1	A tray of buns. Three rows of twelve. I split it in a tens part, and a ones part.
+l_mult_2	The tens part is three rows of ten. That is thirty.
+l_mult_3	The ones part is three rows of two. That is six.

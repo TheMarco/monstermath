@@ -105,6 +105,8 @@ export function skillHealth(save: Save, id: SpeciesId): number | null {
     marks = (save.fracLog ?? []).filter((f) => f.kind === sp.frac).slice(-8).map((f) => f.firstTry);
   } else if (sp.habitat === 'early') {
     marks = (save.countLog ?? []).filter((c) => c.kind === sp.count).slice(-8).map((c) => c.firstTry);
+  } else if (sp.habitat === 'upper') {
+    marks = (save.upperLog ?? []).filter((u) => u.kind === sp.upper).slice(-8).map((u) => u.firstTry);
   } else {
     marks = save.exprLog.filter((e) => e.monster === id).slice(-12).map((e) => e.correct && !e.hinted);
   }
@@ -171,6 +173,14 @@ export const NEEDS: Partial<Record<SpeciesId, SpeciesId[]>> = {
   kelp: ['fig'],
   // Tens and ones stand on the full crate of ten.
   beary: ['kelp'],
+  // Big trays stand on equal rows and on packing a crate of ten.
+  belch: ['glim', 'plum'],
+  // Dividing in parts is multiplying in parts, backwards.
+  drift: ['belch', 'fenn'],
+  // Slices can only be added once equal fractions are known.
+  bug: ['tam'],
+  // Tenths and hundredths are equal pieces of one whole.
+  cook: ['bix'],
 };
 
 /** A good day for a skill: at least this many problems, this share right the first time. */
@@ -189,6 +199,8 @@ function marksByDay(save: Save, id: SpeciesId): Map<string, boolean[]> {
     marks = (save.fracLog ?? []).filter((f) => f.kind === sp.frac).map((f) => [f.day, f.firstTry]);
   } else if (sp.habitat === 'early') {
     marks = (save.countLog ?? []).filter((c) => c.kind === sp.count).map((c) => [c.day, c.firstTry]);
+  } else if (sp.habitat === 'upper') {
+    marks = (save.upperLog ?? []).filter((u) => u.kind === sp.upper).map((u) => [u.day, u.firstTry]);
   } else {
     marks = save.exprLog.filter((e) => e.monster === id).map((e) => [e.day, e.correct && !e.hinted]);
   }
@@ -238,7 +250,9 @@ export interface NextWild {
 
 /** The skills still missing before this monster can be met, least practised first. */
 export function missing(save: Save, id: SpeciesId): SpeciesId[] {
-  return (NEEDS[id] ?? []).filter((n) => !secure(save, n)).sort((x, y) => goodDays(save, x) - goodDays(save, y));
+  // A grown-up said she starts in the Bakery: the skills from the other places are taken as known.
+  const known = (n: SpeciesId): boolean => save.startAt === 'upper' && SPECIES[id].habitat === 'upper' && SPECIES[n].habitat !== 'upper';
+  return (NEEDS[id] ?? []).filter((n) => !known(n) && !secure(save, n)).sort((x, y) => goodDays(save, x) - goodDays(save, y));
 }
 
 /** The next monster to meet in a place, in teaching order, and whether she is ready for it. */

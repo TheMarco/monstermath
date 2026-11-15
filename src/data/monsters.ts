@@ -2,6 +2,7 @@ import type { Treat } from '../math/expr';
 import type { FracKind } from '../math/fractions';
 import type { Delivery } from '../math/regroup';
 import type { CountKind } from '../math/count';
+import type { UpperKind } from '../math/upper';
 
 export type SpeciesId =
   | 'puff' | 'pim' | 'bop'
@@ -9,8 +10,9 @@ export type SpeciesId =
   | 'nub' | 'plum' | 'dusk' | 'chip'
   | 'bix' | 'tam' | 'zim' | 'lux'
   | 'fig' | 'flam' | 'kelp' | 'beary'
+  | 'belch' | 'drift' | 'bug' | 'cook'
   | 'tup' | 'jam' | 'mint' | 'pom' | 'nox' | 'fizz';
-export type Habitat = 'starter' | 'grass' | 'canyon' | 'hollow' | 'early' | 'egg';
+export type Habitat = 'starter' | 'grass' | 'canyon' | 'hollow' | 'early' | 'upper' | 'egg';
 
 export interface Species {
   id: SpeciesId;
@@ -27,6 +29,8 @@ export interface Species {
   frac?: FracKind;
   /** Berry Patch monsters: the kind of early number work they stand for. */
   count?: CountKind;
+  /** Bakery monsters: the kind of grade 4 and 5 work they stand for. */
+  upper?: UpperKind;
   /** Target numbers, easiest pool first. */
   pools: number[][];
   /** For grown-ups: the skill this monster stands for. */
@@ -266,6 +270,50 @@ export const SPECIES = {
     pools: [],
     skill: 'Tens and ones: reading and building numbers to 100 and beyond',
   },
+  belch: {
+    id: 'belch',
+    name: 'Belch',
+    habitat: 'upper',
+    what: 'burp pod beast',
+    blurb: 'Has two pods on its head. They burp.',
+    fav: 'any',
+    upper: 'mult',
+    pools: [],
+    skill: 'Multiplying bigger numbers in parts (the area model)',
+  },
+  drift: {
+    id: 'drift',
+    name: 'Drift',
+    habitat: 'upper',
+    what: 'dandelion lion',
+    blurb: 'A flower with a puffy tail. The seeds drift away.',
+    fav: 'any',
+    upper: 'div',
+    pools: [],
+    skill: 'Dividing bigger numbers in parts, with leftovers',
+  },
+  bug: {
+    id: 'bug',
+    name: 'Bug',
+    habitat: 'upper',
+    what: 'bun pug',
+    blurb: 'Part pug, part warm bun.',
+    fav: 'any',
+    upper: 'fadd',
+    pools: [],
+    skill: 'Adding and taking away fractions',
+  },
+  cook: {
+    id: 'cook',
+    name: 'Cook',
+    habitat: 'upper',
+    what: 'sail hound',
+    blurb: 'Has eight legs and a sail on its back.',
+    fav: 'any',
+    upper: 'dec',
+    pools: [],
+    skill: 'Decimals: tenths and hundredths, comparing, adding and taking away',
+  },
   ...eggSpecies('tup', 'Tup', 'ember cat', 'Ears and a tail of flame. Always ready to pounce.'),
   ...eggSpecies('jam', 'Jam', 'berry bear', 'Strong and sweet. Hides snacks everywhere.'),
   ...eggSpecies('mint', 'Mint', 'leaf dragon', 'Wings like leaves. Afraid of nothing.'),
@@ -296,8 +344,10 @@ export const CANYON_ORDER: SpeciesId[] = ['nub', 'plum', 'dusk', 'chip'];
 export const HOLLOW_ORDER: SpeciesId[] = ['bix', 'tam', 'zim', 'lux'];
 /** The Berry Patch: early number sense. More monsters join as they are drawn. */
 export const EARLY_ORDER: SpeciesId[] = ['fig', 'flam', 'kelp', 'beary'];
+/** The Bakery: grade 4 and 5 work, with buns on baking trays. */
+export const UPPER_ORDER: SpeciesId[] = ['belch', 'drift', 'bug', 'cook'];
 export const EGG_ORDER: SpeciesId[] = ['tup', 'jam', 'mint', 'pom', 'nox', 'fizz'];
-export const ALL_SPECIES: SpeciesId[] = [...STARTERS, ...GRASS_ORDER, ...CANYON_ORDER, ...HOLLOW_ORDER, ...EARLY_ORDER, ...EGG_ORDER];
+export const ALL_SPECIES: SpeciesId[] = [...STARTERS, ...GRASS_ORDER, ...CANYON_ORDER, ...HOLLOW_ORDER, ...EARLY_ORDER, ...UPPER_ORDER, ...EGG_ORDER];
 
 export const TREAT_LABEL: Record<Treat, { symbol: string; text: string; speech: string }> = {
   any: { symbol: '★', text: 'all treats', speech: 'all kinds of treats' },
@@ -328,12 +378,20 @@ export const COUNT_LABEL: Record<CountKind, string> = {
   place: 'crates and loose berries',
 };
 
+export const UPPER_LABEL: Record<UpperKind, string> = {
+  mult: 'big trays',
+  div: 'fair shares',
+  fadd: 'slices',
+  dec: 'crumbs',
+};
+
 /** What a monster loves, as a short phrase: "plus treats", "packing crates", "equal pieces". */
 export function lovesLabel(id: SpeciesId): string {
   const sp = SPECIES[id];
   if (sp.habitat === 'canyon' && sp.delivery) return DELIVERY_LABEL[sp.delivery];
   if (sp.habitat === 'hollow' && sp.frac) return FRAC_LABEL[sp.frac];
   if (sp.habitat === 'early' && sp.count) return COUNT_LABEL[sp.count];
+  if (sp.habitat === 'upper' && sp.upper) return UPPER_LABEL[sp.upper];
   return TREAT_LABEL[sp.fav].text;
 }
 
@@ -359,7 +417,10 @@ export function eggArt(): string {
   return `${import.meta.env.BASE_URL}art/items/egg.png`;
 }
 
-export type BgName = 'meadow' | 'canyon' | 'grass' | 'hollow';
+export type BgName = 'meadow' | 'canyon' | 'grass' | 'hollow' | 'bakery';
+
+/** The picture behind the Bakery and its lessons. Its own picture is not drawn yet: change this to 'bakery' when public/art/bg/bakery.jpg exists. */
+export const BAKERY_BG: BgName = 'bakery';
 
 export function bg(name: BgName): string {
   return `${import.meta.env.BASE_URL}art/bg/${name}.jpg`;

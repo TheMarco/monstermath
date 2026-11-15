@@ -1,10 +1,11 @@
-import { ALL_SPECIES, SPECIES } from '../data/monsters';
+import { ALL_SPECIES, SPECIES, UPPER_ORDER } from '../data/monsters';
 import { START_POINTS, type StartPoint } from '../intake';
 import { COUNT_ERROR_TEXT, COUNT_KINDS, type CountKind } from '../math/count';
 import { OP_SYMBOL, type Kind } from '../math/expr';
 import { FRAC_ERROR_TEXT } from '../math/fractions';
 import { ERROR_TEXT } from '../math/regroup';
-import { COUNT_TEXT, countStats, daysAgo, exprStats, FRAC_TEXT, fracStats, levelRows, intakeCeiling, intakeRows, intakeWarning, tutoringRows, walkthroughCount, KIND_TEXT, monsterStatus, pct, teacherSummary, tripStats, TYPE_TEXT } from '../report';
+import { UPPER_ERROR_TEXT, UPPER_KINDS, type UpperKind } from '../math/upper';
+import { COUNT_TEXT, countStats, UPPER_TEXT, upperStats, daysAgo, exprStats, FRAC_TEXT, fracStats, levelRows, intakeCeiling, intakeRows, intakeWarning, tutoringRows, walkthroughCount, KIND_TEXT, monsterStatus, pct, teacherSummary, tripStats, TYPE_TEXT } from '../report';
 import { adoptBackup, buddyOf, currentPlayer, daysPlayed, friends, NAME_MAX, players, readBackup, removePlayer, renamePlayer } from '../state';
 import { button, monsterImg, type Screen } from '../ui/common';
 import { h, replace } from '../ui/dom';
@@ -135,6 +136,9 @@ export const grownupsScreen: Screen = (app, params) => {
 
   const tryLevel = h('select', { class: 'gu-select' }, [1, 2, 3, 4, 5, 6].map((n) => h('option', { value: String(n - 1) }, String(n))));
   const TRY_LABEL: Record<CountKind, string> = { count: 'Counting', more: 'Comparing', ten: 'Making ten', place: 'Tens and ones' };
+
+  const bakeLevel = h('select', { class: 'gu-select' }, [1, 2, 3, 4, 5].map((n) => h('option', { value: String(n - 1) }, String(n))));
+  const BAKE_LABEL: Record<UpperKind, string> = { mult: 'Big trays', div: 'Sharing fairly', fadd: 'Slices', dec: 'Crumbs' };
 
   const openBtn = button(save.openAll ? 'Monsters: all open (click to follow progress again)' : 'Open all monsters now', () => {
     save.openAll = !save.openAll;
@@ -285,6 +289,37 @@ export const grownupsScreen: Screen = (app, params) => {
           )
         : null,
 
+      (save.upperLog ?? []).length
+        ? card(
+            'Bakery (multiplying and dividing in parts, fractions, decimals)',
+            table(
+              head('Idea', 'Level', 'Working on', 'Problems', 'Right first try', 'Needed picture help', 'Error patterns seen'),
+              upperStats(save)
+                .filter((s) => s.problems > 0)
+                .map((s) =>
+                  row(
+                    UPPER_TEXT[s.kind],
+                    s.level,
+                    s.working,
+                    s.problems,
+                    `${s.firstTry} (${pct(s.firstTry, s.problems)})`,
+                    s.helped,
+                    s.errors.length ? s.errors.map((e) => `${e.count}x ${UPPER_ERROR_TEXT[e.pattern]}`).join('; ') : 'none',
+                  ),
+                ),
+            ),
+            h(
+              'p',
+              { class: 'gu-recent' },
+              'Latest problems: ',
+              (save.upperLog ?? [])
+                .slice(-12)
+                .reverse()
+                .map((u) => h('span', { class: u.firstTry ? 'ok' : 'miss' }, `${u.text}${u.answers.length > 1 ? ` (first answered ${u.answers.slice(0, -1).join('; ')})` : ''}`)),
+            ),
+          )
+        : null,
+
       card(
         'Honey Hollow (fractions)',
       table(
@@ -367,11 +402,11 @@ export const grownupsScreen: Screen = (app, params) => {
       ),
 
       card(
-        'Early number games (in the making)',
+        'Early number games',
         h(
           'p',
           { class: 'gu-small' },
-          'For children who are not yet adding within 10: counting, comparing, making ten, and tens and ones. These games are not in the meadow yet. The buttons open each one for a look, starting at the level chosen. Nothing is saved and nothing is earned.',
+          'For children who are not yet adding within 10: counting, comparing, making ten, and tens and ones. These are the Berry Patch games. The buttons open each one for a look, starting at the level chosen. Nothing is saved and nothing is earned.',
         ),
         h(
           'div',
@@ -380,6 +415,21 @@ export const grownupsScreen: Screen = (app, params) => {
           COUNT_KINDS.map((kind) =>
             button(TRY_LABEL[kind], () => app.go('early', { id: save.starter ? buddyOf(save) : 'puff', kind, practice: true, rung: Number(tryLevel.value) }), 'btn-small'),
           ),
+        ),
+      ),
+
+      card(
+        'Bakery games',
+        h(
+          'p',
+          { class: 'gu-small' },
+          'For children who already multiply and divide with small numbers: big trays (multiplying in parts), sharing fairly (dividing in parts), slices (adding and taking away fractions) and crumbs (decimals). The buttons open each one for a look, starting at the level chosen. Nothing is saved and nothing is earned.',
+        ),
+        h(
+          'div',
+          { class: 'gu-actions' },
+          h('label', { class: 'gu-label' }, 'Start at level ', bakeLevel),
+          UPPER_KINDS.map((kind, i) => button(BAKE_LABEL[kind], () => app.go('upper', { id: UPPER_ORDER[i] ?? 'belch', kind, practice: true, rung: Number(bakeLevel.value) }), 'btn-small')),
         ),
       ),
 

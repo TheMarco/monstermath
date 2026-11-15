@@ -16,7 +16,7 @@ export interface App {
   reload(): void;
 }
 
-export type ScreenName = 'title' | 'intro' | 'home' | 'befriend' | 'canyon' | 'journal' | 'stickers' | 'lesson' | 'grownups' | 'hollow' | 'shop' | 'players' | 'early';
+export type ScreenName = 'title' | 'intro' | 'home' | 'befriend' | 'canyon' | 'journal' | 'stickers' | 'lesson' | 'grownups' | 'hollow' | 'shop' | 'players' | 'early' | 'upper';
 
 export interface ScreenHandle {
   el: HTMLElement;
@@ -97,6 +97,7 @@ const ICONS: Record<string, string> = {
   berry:
     '<circle cx="12" cy="14" r="7" fill="currentColor"/><path d="M12 7c1-3 3-4 6-4-1 3-3 4-6 4z" fill="#7cc48a"/>',
   drop: '<path d="M12 3c4 5.500 6.500 8.800 6.500 12a6.500 6.500 0 01-13 0C5.500 11.800 8 8.500 12 3z" fill="currentColor"/>',
+  bun: '<path d="M3.500 15a8.500 8 0 0117 0v1.500a2 2 0 01-2 2h-13a2 2 0 01-2-2V15z" fill="currentColor"/><path d="M8.500 9.500l1.500 2.500M12 8.500v3M15.500 9.500L14 12" fill="none" stroke="#fff" stroke-width="1.600" stroke-linecap="round"/>',
   check: '<path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>',
   bulb: '<path d="M9 18h6M10 21h4M12 3a6 6 0 00-3.5 10.9c.6.5 1 1.300 1 2.100h5c0-.8.4-1.600 1-2.100A6 6 0 0012 3z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>',
   erase: '<path d="M9 6h11v12H9l-6-6 6-6z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/><path d="M12 9.500l5 5m0-5l-5 5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>',

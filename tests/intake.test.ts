@@ -110,6 +110,8 @@ describe('intake staircases', () => {
     expect(belowFloor({ add: 0, sub: 2 })).toEqual(['add']);
     expect(belowFloor({ add: 1, sub: 2 })).toEqual([]);
     expect(belowFloor({ add: 4, sub: 3 })).toEqual([]);
+    // A check that did not ask about sums says nothing about them.
+    expect(belowFloor({ mul: 3, div: 2 })).toEqual([]);
   });
 
   it('describes the result for a parent', () => {
@@ -150,6 +152,7 @@ describe('where the check begins', () => {
     const { strandPlan } = await import('../src/intake');
     expect(strandPlan('early', {}).map((s) => s.id)).toEqual(['count', 'place', 'add', 'sub']);
     expect(strandPlan('sums', {}).map((s) => s.id)).toEqual(['place', 'add', 'sub', 'mul']);
+    expect(strandPlan('upper', {}).map((s) => s.id)).toEqual(['place', 'mul', 'div', 'frac']);
   });
 
   it('the counting round has sound answers and recorded speech', async () => {

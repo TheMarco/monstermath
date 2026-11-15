@@ -1,5 +1,6 @@
 import type { SpeciesId } from './data/monsters';
 import type { CountKind } from './math/count';
+import type { UpperKind } from './math/upper';
 import type { BarPart } from './ui/models';
 
 /**
@@ -9,7 +10,7 @@ import type { BarPart } from './ui/models';
  * shown and explained.
  */
 
-export type LessonId = 'count' | 'more' | 'ten' | 'place' | 'parts' | 'pack' | 'open' | 'rows' | 'share' | 'frac' | 'same' | 'ftimes' | 'ftray';
+export type LessonId = 'count' | 'more' | 'ten' | 'place' | 'parts' | 'pack' | 'open' | 'rows' | 'share' | 'frac' | 'same' | 'ftimes' | 'ftray' | 'mult' | 'div' | 'fadd' | 'dec';
 
 export type Scene =
   | { t: 'mat'; tens: number; ones: number; moreTens?: number; moreOnes?: number; caption?: string }
@@ -23,7 +24,15 @@ export type Scene =
   | { t: 'bar'; parts: BarPart[]; caption?: string }
   | { t: 'fbar'; parts: number; shaded: number; caption?: string }
   | { t: 'fbars'; bars: Array<{ parts: number; shaded: number }>; caption?: string }
-  | { t: 'tray'; cols: number; shaded: number; rows?: number; taken?: number; caption?: string };
+  | { t: 'tray'; cols: number; shaded: number; rows?: number; taken?: number; caption?: string }
+  /** A baking tray of `b` rows of `a` buns, split in a tens part and a ones part. `lit` names the parts that show their product. */
+  | { t: 'btray'; a: number; b: number; lit?: number[]; caption?: string }
+  /** Buns shared into baskets. `dealt` is how many are in each basket so far. `quiet` leaves the counts off, for her to find. */
+  | { t: 'share'; total: number; by: number; dealt: number; loose?: boolean; quiet?: boolean; caption?: string }
+  /** Loaves cut into slices. `recut` cuts each slice again, into that many slices in all. */
+  | { t: 'loaves'; loaves: Array<{ parts: number; shaded: number; recut?: number }>; caption?: string }
+  /** A tray of one hundred squares with `n` filled (hundredths), and a second one to compare. */
+  | { t: 'crumbs'; n: number; other?: number; caption?: string };
 
 export type Ask =
   | { kind: 'tap'; label: string }
@@ -329,6 +338,85 @@ export const LESSONS: Record<LessonId, Lesson> = {
       },
     ],
   },
+  mult: {
+    id: 'mult',
+    title: 'Big trays',
+    teaches: 'Multiplying a bigger number in parts: the tens part, the ones part, then add them (the area model)',
+    steps: [
+      { clip: 'l_mult_1', text: 'A tray of buns. 3 rows of 12. I split it in a tens part and a ones part.', scene: { t: 'btray', a: 12, b: 3 } },
+      { clip: 'l_mult_2', text: 'The tens part is 3 rows of 10. That is 30.', scene: { t: 'btray', a: 12, b: 3, lit: [0], caption: '10 × 3 = 30' } },
+      { clip: 'l_mult_3', text: 'The ones part is 3 rows of 2. That is 6.', scene: { t: 'btray', a: 12, b: 3, lit: [0, 1], caption: '2 × 3 = 6' } },
+      { clip: 'l_mult_4', text: 'I add the parts. 30 and 6 is 36.', scene: { t: 'btray', a: 12, b: 3, lit: [0, 1], caption: '30 + 6 = 36' } },
+      {
+        clip: 'l_mult_5',
+        text: 'Your turn. 4 rows of 13. The parts are 40 and 12. How many buns in all?',
+        scene: { t: 'btray', a: 13, b: 4, lit: [0, 1], caption: '40 + 12 = ?' },
+        ask: { kind: 'number', expected: 52 },
+      },
+      { clip: 'l_mult_6', text: '52! A big tray is easy in parts.', scene: { t: 'btray', a: 13, b: 4, lit: [0, 1], caption: '13 × 4 = 52' } },
+    ],
+  },
+  div: {
+    id: 'div',
+    title: 'Sharing fairly',
+    teaches: 'Dividing in parts: share the tens first, then the rest, and say what is left over',
+    steps: [
+      { clip: 'l_div_1', text: '48 buns, and 4 baskets. Every basket gets the same.', scene: { t: 'share', total: 48, by: 4, dealt: 0 } },
+      { clip: 'l_div_2', text: 'First I share the trays of ten. Each basket gets 1 tray. That is 10.', scene: { t: 'share', total: 48, by: 4, dealt: 10, caption: '40 ÷ 4 = 10' } },
+      { clip: 'l_div_3', text: 'Then I share the 8 loose buns. Each basket gets 2 more.', scene: { t: 'share', total: 48, by: 4, dealt: 12, caption: '8 ÷ 4 = 2' } },
+      { clip: 'l_div_4', text: '10 and 2 is 12. 48 divided by 4 is 12.', scene: { t: 'share', total: 48, by: 4, dealt: 12, caption: '48 ÷ 4 = 12' } },
+      {
+        clip: 'l_div_5',
+        text: 'Your turn. 14 buns, 4 baskets. Each basket gets 3. How many are left?',
+        scene: { t: 'share', total: 14, by: 4, dealt: 3, loose: true, quiet: true },
+        ask: { kind: 'number', expected: 2 },
+      },
+      { clip: 'l_div_6', text: '2 are left. Not enough to give every basket one more.', scene: { t: 'share', total: 14, by: 4, dealt: 3, loose: true, caption: '14 ÷ 4 = 3, and 2 left' } },
+    ],
+  },
+  fadd: {
+    id: 'fadd',
+    title: 'Slices',
+    teaches: 'Adding and taking away fractions: make the slices the same size first, then only the top number changes',
+    steps: [
+      { clip: 'l_fadd_1', text: 'A loaf cut in 4 slices. 1 slice here, and 2 slices there.', scene: { t: 'loaves', loaves: [{ parts: 4, shaded: 1 }, { parts: 4, shaded: 2 }] } },
+      {
+        clip: 'l_fadd_2',
+        text: 'The slices are the same size. So I just count them. 1 and 2 is 3 fourths.',
+        scene: { t: 'loaves', loaves: [{ parts: 4, shaded: 1 }, { parts: 4, shaded: 2 }], caption: '1/4 + 2/4 = 3/4' },
+      },
+      { clip: 'l_fadd_3', text: 'Now 1 half and 1 fourth. The slices are not the same size!', scene: { t: 'loaves', loaves: [{ parts: 2, shaded: 1 }, { parts: 4, shaded: 1 }] } },
+      {
+        clip: 'l_fadd_4',
+        text: 'I cut the half again. 1 half is 2 fourths.',
+        scene: { t: 'loaves', loaves: [{ parts: 2, shaded: 1, recut: 4 }, { parts: 4, shaded: 1 }], caption: '1/2 = 2/4' },
+      },
+      {
+        clip: 'l_fadd_5',
+        text: 'Your turn. 2 fourths and 1 fourth. How many fourths is that?',
+        scene: { t: 'loaves', loaves: [{ parts: 2, shaded: 1, recut: 4 }, { parts: 4, shaded: 1 }], caption: '2/4 + 1/4 = ?/4' },
+        ask: { kind: 'number', expected: 3 },
+      },
+      {
+        clip: 'l_fadd_6',
+        text: '3 fourths. Same size slices first. Then count.',
+        scene: { t: 'loaves', loaves: [{ parts: 2, shaded: 1, recut: 4 }, { parts: 4, shaded: 1 }], caption: '1/2 + 1/4 = 3/4' },
+      },
+    ],
+  },
+  dec: {
+    id: 'dec',
+    title: 'Crumbs',
+    teaches: 'Decimals: tenths and hundredths as parts of one whole, and why 0.5 is more than 0.45',
+    steps: [
+      { clip: 'l_dec_1', text: 'This full tray is 1. It has 100 small squares.', scene: { t: 'crumbs', n: 100, caption: '1' } },
+      { clip: 'l_dec_2', text: 'A strip is 10 squares. 10 strips fill the tray. 1 strip is one tenth.', scene: { t: 'crumbs', n: 10, caption: '0.1' } },
+      { clip: 'l_dec_3', text: '3 strips is 3 tenths. We write 0.3.', scene: { t: 'crumbs', n: 30, caption: '0.3' } },
+      { clip: 'l_dec_4', text: '1 small square is one hundredth. 4 strips and 7 squares is 0.47.', scene: { t: 'crumbs', n: 47, caption: '0.47' } },
+      { clip: 'l_dec_5', text: 'Your turn. Which one is more?', scene: { t: 'crumbs', n: 50, other: 45 }, ask: { kind: 'choice', choices: ['0.5', '0.45'], expected: '0.5' } },
+      { clip: 'l_dec_6', text: 'Yes. 5 strips is more than 4 strips and 5 squares.', scene: { t: 'crumbs', n: 50, other: 45, caption: '0.5 > 0.45' } },
+    ],
+  },
 };
 
 /** The lesson taught before a monster is met for the first time. */
@@ -346,6 +434,10 @@ export const LESSON_BEFORE: Partial<Record<SpeciesId, LessonId>> = {
   flam: 'more',
   kelp: 'ten',
   beary: 'place',
+  belch: 'mult',
+  drift: 'div',
+  bug: 'fadd',
+  cook: 'dec',
 };
 
 /** The lesson that explains a kind of treat or berry trip, when there is one. */
@@ -365,6 +457,9 @@ export const LESSON_FOR_KIND: Partial<Record<string, LessonId>> = {
 
 /** The lesson for each early-number idea. */
 export const LESSON_FOR_COUNT: Record<CountKind, LessonId> = { count: 'count', more: 'more', ten: 'ten', place: 'place' };
+
+/** The lesson for each Bakery idea. */
+export const LESSON_FOR_UPPER: Record<UpperKind, LessonId> = { mult: 'mult', div: 'div', fadd: 'fadd', dec: 'dec' };
 
 export interface LessonLog {
   seen: number;
