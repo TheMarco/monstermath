@@ -27,4 +27,4 @@ for f in *.mp4; do
   first=0
 done
 printf ']\n' >> manifest.json
-echo "Clips ready: $(ls *.mp4 2>/dev/null | wc -l | tr -d ' ') of 156"
+echo "Clips ready: $(ls *.mp4 2>/dev/null | wc -l | tr -d ' ') of 162"
