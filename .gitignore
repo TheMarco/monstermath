@@ -14,3 +14,7 @@ art-src/
 # Curriculum overviews from the school (third-party documents)
 *.pdf
 trailer/
+
+# Local secrets (API keys)
+.env
+.env.*
