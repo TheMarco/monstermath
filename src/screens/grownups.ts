@@ -1,5 +1,5 @@
 import { ALL_SPECIES, SPECIES, UPPER_ORDER } from '../data/monsters';
-import { START_POINTS, type StartPoint } from '../intake';
+import { GRADE_POINTS, gradeOf, START_POINTS } from '../intake';
 import { COUNT_ERROR_TEXT, COUNT_KINDS, type CountKind } from '../math/count';
 import { OP_SYMBOL, type Kind } from '../math/expr';
 import { FRAC_ERROR_TEXT } from '../math/fractions';
@@ -118,20 +118,29 @@ export const grownupsScreen: Screen = (app, params) => {
   // The start point can only be chosen before the first question of the check.
   const startLocked = save.introDone || (save.intakeAt ?? 0) > 0 || save.placement.length > 0;
   const startNow = save.startAt ?? 'auto';
+  const gradeNow = gradeOf(save.startAt, save.startGrade);
   const startSelect = h(
     'select',
     {
       class: 'gu-select gu-start',
       disabled: startLocked,
       onchange: () => {
-        const value = startSelect.value;
-        if (value === 'auto') delete save.startAt;
-        else save.startAt = value as StartPoint;
+        const picked = GRADE_POINTS.find((g) => `g${g.grade}` === startSelect.value);
+        if (picked) {
+          save.startAt = picked.start;
+          save.startGrade = picked.grade;
+        } else {
+          delete save.startAt;
+          delete save.startGrade;
+        }
         app.commit();
         app.go('grownups');
       },
     },
-    START_POINTS.map((s) => h('option', { value: s.id, selected: s.id === startNow }, s.label)),
+    [
+      h('option', { value: 'auto', selected: gradeNow === null }, 'Not sure, let the game find out'),
+      ...GRADE_POINTS.map((g) => h('option', { value: `g${g.grade}`, selected: g.grade === gradeNow }, g.label)),
+    ],
   );
 
   const tryLevel = h('select', { class: 'gu-select' }, [1, 2, 3, 4, 5, 6].map((n) => h('option', { value: String(n - 1) }, String(n))));
@@ -389,9 +398,9 @@ export const grownupsScreen: Screen = (app, params) => {
         h(
           'p',
           { class: 'gu-small' },
-          `The first-day check finds where each kind of problem should start for ${who}. If you already know roughly where that is, choose it here before ${who} begins, and the check only asks about that range. The child never sees a grade.`,
+          `The first-day check finds where each kind of problem should start for ${who}. If you already know roughly the level ${who} works at, choose it here before ${who} begins, and the check only asks about that range. Choose the level of the work ${who} can do, which may be below the grade ${who} is in. When the first questions turn out too hard, the check adds easier ones by itself. The child never sees a grade.`,
         ),
-        h('div', { class: 'gu-actions' }, h('label', { class: 'gu-label' }, 'First-day check ', startSelect)),
+        h('div', { class: 'gu-actions' }, h('label', { class: 'gu-label' }, 'Works at about the level of ', startSelect)),
         h(
           'p',
           { class: 'gu-small' },

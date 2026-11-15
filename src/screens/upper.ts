@@ -70,7 +70,7 @@ export const upperScreen: Screen = (app, params) => {
   function progress(kind: UpperKind): EarlyProgress {
     const store = practice ? tryStore : (save.upper ??= {});
     const at = (store[kind] ??= {});
-    if (at.step === undefined) at.step = upperStartStep(save.intakeLevels, kind);
+    if (at.step === undefined) at.step = upperStartStep(save.intakeLevels, kind, practice ? undefined : save.startGrade);
     at.step = Math.max(0, Math.min(upperTop(kind), at.step));
     return at;
   }

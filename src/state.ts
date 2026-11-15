@@ -216,6 +216,8 @@ export interface Save {
   intakeAt?: number;
   /** Where a grown-up chose to begin the first-day check. Unset: the game finds out. */
   startAt?: 'early' | 'sums' | 'middle' | 'upper';
+  /** The level a grown-up picked, 0 for kindergarten to 5. The check plan comes from startAt. */
+  startGrade?: number;
   /** Where each kind of berry trip starts, from the first-day check (0 easiest to 2). */
   startStep?: Partial<Record<Delivery, number>>;
   /** Ranger points: every heart and berry trip counts. */

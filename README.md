@@ -72,16 +72,20 @@ page also says when a child is outside what the game can teach: below its
 easiest sums, or passing a whole topic of the check.
 
 **Where to start.** Without a choice the check asks about every topic. On the
-grown-up page, before the child begins, a grown-up can choose to start with
-counting (about kindergarten and grade 1), with adding and subtracting (about
-grades 1 and 2), with times tables and first fractions (about grade 3), or with bigger multiplying and dividing (about grades 4 and 5);
-the check then only asks about that range. The last choice is for a child who
-already multiplies and divides with small numbers: the check asks about place
-value, multiplying, dividing and fractions, leaves out adding and subtracting,
-and the Bakery monsters come out without waiting for the other places. The child
-never sees a grade. A counting round is also added at the end of the full check
-when the first sums did not go well. To begin again from another point, add a
-new player.
+grown-up page, before the child begins, a grown-up can pick the level the child
+works at, from kindergarten to grade 5. That is the level of the work the child
+can do, which for a child who is behind is below the grade the child is in. Six
+levels share four checks: kindergarten and grade 1 ask about counting, numbers
+to 100, adding and subtracting; grade 2 about numbers, adding, subtracting and
+equal groups; grade 3 about every topic but counting; grades 4 and 5 about
+place value, multiplying, dividing and fractions. Grade 1 starts the Berry
+Patch games one level up, and grade 5 the Bakery games. When the chosen range
+turns out too hard, the check goes on with the range below (counting for
+grades 2 and 3, adding and subtracting for grades 4 and 5). For grades 4 and 5
+the Bakery monsters come out without waiting for the other places, unless the
+check had to step down. The child never sees a grade. To begin again from
+another level, add a new player. The rules are in `src/start.ts` and
+`src/intake.ts`.
 
 **Early numbers (Berry Patch).** For a child who is not yet adding within 10
 there are four ideas, each with its own ladder, all drawn with the canyon's

@@ -53,6 +53,7 @@ export const playersScreen: Screen = (app) => {
     h('h1', { class: 'players-title' }, 'Who is playing?'),
     h('div', { class: `player-row${list.length > 4 ? ' many' : ''}` }, list.map(card)),
     adder,
+    h('p', { class: 'player-note' }, 'Grown-ups: to set the level for a new player, pick the player, then hold "Grown-ups" before the first question.'),
   );
 
   return { el };

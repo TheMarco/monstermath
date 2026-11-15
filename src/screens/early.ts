@@ -81,7 +81,7 @@ export const earlyScreen: Screen = (app, params) => {
   function progress(kind: CountKind): EarlyProgress {
     const store = practice ? tryStore : (save.early ??= {});
     const at = (store[kind] ??= {});
-    if (at.step === undefined) at.step = earlyStartStep(save.intakeLevels, kind);
+    if (at.step === undefined) at.step = earlyStartStep(save.intakeLevels, kind, practice ? undefined : save.startGrade);
     at.step = Math.max(0, Math.min(countTop(kind), at.step));
     return at;
   }
@@ -732,7 +732,7 @@ export const earlyScreen: Screen = (app, params) => {
   const el = h(
     'div',
     { class: 'screen canyon-screen early-screen' },
-    backdrop('canyon'),
+    backdrop('patch'),
     h('div', { class: 'topbar' }, practice ? button('Back', () => app.go('grownups'), 'btn-small') : backButton(app)),
     h(
       'div',

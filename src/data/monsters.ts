@@ -417,7 +417,7 @@ export function eggArt(): string {
   return `${import.meta.env.BASE_URL}art/items/egg.png`;
 }
 
-export type BgName = 'meadow' | 'canyon' | 'grass' | 'hollow' | 'bakery';
+export type BgName = 'meadow' | 'canyon' | 'grass' | 'hollow' | 'bakery' | 'patch';
 
 /** The picture behind the Bakery and its lessons. Its own picture is not drawn yet: change this to 'bakery' when public/art/bg/bakery.jpg exists. */
 export const BAKERY_BG: BgName = 'bakery';

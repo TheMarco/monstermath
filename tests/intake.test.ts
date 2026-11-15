@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { advance, belowFloor, fastTrack, currentItem, MAX_MISSES, newRun, reached, startSteps, STRANDS } from '../src/intake';
+import { advance, belowFloor, earlyStartStep, fastTrack, currentItem, GRADE_POINTS, gradeOf, MAX_MISSES, newRun, reached, startSteps, steppedDown, STRANDS, strandPlan, upperStartStep } from '../src/intake';
 import { recordingScript } from '../src/voice/lines';
 
 describe('intake staircases', () => {
@@ -153,7 +153,36 @@ describe('where the check begins', () => {
     expect(strandPlan('early', {}).map((s) => s.id)).toEqual(['count', 'place', 'add', 'sub']);
     expect(strandPlan('sums', {}).map((s) => s.id)).toEqual(['place', 'add', 'sub', 'mul']);
     // About grade 3: every topic but counting, and counting is never added afterwards.
+    // About grade 3: every topic but counting, as long as the check has not shown it is too hard.
     expect(strandPlan('middle', { place: 0, add: 0 }).map((s) => s.id)).toEqual(['place', 'add', 'sub', 'mul', 'div', 'frac']);
+  });
+
+  it('adds the range below when the chosen level turns out too hard, and only at the end of the list', () => {
+    const ids = (start: 'sums' | 'middle' | 'upper', levels: Record<string, number>): string[] => strandPlan(start, levels).map((s) => s.id);
+    // Grade 2 picked, but she cannot add within 10: counting is added.
+    expect(ids('sums', { place: 3, add: 0, sub: 0, mul: 0 })).toEqual(['place', 'add', 'sub', 'mul', 'count']);
+    expect(ids('sums', { place: 3, add: 2, sub: 1, mul: 0 })).toEqual(['place', 'add', 'sub', 'mul']);
+    // Grade 3 picked, teen numbers not read yet.
+    expect(ids('middle', { place: 1, add: 2, sub: 2, mul: 1, div: 0, frac: 0 })).toEqual(['place', 'add', 'sub', 'mul', 'div', 'frac', 'count']);
+    // Grades 4 and 5 picked, but the times tables are not there: adding and subtracting are asked too.
+    expect(ids('upper', { place: 4, mul: 1, div: 0, frac: 1 })).toEqual(['place', 'mul', 'div', 'frac', 'add', 'sub']);
+    expect(ids('upper', { place: 4, mul: 5, div: 3, frac: 2 })).toEqual(['place', 'mul', 'div', 'frac']);
+    // Nothing is added before the chosen range has been asked in full.
+    expect(ids('upper', { place: 4, mul: 0 })).toEqual(['place', 'mul', 'div', 'frac']);
+    expect(steppedDown('upper', { place: 4, mul: 1, div: 0, frac: 1 })).toBe(true);
+  });
+
+  it('six levels share four checks, and the higher level of a pair starts one step up', () => {
+    expect(GRADE_POINTS.map((g) => g.start)).toEqual(['early', 'early', 'sums', 'middle', 'upper', 'upper']);
+    expect(gradeOf(undefined, undefined)).toBeNull();
+    expect(gradeOf('upper', 5)).toBe(5);
+    // A save from before levels could be picked shows the first level of its range.
+    expect(gradeOf('upper', undefined)).toBe(4);
+    expect(earlyStartStep({}, 'count', 1)).toBe(earlyStartStep({}, 'count', 0) + 1);
+    expect(upperStartStep({}, 'mult', 5)).toBe(upperStartStep({}, 'mult', 4) + 1);
+    // Stepped down: no head start.
+    const low = { place: 4, mul: 1, div: 0, frac: 1 };
+    expect(upperStartStep(low, 'mult', 5)).toBe(upperStartStep(low, 'mult', 4));
     expect(strandPlan('upper', {}).map((s) => s.id)).toEqual(['place', 'mul', 'div', 'frac']);
   });
 

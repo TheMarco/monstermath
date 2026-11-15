@@ -249,7 +249,7 @@ export const lessonScreen: Screen = (app, params) => {
     'div',
     { class: 'screen lesson-screen', 'data-lesson': lesson.id },
     backdrop(
-      ['mult', 'div', 'fadd', 'dec'].includes(lesson.id) ? BAKERY_BG : ['frac', 'same', 'ftimes', 'ftray'].includes(lesson.id) ? 'hollow' : ['count', 'more', 'ten', 'place'].includes(lesson.id) ? 'canyon' : 'meadow',
+      ['mult', 'div', 'fadd', 'dec'].includes(lesson.id) ? BAKERY_BG : ['frac', 'same', 'ftimes', 'ftray'].includes(lesson.id) ? 'hollow' : ['count', 'more', 'ten', 'place'].includes(lesson.id) ? 'patch' : 'meadow',
     ),
     h(
       'div',

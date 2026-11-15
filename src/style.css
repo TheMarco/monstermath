@@ -5859,3 +5859,29 @@ button.e-cell.empty {
   height: 118px;
   padding: 6px 2px 4px;
 }
+
+/* ---- players: a line for grown-ups about setting the level ---------------- */
+
+.player-note {
+  position: absolute;
+  left: 50%;
+  bottom: 96px;
+  transform: translateX(-50%);
+  margin: 0;
+  padding: 6px 16px;
+  width: max-content;
+  max-width: 900px;
+  font-size: 16px;
+  text-align: center;
+  color: var(--plum);
+  background: rgba(255, 255, 255, 0.82);
+  border-radius: 14px;
+}
+
+/* ---- the try-out label stays readable on busy backgrounds ----------------- */
+
+.cy-status > .mat-note {
+  padding: 3px 10px;
+  background: rgba(255, 255, 255, 0.86);
+  border-radius: 10px;
+}

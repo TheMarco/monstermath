@@ -1,6 +1,7 @@
 import { EGG_ORDER, SPECIES, type SpeciesId } from './data/monsters';
 import type { Delivery } from './math/regroup';
 import { clock, dayKey, daysPlayed, friends, isFriend, monster, type MonsterState, type Save } from './state';
+import { steppedDown } from './start';
 
 /**
  * What the game knows about where she is, and how it uses it: how big the
@@ -251,7 +252,7 @@ export interface NextWild {
 /** The skills still missing before this monster can be met, least practised first. */
 export function missing(save: Save, id: SpeciesId): SpeciesId[] {
   // A grown-up said she starts in the Bakery: the skills from the other places are taken as known.
-  const known = (n: SpeciesId): boolean => save.startAt === 'upper' && SPECIES[id].habitat === 'upper' && SPECIES[n].habitat !== 'upper';
+  const known = (n: SpeciesId): boolean => save.startAt === 'upper' && !steppedDown('upper', save.intakeLevels ?? {}) && SPECIES[id].habitat === 'upper' && SPECIES[n].habitat !== 'upper';
   return (NEEDS[id] ?? []).filter((n) => !known(n) && !secure(save, n)).sort((x, y) => goodDays(save, x) - goodDays(save, y));
 }
 

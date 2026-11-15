@@ -3,6 +3,9 @@ import type { FracKind } from './math/fractions';
 import type { Delivery } from './math/regroup';
 import type { UpperKind } from './math/upper';
 import { addStory, subStory } from './voice/lines';
+import { BELOW, PLAN, steppedDown, type StartPoint } from './start';
+
+export { steppedDown };
 
 /**
  * The intake: six short staircases, one per strand. Each starts with an easy
@@ -197,7 +200,7 @@ export const COUNT_STRAND: Strand = {
 export const ALL_STRANDS: Strand[] = [COUNT_STRAND, ...STRANDS];
 
 /** Where a grown-up wants the first-day check to begin. Without a choice the game finds out. */
-export type StartPoint = 'early' | 'sums' | 'middle' | 'upper';
+export type { StartPoint } from './start';
 
 export const START_POINTS: Array<{ id: StartPoint | 'auto'; label: string; asks: string }> = [
   { id: 'auto', label: 'Let the game find out', asks: 'Asks about every topic, easiest first, and stops each topic after two misses. Counting is added when the first sums do not go well.' },
@@ -207,12 +210,26 @@ export const START_POINTS: Array<{ id: StartPoint | 'auto'; label: string; asks:
   { id: 'upper', label: 'Start with bigger multiplying and dividing (about grades 4 and 5)', asks: 'For a child who already multiplies and divides with small numbers. Asks about numbers, multiplying, dividing and fractions. Leaves out adding and subtracting. The Bakery monsters come out without waiting for the other places.' },
 ];
 
-const PLAN: Record<StartPoint, StrandId[]> = {
-  early: ['count', 'place', 'add', 'sub'],
-  sums: ['place', 'add', 'sub', 'mul'],
-  middle: ['place', 'add', 'sub', 'mul', 'div', 'frac'],
-  upper: ['place', 'mul', 'div', 'frac'],
-};
+/**
+ * The levels a grown-up can pick: the level the child works at, which for a
+ * child who is behind is not the grade she is in. Six levels share four checks.
+ */
+export const GRADE_POINTS: Array<{ grade: number; label: string; start: StartPoint }> = [
+  { grade: 0, label: 'Kindergarten', start: 'early' },
+  { grade: 1, label: 'Grade 1', start: 'early' },
+  { grade: 2, label: 'Grade 2', start: 'sums' },
+  { grade: 3, label: 'Grade 3', start: 'middle' },
+  { grade: 4, label: 'Grade 4', start: 'upper' },
+  { grade: 5, label: 'Grade 5', start: 'upper' },
+];
+
+/** The level shown as chosen for a save, also for saves from before levels could be picked. */
+export function gradeOf(start: StartPoint | undefined, grade: number | undefined): number | null {
+  if (!start) return null;
+  if (grade !== undefined && GRADE_POINTS.some((g) => g.grade === grade && g.start === start)) return grade;
+  return GRADE_POINTS.find((g) => g.start === start)?.grade ?? null;
+}
+
 
 /**
  * The rounds of the first-day check, in order. The list only ever grows at
@@ -220,7 +237,7 @@ const PLAN: Record<StartPoint, StrandId[]> = {
  */
 export function strandPlan(start: StartPoint | undefined, levels: IntakeLevels): Strand[] {
   const byId = (id: StrandId): Strand => ALL_STRANDS.find((s) => s.id === id) as Strand;
-  if (start) return PLAN[start].map(byId);
+  if (start) return [...PLAN[start], ...(steppedDown(start, levels) ? BELOW[start] : [])].map(byId);
   const asked = STRANDS.every((s) => levels[s.id] !== undefined);
   // Not reading teen numbers, or not adding within 10: find out where counting stands.
   const low = (levels.place ?? 0) < 2 || (levels.add ?? 0) < 1;
@@ -299,7 +316,7 @@ export function fracStartStep(levels: IntakeLevels | undefined, kind: FracKind):
  * Where each early-number idea starts on its ladder, from the place-value and
  * addition levels she passed.
  */
-export function earlyStartStep(levels: IntakeLevels | undefined, kind: CountKind): number {
+function earlyBase(levels: IntakeLevels | undefined, kind: CountKind): number {
   const place = levels?.place ?? 0;
   const add = levels?.add ?? 0;
   const count = levels?.count ?? 0;
@@ -309,6 +326,11 @@ export function earlyStartStep(levels: IntakeLevels | undefined, kind: CountKind
   return place >= 5 ? 4 : place >= 3 ? 3 : 0;
 }
 
+/** Where an early-number game starts. A child said to work at grade 1 level starts one step up. */
+export function earlyStartStep(levels: IntakeLevels | undefined, kind: CountKind, grade?: number): number {
+  return earlyBase(levels, kind) + (grade === 1 ? 1 : 0);
+}
+
 /**
  * Where each Bakery idea starts on its ladder. The first-day check has no
  * question at Bakery size, so the most it can show is that the first rung is
@@ -316,11 +338,17 @@ export function earlyStartStep(levels: IntakeLevels | undefined, kind: CountKind
  * facts for sharing, equal fractions for slices. Decimals always start at the
  * first rung.
  */
-export function upperStartStep(levels: IntakeLevels | undefined, kind: UpperKind): number {
+function upperBase(levels: IntakeLevels | undefined, kind: UpperKind): number {
   if (kind === 'mult') return (levels?.mul ?? 0) >= 5 ? 1 : 0;
   if (kind === 'div') return (levels?.div ?? 0) >= 5 ? 1 : 0;
   if (kind === 'fadd') return (levels?.frac ?? 0) >= 4 ? 1 : 0;
   return 0;
+}
+
+/** Where a Bakery game starts. A child said to work at grade 5 level starts one step up, unless the check stepped down. */
+export function upperStartStep(levels: IntakeLevels | undefined, kind: UpperKind, grade?: number): number {
+  const up = grade === 5 && !steppedDown('upper', levels ?? {}) ? 1 : 0;
+  return upperBase(levels, kind) + up;
 }
 
 /**

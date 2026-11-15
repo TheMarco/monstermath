@@ -392,14 +392,15 @@ describe('a first-day check that starts at the Bakery', () => {
     expect(strandPlan('upper', {}).map((s) => s.id)).toEqual(['place', 'mul', 'div', 'frac']);
     app.go('grownups');
     const select = q<HTMLSelectElement>('.gu-start') as HTMLSelectElement;
-    expect(Array.from(select.options).map((o) => o.value)).toContain('upper');
-    select.value = 'upper';
+    expect(Array.from(select.options).map((o) => o.value)).toEqual(['auto', 'g0', 'g1', 'g2', 'g3', 'g4', 'g5']);
+    select.value = 'g5';
     select.dispatchEvent(new Event('change'));
     expect(app.save.startAt).toBe('upper');
+    expect(app.save.startGrade).toBe(5);
     expect(stage().textContent).toContain('already multiplies and divides with small numbers');
   });
 
-  it('leaves out adding and subtracting, ends with a first friend, and opens the Bakery', () => {
+  it('starts with four rounds, and adds adding and subtracting when every question is too hard', () => {
     app.save.startAt = 'upper';
     app.go('intro');
     (qa('.pick-card')[0] as HTMLElement).click();
@@ -422,14 +423,24 @@ describe('a first-day check that starts at the Bakery', () => {
     expect(text('.party')).toContain('is your friend!');
     const save = saved();
     expect(save.introDone).toBe(true);
-    expect(save.intakeLevels).toEqual({ place: 0, mul: 0, div: 0, frac: 0 });
+    // The chosen range was too hard, so the check went on with the range below.
+    expect(save.intakeLevels).toEqual({ place: 0, mul: 0, div: 0, frac: 0, add: 0, sub: 0 });
     expect(save.startAt).toBe('upper');
-    // Sums were not asked, so there is no warning about them.
-    expect(intakeWarning(save)).toBeNull();
-    expect(nextWild(save, upperQueue(save))).toEqual({ id: 'belch', ready: true });
+    expect(intakeWarning(save)).not.toBeNull();
+    // The Bakery monsters then wait for the other places like for any other child.
+    expect(nextWild(save, upperQueue(save))?.ready).toBe(false);
+  });
+
+  it('opens the Bakery straight away when the check went well', () => {
+    app.save.startAt = 'upper';
+    app.save.startGrade = 4;
+    app.save.intakeLevels = { place: 5, mul: 5, div: 4, frac: 3 };
+    app.save.introDone = true;
+    expect(intakeWarning(app.save)).toBeNull();
+    expect(nextWild(app.save, upperQueue(app.save))).toEqual({ id: 'belch', ready: true });
 
     // On the meadow the Bakery button leads to Belch, by way of the lesson.
-    click('Go to the meadow');
+    app.go('home');
     expect(qa('.place')).toHaveLength(5);
     click('Bakery');
     expect(q('.lesson-screen')?.getAttribute('data-lesson')).toBe('mult');

@@ -135,9 +135,13 @@ describe('the early number games', () => {
   });
 
   it('a miss gets coaching, a second brings counting help, a third shows the answer', () => {
-    app.go('early', { id: 'puff', kind: 'ten', practice: true, rung: 1 });
-    const right = rightAnswer() as number;
-    const wrong = right === 10 - right ? right + 1 : 10 - right;
+    // Five filled and five empty has no "counted the full spots" mistake: take another problem.
+    let right = 5;
+    while (right === 5) {
+      app.go('early', { id: 'puff', kind: 'ten', practice: true, rung: 1 });
+      right = rightAnswer() as number;
+    }
+    const wrong = 10 - right;
     chip('.e-chips', wrong);
     click('Check');
     expect(text('.cy-bubble')).toContain('Count the empty spots');
