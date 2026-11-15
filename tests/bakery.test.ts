@@ -388,7 +388,7 @@ describe('lessons for the bakery', () => {
 
 describe('a first-day check that starts at the Bakery', () => {
   it('is offered on the grown-up page and asks about numbers, multiplying, dividing and fractions', () => {
-    expect(START_POINTS.map((s) => s.id)).toEqual(['auto', 'early', 'sums', 'upper']);
+    expect(START_POINTS.map((s) => s.id)).toEqual(['auto', 'early', 'sums', 'middle', 'upper']);
     expect(strandPlan('upper', {}).map((s) => s.id)).toEqual(['place', 'mul', 'div', 'frac']);
     app.go('grownups');
     const select = q<HTMLSelectElement>('.gu-start') as HTMLSelectElement;
