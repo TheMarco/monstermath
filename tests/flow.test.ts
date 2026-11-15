@@ -12,6 +12,15 @@ tuning.stretchChance = 0;
 const stage = (): HTMLElement => document.getElementById('stage') as HTMLElement;
 const q = <T extends Element = HTMLElement>(sel: string): T | null => stage().querySelector<T>(sel);
 const qa = <T extends Element = HTMLElement>(sel: string): T[] => Array.from(stage().querySelectorAll<T>(sel));
+/** Open a friend's card: tap it in the meadow, or call it out from "All friends" when it is resting. */
+const openFriend = (id: string): void => {
+  const inMeadow = q(`.friend[data-id="${id}"]`);
+  if (inMeadow) inMeadow.click();
+  else {
+    q('.friends-btn')!.click();
+    q(`.friends-tile[data-id="${id}"]`)!.click();
+  }
+};
 const text = (sel: string): string => q(sel)?.textContent ?? '';
 
 function buttonByText(label: string): HTMLElement {
@@ -303,7 +312,16 @@ describe('first session', () => {
 
   it('shows the journal', () => {
     expect(q('.party')).toBeNull();
-    expect(qa('.friend')).toHaveLength(7);
+    // Seven friends, six in the meadow: the seventh rests until it is called out.
+    expect(qa('.friend')).toHaveLength(6);
+    q('.friends-btn')!.click();
+    expect(qa('.friends-tile')).toHaveLength(7);
+    const resting = q('.friends-tile.resting')!.dataset.id as string;
+    q('.friends-tile.resting')!.click();
+    expect(q(`.friend[data-id="${resting}"]`)).not.toBeNull();
+    expect(q('.friend-card')).not.toBeNull();
+    expect(qa('.friend')).toHaveLength(6);
+    q('.card-close')!.click();
     click('Journal');
     expect(text('.journal-count')).toBe('7 of 21');
     (qa('.journal-tile.known')[1] as HTMLElement).click();
@@ -312,7 +330,7 @@ describe('first session', () => {
   });
 
   it('plays with a friend for a star', () => {
-    (qa('.friend')[1] as HTMLElement).click();
+    openFriend('dab');
     click('Play');
     const target = Number(text('.target-badge'));
     giveTreat(target - 2, '+', 2);
@@ -347,14 +365,15 @@ describe('first session', () => {
     expect(q('.party.pending')).toBeNull();
     expect(q('.party .monster')).not.toBeNull();
     click('Hello!');
-    expect(qa('.friend')).toHaveLength(8);
+    expect(qa('.friend')).toHaveLength(6);
+    expect(q('.friend[data-id="tup"]')).not.toBeNull();
     expect(saved().monsters.tup?.friend).toBe(true);
     expect(text('.rank-label')).toMatch(/Ranger level [2-9]/);
 
     // Feeding spends earned berries; a new buddy takes over as helper.
     const berriesBefore = saved().berries ?? 0;
     expect(berriesBefore).toBeGreaterThan(10);
-    (qa('.friend')[1] as HTMLElement).click();
+    openFriend('dab');
     click('Feed');
     click('Ball');
     expect(saved().berries).toBe(berriesBefore - 1);
@@ -363,7 +382,7 @@ describe('first session', () => {
     expect(qa('.friend.is-buddy')).toHaveLength(1);
     wait(6000); // friends wander without errors
 
-    (qa('.friend')[0] as HTMLElement).click();
+    openFriend('puff');
     click('Pet');
     click('Pet');
     expect(saved().monsters.puff?.bond).toBeGreaterThanOrEqual(2);
@@ -404,7 +423,8 @@ describe('first session', () => {
     expect(log.length).toBeGreaterThanOrEqual(5);
     expect(log.every((f) => f.kind === 'name')).toBe(true);
     expect(saved().monsters.bix?.friend).toBe(true);
-    expect(qa('.friend')).toHaveLength(9);
+    expect(qa('.friend')).toHaveLength(6);
+    expect(q('.friend[data-id="bix"]')).not.toBeNull();
   });
 
   it('meets the next hollow monster after its lesson, and gets counting help after two misses', () => {
@@ -442,7 +462,7 @@ describe('first session', () => {
     click('Meadow');
     expect(qa('.decor')).toHaveLength(1);
 
-    (qa('.friend')[0] as HTMLElement).click();
+    openFriend('puff');
     (q('.charm-pick') as HTMLElement).click();
     expect(saved().monsters.puff?.charm).toBe('star');
     expect(q('.friend-card .charm')).not.toBeNull();

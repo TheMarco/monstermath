@@ -136,7 +136,10 @@ small goals that take 10 to 15 minutes.
 playing buy charms (worn floating over a monster's head) and meadow decorations
 (drag them to place them) in the Berry Shop. Friends in the meadow walk over to
 each other to greet, chat and play tag, and react when one of them is petted or
-fed. A monster that has all its stars for the day dozes. When the day's goals
+fed. Six friends are out in the meadow at a time: the buddy, the two who
+asked to play, the ones met or called out most recently, and the rest in
+turns, a different group each day. "All friends" shows everyone, and tapping a
+resting friend brings it out. A monster that has all its stars for the day dozes. When the day's goals
 are done, "Good night" puts the meadow to sleep, which gives the session a
 clear end.
 

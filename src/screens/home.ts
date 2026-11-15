@@ -18,6 +18,7 @@ import {
 } from '../rewards';
 import {
   buddyOf,
+  callOut,
   canyonQueue,
   DAILY_GOAL,
   dailyDone,
@@ -26,6 +27,8 @@ import {
   giveStar,
   grassQueue,
   hollowQueue,
+  MEADOW_MAX,
+  meadowFriends,
   starsLeftToday,
   today,
   type MonsterState,
@@ -55,29 +58,14 @@ import { berry } from '../ui/models';
 import { goWithLesson } from '../tutor';
 import { aboutClip, nameClip } from '../voice/lines';
 
-/** Where friends stand on the meadow: [x, y, size]. The first slot is the starter's. */
+/** Where friends stand on the meadow: [x, y, size]. The first slot is the buddy's. */
 const SLOTS: Array<[number, number, number]> = [
-  [640, 560, 170],
-  [450, 440, 130],
-  [840, 440, 130],
-  [560, 320, 108],
-  [740, 320, 108],
-  [400, 590, 150],
-  [880, 590, 150],
-  [290, 450, 126],
-  [1000, 450, 126],
-  [390, 325, 104],
-  [900, 325, 104],
-  [645, 432, 116],
-  [520, 690, 128],
-  [760, 690, 128],
-  [262, 580, 104],
-  [1080, 335, 96],
-  [1160, 470, 100],
-  [250, 335, 92],
-  [990, 335, 92],
-  [1090, 600, 110],
-  [1200, 340, 90],
+  [640, 590, 176],
+  [360, 520, 146],
+  [920, 520, 146],
+  [500, 370, 120],
+  [780, 370, 120],
+  [1090, 400, 124],
 ];
 
 function sized(el: HTMLElement, size: number): HTMLElement {
@@ -139,17 +127,17 @@ export function playWith(app: App, id: SpeciesId): void {
   app.go(SCREEN_OF[placeOf(SPECIES[id].habitat)], { id });
 }
 
-export const homeScreen: Screen = (app) => {
+export const homeScreen: Screen = (app, params) => {
   const { save } = app;
   // Back after a long break: start a size easier, before today counts as played.
   if (easeAfterBreak(save)) app.commit();
   const day = today(save);
   ensureWishes(save);
-  const list = friends(save).sort((x, y) => (x.friendOn ?? '').localeCompare(y.friendOn ?? ''));
-  const ordered = [
-    ...list.filter((m) => m.id === save.starter),
-    ...list.filter((m) => m.id !== save.starter),
-  ];
+  const all = friends(save).sort((x, y) => (x.friendOn ?? '').localeCompare(y.friendOn ?? ''));
+  // Only a few friends are out at once; the rest are resting and can be called out.
+  const ordered = meadowFriends(save)
+    .map((id) => save.monsters[id])
+    .filter((m): m is MonsterState => !!m);
 
   const cardHost = h('div', { class: 'friend-card-host' });
 
@@ -319,6 +307,46 @@ export const homeScreen: Screen = (app) => {
 
   const asleep = day.asleep === true;
 
+  /** Every friend, in the meadow or resting. Tapping a resting one brings it out. */
+  function openFriends(): void {
+    sfx('pop');
+    const out = new Set(ordered.map((m) => m.id));
+    cardHost.replaceChildren(
+      h(
+        'div',
+        { class: 'card friends-card' },
+        h('button', { class: 'card-close', type: 'button', 'aria-label': 'Close', onclick: () => cardHost.replaceChildren() }, '×'),
+        h('h3', null, 'All friends'),
+        h(
+          'div',
+          { class: 'friends-grid' },
+          all.map((m) =>
+            h(
+              'button',
+              {
+                class: `friends-tile ${out.has(m.id) ? 'out' : 'resting'}`,
+                type: 'button',
+                'data-id': m.id,
+                onclick: () => {
+                  if (out.has(m.id)) {
+                    openCard(m);
+                    return;
+                  }
+                  callOut(save, m.id);
+                  app.commit();
+                  app.go('home', { open: m.id });
+                },
+              },
+              monsterImg(m.id, m.stage, 76),
+              h('span', { class: 'friends-name' }, displayName(save, m.id)),
+              out.has(m.id) ? null : h('span', { class: 'friends-zzz' }, 'z z'),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   /** Decorations she bought. Dragging one moves it; where it is dropped is saved. */
   function decorEl(item: { id: string; x: number; y: number }): HTMLElement {
     const size = DECOR.find((d) => d.id === item.id)?.size ?? 120;
@@ -365,7 +393,7 @@ export const homeScreen: Screen = (app) => {
     { class: 'meadow' },
     (save.decor ?? []).map(decorEl),
     ordered.map((m, i) => {
-      const slot = SLOTS[i % SLOTS.length] as [number, number, number];
+      const slot = SLOTS[i] as [number, number, number];
       const [x, y, size] = slot;
       const close = bondLevel(m.bond ?? 0).level >= 4;
       return h(
@@ -565,6 +593,9 @@ export const homeScreen: Screen = (app) => {
     place('place-hollow', 'Honey Hollow', 'drop', hollowNext, () => goHollow(app)),
     h('div', { class: `night-sky ${asleep ? 'on' : ''}`, 'aria-hidden': 'true' }, h('i', { class: 'moon' }), times(14, (i) => h('i', { class: 'night-star', style: `left:${(i * 83 + 40) % 1240}px;top:${(i * 47) % 190 + 14}px;animation-delay:${(i % 5) * 0.4}s` }))),
     h('div', { class: 'home-grownups' }, holdButton('Grown-ups (hold)', () => app.go('grownups'))),
+    all.length > MEADOW_MAX
+      ? h('div', { class: 'home-friends' }, button([icon('heart', 'on'), `All friends ${all.length}`], openFriends, 'btn-small friends-btn'))
+      : null,
     cardHost,
   );
 
@@ -730,6 +761,10 @@ export const homeScreen: Screen = (app) => {
     timers.push(window.setInterval(wander, 4200 + ((k * 937) % 2600)));
   });
   timers.push(window.setInterval(meet, 6500));
+
+  // A friend that was just called out says hello.
+  const called = ordered.find((m) => m.id === params.open);
+  if (called) openCard(called);
 
   return {
     el,

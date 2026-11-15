@@ -183,6 +183,8 @@ export interface Save {
   /** Charms she owns, and decorations placed in the meadow. */
   charms?: string[];
   decor?: Array<{ id: string; x: number; y: number }>;
+  /** Friends called out to the meadow, latest first. The meadow shows only a few at a time. */
+  out?: SpeciesId[];
   /** The last day played before a long break that the game already eased off for. */
   easedFor?: string;
   /** Set on the grown-up page: every monster can be met, whatever the skills before it look like. */
@@ -347,7 +349,7 @@ export function readBackup(text: string): Save | null {
     save.introDone = false;
   }
   if (typeof save.buddy !== 'string' || !monsters[save.buddy]) delete save.buddy;
-  for (const key of ['seenTips', 'stickers', 'charms', 'decor', 'fracLog'] as const) {
+  for (const key of ['seenTips', 'stickers', 'charms', 'decor', 'fracLog', 'out'] as const) {
     if (save[key] !== undefined && !Array.isArray(save[key])) delete save[key];
   }
   save.seenTips ??= [];
@@ -464,7 +466,32 @@ export function befriend(save: Save, id: SpeciesId): void {
   if (!m.friend) {
     m.friend = true;
     m.friendOn = dayKey();
+    callOut(save, id);
   }
+}
+
+/** How many friends stand in the meadow at once. The others rest and can be called out. */
+export const MEADOW_MAX = 6;
+
+/** Bring a friend out to the meadow, ahead of the ones called before. */
+export function callOut(save: Save, id: SpeciesId): void {
+  save.out = [id, ...(save.out ?? []).filter((x) => x !== id)].slice(0, MEADOW_MAX);
+}
+
+/**
+ * Who is in the meadow today: the buddy, the friends who asked to play, the
+ * friends called out or met most recently, then the rest in turns, a different
+ * group each day, so every friend is seen again.
+ */
+export function meadowFriends(save: Save): SpeciesId[] {
+  const all = friends(save)
+    .sort((x, y) => (x.friendOn ?? '').localeCompare(y.friendOn ?? ''))
+    .map((m) => m.id);
+  if (all.length === 0) return [];
+  const turn = Object.keys(save.days).length % all.length;
+  const wishes = (today(save).wishes ?? []).map((w) => w.id);
+  const order = [buddyOf(save), ...wishes, ...(save.out ?? []), ...all.slice(turn), ...all.slice(0, turn)];
+  return [...new Set(order)].filter((id) => all.includes(id)).slice(0, MEADOW_MAX);
 }
 
 /** The grass monsters she can still meet, in teaching order, then the other starters. */
