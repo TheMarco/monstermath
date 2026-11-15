@@ -2,6 +2,7 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { earlyStartStep } from '../src/intake';
 import { tuning } from '../src/ladder';
 import { COUNT_KINDS, countTop, type CountKind } from '../src/math/count';
+import { countStats, teacherSummary } from '../src/report';
 import type { Save } from '../src/state';
 import type { App } from '../src/ui/common';
 import { recordingScript } from '../src/voice/lines';
@@ -180,6 +181,13 @@ describe('the early number games', () => {
     expect(save.countLog?.[0]).toMatchObject({ kind: 'count', monster: 'tup', firstTry: true, rung: 0 });
     expect(save.early?.count?.step).toBe(1);
     expect(save.days[Object.keys(save.days)[0] as string]?.trips).toBe(5);
+
+    // The grown-up page and the teacher summary report it.
+    const stats = countStats(save).find((s) => s.kind === 'count');
+    expect(stats).toMatchObject({ problems: 5, firstTry: 5, helped: 0, level: '2 of 5', working: 'Counts up to 10 berries' });
+    expect(teacherSummary(save)).toContain('Counting a set: level 2 of 5 (Counts up to 10 berries), 5 problems, 100% right on the first try');
+    app.go('grownups');
+    expect(stage().textContent).toContain('Early numbers (counting, comparing, ten, tens and ones)');
   });
 });
 

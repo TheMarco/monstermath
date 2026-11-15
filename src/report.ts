@@ -1,4 +1,5 @@
 import { ALL_SPECIES, CANYON_ORDER, GRASS_ORDER, HOLLOW_ORDER, SPECIES, type SpeciesId } from './data/monsters';
+import { COUNT_ERROR_TEXT, COUNT_KINDS, COUNT_RUNG_TEXT, type CountError, type CountKind } from './math/count';
 import { OP_SYMBOL, type Kind } from './math/expr';
 import { FRAC_ERROR_TEXT, FRAC_KINDS, FRAC_RUNG_TEXT, type FracError, type FracKind } from './math/fractions';
 import { ERROR_TEXT, RUNG_TEXT, type Delivery, type ErrorPattern } from './math/regroup';
@@ -96,6 +97,44 @@ export function fracStats(save: Save): FracStats[] {
       problems: log.length,
       firstTry: log.filter((f) => f.firstTry).length,
       helped: log.filter((f) => f.helped).length,
+      errors: [...counts.entries()].map(([pattern, count]) => ({ pattern, count })).sort((x, y) => y.count - x.count),
+    };
+  });
+}
+
+export const COUNT_TEXT: Record<CountKind, string> = {
+  count: 'Counting a set',
+  more: 'Comparing',
+  ten: 'Making ten and the teen numbers',
+  place: 'Tens and ones',
+};
+
+export interface CountStats {
+  kind: CountKind;
+  problems: number;
+  firstTry: number;
+  helped: number;
+  /** "2 of 5", and what that level covers. Empty when she has not played this idea. */
+  level: string;
+  working: string;
+  errors: Array<{ pattern: CountError; count: number }>;
+}
+
+/** Early number work, one row per idea. */
+export function countStats(save: Save): CountStats[] {
+  return COUNT_KINDS.map((kind) => {
+    const log = (save.countLog ?? []).filter((c) => c.kind === kind);
+    const counts = new Map<CountError, number>();
+    for (const c of log) for (const e of c.errors) counts.set(e, (counts.get(e) ?? 0) + 1);
+    const step = save.early?.[kind]?.step;
+    const rungs = COUNT_RUNG_TEXT[kind];
+    return {
+      kind,
+      problems: log.length,
+      firstTry: log.filter((c) => c.firstTry).length,
+      helped: log.filter((c) => c.helped).length,
+      level: step === undefined ? '' : `${step + 1} of ${rungs.length}`,
+      working: step === undefined ? '' : (rungs[step] ?? ''),
       errors: [...counts.entries()].map(([pattern, count]) => ({ pattern, count })).sort((x, y) => y.count - x.count),
     };
   });
@@ -276,6 +315,15 @@ export function teacherSummary(save: Save): string {
   for (const s of fracStats(save)) {
     lines.push(`  ${FRAC_TEXT[s.kind]}: ${s.problems} problems, ${pct(s.firstTry, s.problems)} right on the first try, counting help on ${s.helped}.`);
     for (const e of s.errors) lines.push(`    ${e.count}x ${FRAC_ERROR_TEXT[e.pattern]}`);
+  }
+  if ((save.countLog ?? []).length > 0) {
+    lines.push('');
+    lines.push('Early numbers (counting, comparing, ten, tens and ones):');
+    for (const s of countStats(save)) {
+      if (s.problems === 0) continue;
+      lines.push(`  ${COUNT_TEXT[s.kind]}: level ${s.level} (${s.working}), ${s.problems} problems, ${pct(s.firstTry, s.problems)} right on the first try, counting help on ${s.helped}.`);
+      for (const e of s.errors) lines.push(`    ${e.count}x ${COUNT_ERROR_TEXT[e.pattern]}`);
+    }
   }
   lines.push('');
   lines.push('Skills by monster:');

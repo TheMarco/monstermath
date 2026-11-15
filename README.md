@@ -71,6 +71,24 @@ where each kind of problem starts and is shown on the grown-up page. The grown-u
 page also says when a child is outside what the game can teach: below its
 easiest sums, or passing a whole topic of the check.
 
+**Where to start.** Without a choice the check asks about every topic. On the
+grown-up page, before the child begins, a grown-up can choose to start with
+counting (about kindergarten and grade 1) or with adding and subtracting (about
+grades 1 and 2); the check then only asks about that range. The child never sees
+a grade. A counting round is also added at the end of the full check when the
+first sums did not go well. To begin again from another point, add a new player.
+
+**Early numbers (in the making).** For a child who is not yet adding within 10
+there are four ideas, each with its own ladder, all drawn with the canyon's
+berries and crates: counting a set (5 in a row up to counting out 20), comparing
+(two piles up to three-digit numbers), making ten (how many more make 5, fill a
+crate, teen numbers as one crate and loose berries) and tens and ones (crates
+counted by tens, reading and building two-digit numbers, ten more and ten less,
+carts for hundreds). The problems are in `src/math/count.ts` and the screen in
+`src/screens/early.ts`. Their monsters and their place in the meadow are not
+made yet, so for now the grown-up page has buttons that open each game for a
+look; nothing is saved from there.
+
 **Treats (Tall Grass).** A monster shows a number and the child builds expressions
 that equal it. Hearts depend on the thinking: `n + 0` earns 1, a real addition
 3, subtraction 4, multiplication or division 5, with a bonus for the first use
@@ -167,8 +185,8 @@ whose file is missing falls back to a synthesized tone (`src/audio.ts`).
 
 ## Layout
 
-- `src/math` expression scoring, hints, regrouping problems, fractions, error patterns
-- `src/screens` players, title, intro (first-day check), home, treats, canyon, hollow, lesson, shop, journal, stickers, grown-ups
+- `src/math` expression scoring, hints, early number problems, regrouping problems, fractions, error patterns
+- `src/screens` players, title, intro (first-day check), home, treats, early numbers, canyon, hollow, lesson, shop, journal, stickers, grown-ups
 - `src/data/monsters.ts` the monsters, their skills and number pools
 - `src/lessons.ts`, `src/tutor.ts` the taught lessons and when they play
 - `src/rewards.ts`, `src/shop.ts` levels, eggs, bonds, stickers, charms, decorations

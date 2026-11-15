@@ -1,10 +1,10 @@
 import { ALL_SPECIES, SPECIES } from '../data/monsters';
 import { START_POINTS, type StartPoint } from '../intake';
-import { COUNT_KINDS, type CountKind } from '../math/count';
+import { COUNT_ERROR_TEXT, COUNT_KINDS, type CountKind } from '../math/count';
 import { OP_SYMBOL, type Kind } from '../math/expr';
 import { FRAC_ERROR_TEXT } from '../math/fractions';
 import { ERROR_TEXT } from '../math/regroup';
-import { daysAgo, exprStats, FRAC_TEXT, fracStats, levelRows, intakeCeiling, intakeRows, intakeWarning, tutoringRows, walkthroughCount, KIND_TEXT, monsterStatus, pct, teacherSummary, tripStats, TYPE_TEXT } from '../report';
+import { COUNT_TEXT, countStats, daysAgo, exprStats, FRAC_TEXT, fracStats, levelRows, intakeCeiling, intakeRows, intakeWarning, tutoringRows, walkthroughCount, KIND_TEXT, monsterStatus, pct, teacherSummary, tripStats, TYPE_TEXT } from '../report';
 import { adoptBackup, buddyOf, currentPlayer, daysPlayed, friends, NAME_MAX, players, readBackup, removePlayer, renamePlayer } from '../state';
 import { button, monsterImg, type Screen } from '../ui/common';
 import { h, replace } from '../ui/dom';
@@ -253,6 +253,37 @@ export const grownupsScreen: Screen = (app, params) => {
           )
         : null,
       ),
+
+      (save.countLog ?? []).length
+        ? card(
+            'Early numbers (counting, comparing, ten, tens and ones)',
+            table(
+              head('Idea', 'Level', 'Working on', 'Problems', 'Right first try', 'Needed counting help', 'Error patterns seen'),
+              countStats(save)
+                .filter((s) => s.problems > 0)
+                .map((s) =>
+                  row(
+                    COUNT_TEXT[s.kind],
+                    s.level,
+                    s.working,
+                    s.problems,
+                    `${s.firstTry} (${pct(s.firstTry, s.problems)})`,
+                    s.helped,
+                    s.errors.length ? s.errors.map((e) => `${e.count}x ${COUNT_ERROR_TEXT[e.pattern]}`).join('; ') : 'none',
+                  ),
+                ),
+            ),
+            h(
+              'p',
+              { class: 'gu-recent' },
+              'Latest problems: ',
+              (save.countLog ?? [])
+                .slice(-12)
+                .reverse()
+                .map((c) => h('span', { class: c.firstTry ? 'ok' : 'miss' }, `${c.text}${c.answers.length > 1 ? ` (first answered ${c.answers.slice(0, -1).join(', ')})` : ''}`)),
+            ),
+          )
+        : null,
 
       card(
         'Honey Hollow (fractions)',
