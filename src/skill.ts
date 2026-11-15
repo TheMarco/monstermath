@@ -154,46 +154,63 @@ export function easeAfterBreak(save: Save): boolean {
 
 // ---- when the next monster comes out ----------------------------------------
 
-/** The monster whose skill has to be secure before this one is met. */
-export const NEEDS: Partial<Record<SpeciesId, SpeciesId>> = {
-  plum: 'nub',
-  dusk: 'nub',
-  chip: 'dusk',
-  fenn: 'glim',
-  tam: 'bix',
-  zim: 'bix',
-  lux: 'zim',
+/** The monsters whose skills have to be secure before this one is met. */
+export const NEEDS: Partial<Record<SpeciesId, SpeciesId[]>> = {
+  plum: ['nub'],
+  dusk: ['nub'],
+  chip: ['dusk'],
+  fenn: ['glim'],
+  tam: ['bix'],
+  // Many copies of a piece is multiplication: equal rows come first.
+  zim: ['bix', 'glim'],
+  lux: ['zim', 'tam'],
 };
 
-export const SECURE_PROBLEMS = 6;
+/** A good day for a skill: at least this many problems, this share right the first time. */
+export const GOOD_DAY_PROBLEMS = 4;
 export const SECURE_RATE = 0.7;
+/** Good days needed before a skill counts as secure. */
+export const SECURE_DAYS = 3;
+
+/** First-try marks for a skill, with the day each problem was done. */
+function marksByDay(save: Save, id: SpeciesId): Map<string, boolean[]> {
+  const sp = SPECIES[id];
+  let marks: Array<[string, boolean]>;
+  if (sp.habitat === 'canyon' && sp.delivery) {
+    marks = save.tripLog.filter((t) => t.type === sp.delivery).map((t) => [t.day, t.firstTry]);
+  } else if (sp.habitat === 'hollow') {
+    marks = (save.fracLog ?? []).filter((f) => f.kind === sp.frac).map((f) => [f.day, f.firstTry]);
+  } else {
+    marks = save.exprLog.filter((e) => e.monster === id).map((e) => [e.day, e.correct && !e.hinted]);
+  }
+  const days = new Map<string, boolean[]>();
+  for (const [day, ok] of marks) days.set(day, [...(days.get(day) ?? []), ok]);
+  return days;
+}
+
+/** How many different days she practised this skill enough, and well. Capped at SECURE_DAYS. */
+export function goodDays(save: Save, id: SpeciesId): number {
+  if (!isFriend(save, id)) return 0;
+  const sp = SPECIES[id];
+  if (sp.habitat === 'canyon' && sp.delivery && save.fast[sp.delivery]) return SECURE_DAYS;
+  let good = 0;
+  for (const marks of marksByDay(save, id).values()) {
+    if (marks.length >= GOOD_DAY_PROBLEMS && marks.filter(Boolean).length / marks.length >= SECURE_RATE) good += 1;
+  }
+  return Math.min(SECURE_DAYS, good);
+}
 
 /**
- * A skill is secure when she has done a fair number of its problems and most
- * recent ones were right the first time. The first-day check can show that
- * straight away.
+ * A skill is secure when it went well on three different days: same-day
+ * success says little about whether it will still be there next week. The
+ * first-day check can show a skill is secure straight away.
  */
 export function secure(save: Save, id: SpeciesId): boolean {
-  if (!isFriend(save, id)) return false;
-  const sp = SPECIES[id];
-  const passedCheck = sp.habitat === 'canyon' && !!sp.delivery && !!save.fast[sp.delivery];
-  // A skill met today is not secure yet: it has to hold after a night's sleep.
-  if (!passedCheck && save.monsters[id]?.friendOn === dayKey()) return false;
-  let marks: boolean[];
-  if (sp.habitat === 'canyon' && sp.delivery) {
-    if (save.fast[sp.delivery]) return true;
-    marks = save.tripLog.filter((t) => t.type === sp.delivery).map((t) => t.firstTry);
-  } else if (sp.habitat === 'hollow') {
-    marks = (save.fracLog ?? []).filter((f) => f.kind === sp.frac).map((f) => f.firstTry);
-  } else {
-    return (save.monsters[id]?.rounds ?? 0) >= 2;
-  }
-  const recent = marks.slice(-8);
-  return marks.length >= SECURE_PROBLEMS && recent.filter(Boolean).length / recent.length >= SECURE_RATE;
+  return goodDays(save, id) >= SECURE_DAYS;
 }
 
 /** New monsters she can befriend in the places per day. The starter and egg monsters are not counted. */
-export const NEW_FRIENDS_PER_DAY = 2;
+export const NEW_FRIENDS_PER_DAY = 1;
 
 export function metToday(save: Save): number {
   const day = dayKey();
@@ -202,10 +219,17 @@ export function metToday(save: Save): number {
 
 export interface NextWild {
   id: SpeciesId;
-  /** False when the skill before it still needs practice. */
+  /** False when a skill before it still needs practice, or today already had a new friend. */
   ready: boolean;
-  /** The friend to practise with first. */
+  /** The friend to practise with first: the one whose skill is furthest from secure. */
   needs?: SpeciesId;
+  /** Good days so far with that friend, out of SECURE_DAYS. */
+  progress?: number;
+}
+
+/** The skills still missing before this monster can be met, least practised first. */
+export function missing(save: Save, id: SpeciesId): SpeciesId[] {
+  return (NEEDS[id] ?? []).filter((n) => !secure(save, n)).sort((x, y) => goodDays(save, x) - goodDays(save, y));
 }
 
 /** The next monster to meet in a place, in teaching order, and whether she is ready for it. */
@@ -215,13 +239,14 @@ export function nextWild(save: Save, order: SpeciesId[]): NextWild | null {
   if (!save.openAll && metToday(save) >= NEW_FRIENDS_PER_DAY) {
     // One she has already started with can still be finished.
     const begun = waiting.find((id) => (save.monsters[id]?.trips ?? 0) > 0 || save.monsters[id]?.current);
-    if (begun && (!NEEDS[begun] || secure(save, NEEDS[begun] as SpeciesId))) return { id: begun, ready: true };
+    if (begun && missing(save, begun).length === 0) return { id: begun, ready: true };
     return waiting[0] ? { id: waiting[0], ready: false } : null;
   }
   for (const id of waiting) {
-    const needs = NEEDS[id];
-    if (save.openAll || !needs || secure(save, needs)) return { id, ready: true };
+    if (save.openAll || missing(save, id).length === 0) return { id, ready: true };
   }
   const first = waiting[0];
-  return first ? { id: first, ready: false, needs: NEEDS[first] } : null;
+  if (!first) return null;
+  const needs = missing(save, first)[0];
+  return { id: first, ready: false, needs, progress: needs ? goodDays(save, needs) : 0 };
 }

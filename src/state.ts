@@ -62,6 +62,8 @@ export interface MonsterState {
   run?: number;
   /** The skill this monster owns: marks for her last few problems (see ladder.ts). */
   recent?: number[];
+  /** Problems in a row where the answer had to be shown. */
+  shownRun?: number;
   /** Treats: which pool of numbers this monster asks from, and the streak of clean rounds. */
   pool?: number;
   poolRun?: number;
@@ -515,7 +517,7 @@ export function giveStar(save: Save, id: SpeciesId, opts: { bonus?: boolean } = 
   const m = monster(save, id);
   const key = dayKey();
   const todayCount = m.starsByDay[key] ?? 0;
-  if (!opts.bonus && todayCount >= STARS_PER_DAY) return 'full-today';
+  if (!opts.bonus && (todayCount >= STARS_PER_DAY || starsToday(save) >= DAY_STARS)) return 'full-today';
   m.stars += 1;
   if (!opts.bonus) m.starsByDay[key] = todayCount + 1;
   if (m.stage === 1 && m.stars >= STARS_TO_GROW) {
@@ -529,9 +531,18 @@ export function giveStar(save: Save, id: SpeciesId, opts: { bonus?: boolean } = 
   return 'star';
 }
 
+/** Stars a whole day can give, over all friends. After that everyone is sleepy: a soft end to the session. */
+export const DAY_STARS = 6;
+
+export function starsToday(save: Save): number {
+  const key = dayKey();
+  return friends(save).reduce((sum, m) => sum + (m.starsByDay[key] ?? 0), 0);
+}
+
 export function starsLeftToday(save: Save, id: SpeciesId): number {
   const m = save.monsters[id];
   if (!m) return STARS_PER_DAY;
+  if (starsToday(save) >= DAY_STARS) return 0;
   return Math.max(0, STARS_PER_DAY - (m.starsByDay[dayKey()] ?? 0));
 }
 

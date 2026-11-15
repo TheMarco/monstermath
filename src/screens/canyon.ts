@@ -25,7 +25,7 @@ import {
 } from '../math/regroup';
 import { record, wantsStretch, type Mark } from '../ladder';
 import { gainLines, onRound, onTrip } from '../rewards';
-import { fluent } from '../skill';
+import { fluent, goodDays, NEEDS } from '../skill';
 import { befriend, dayKey, displayName, giveStar, growth, growthLine, isFriend, monster, today } from '../state';
 import {
   backButton,
@@ -43,7 +43,7 @@ import {
 import { h, pick, replace, times } from '../ui/dom';
 import { berry, cart, crate } from '../ui/models';
 import { LESSON_FOR_KIND, type LessonId } from '../lessons';
-import { teach, teachIfDue } from '../tutor';
+import { playWithFriend, teach, teachIfDue } from '../tutor';
 import { addStory, nameClip, subStory } from '../voice/lines';
 
 const COACH_CLIP: Record<ErrorPattern, string> = {
@@ -115,6 +115,8 @@ export const canyonScreen: Screen = (app, params) => {
   let helped = false;
   /** Three misses on one trip: the answer is shown and she copies it. */
   let revealed = false;
+  /** The answer was shown twice in a row on the easiest level: the friend to go back to. */
+  let sendBack: SpeciesId | null = null;
   /** This trip comes from the rung above hers: a miss costs nothing and brings help at once. */
   let stretch = false;
   /** A lesson to replay before the next trip, set when the game sees a repeated struggle. */
@@ -513,6 +515,11 @@ export const canyonScreen: Screen = (app, params) => {
 
   function drawAction(): void {
     if (solved) {
+      if (sendBack && !partied) {
+        const back = sendBack;
+        replace(action, button(`Play with ${displayName(save, back)}`, () => playWithFriend(app, back), 'btn-primary btn-big'));
+        return;
+      }
       replace(action, partied ? null : button('Next trip', newTrip, 'btn-primary btn-big'));
       return;
     }
@@ -613,6 +620,15 @@ export const canyonScreen: Screen = (app, params) => {
     // Stepping down means repeated misses: reteach the idea before the next trip.
     if (moved.moved < 0) lessonDue = LESSON_FOR_KIND[p.type];
     o.step = moved.rung;
+    // Shown the answer twice in a row on the easiest level: this skill is too far for now.
+    o.shownRun = revealed ? (o.shownRun ?? 0) + 1 : 0;
+    if (o.shownRun >= 2 && before === 0) {
+      const back = (NEEDS[o.id] ?? []).filter((n) => isFriend(save, n)).sort((x, y) => goodDays(save, x) - goodDays(save, y))[0];
+      if (back) {
+        o.shownRun = 0;
+        sendBack = back;
+      }
+    }
     o.recent = moved.recent;
     const day = today(save);
     if (worked) day.trips += 1;
@@ -639,7 +655,10 @@ export const canyonScreen: Screen = (app, params) => {
     if (moved.moved > 0) sfx('level');
     if (moved.moved > 0) toasts(el, [{ text: 'Level up! The numbers grow with you.', kind: 'level', clip: 't_harder' }]);
     replace(bubble, `Yes! ${p.a} ${adding ? '+' : '−'} ${p.b} = ${p.answer}`);
-    say(stretch && firstTry ? 'stretch_yes' : 'yes');
+    if (sendBack) {
+      replace(bubble, `${displayName(save, sendBack)} can help with this one. Play there first.`);
+      say(nameClip(sendBack), 'wants_play');
+    } else say(stretch && firstTry ? 'stretch_yes' : 'yes');
 
     if (wild) {
       // Friendship grows from problems she worked out: two for a first try, one for a

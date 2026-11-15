@@ -221,6 +221,7 @@ describe('first session', () => {
   it('asks for the favorite treat when the meter fills without it', () => {
     // She passed every subtraction level in the first-day check, so Moss starts two pools up.
     // Pin the number to the top of that pool (35).
+    tomorrow();
     const random = vi.spyOn(Math, 'random').mockReturnValue(0.99);
     click('Tall Grass');
     random.mockRestore();
@@ -299,6 +300,7 @@ describe('first session', () => {
     wait(1500);
     click('Hooray!');
 
+    tomorrow();
     click('Berry Canyon');
     expect(finishLesson()).toBe('open');
     expect(text('.nameplate')).toBe('Wild Chip');
@@ -362,6 +364,7 @@ describe('first session', () => {
   });
 
   it('hatches the egg she earned and shows the sticker book', () => {
+    if (text('.party h2') === 'You did it all today!') click('Okay');
     expect(saved().xp).toBeGreaterThan(50);
     expect(q('.egg-nest.ready')).not.toBeNull();
     (q('.egg-nest') as HTMLElement).click();
@@ -436,18 +439,27 @@ describe('first session', () => {
   });
 
   it('meets the next hollow monster after its lesson, and gets counting help after two misses', () => {
-    // Bix is a friend, but the next monster waits until the skill has held overnight.
+    // Bix is a friend, but the next monster waits until the skill went well on three different days.
     click('Journal');
     click('Meadow');
     expect(q('.place-hollow .peek-soon')).not.toBeNull();
-    tomorrow();
-    openFriend('bix');
-    click('Play');
-    for (let k = 0; k < 6 && !q('.party'); k++) {
-      if (k > 0) click('Next one');
-      solveHoney();
-      wait(1500);
+    const marks = (): number => qa('.place-hollow .peek-steps i.on').length;
+    for (let day = 0; day < 3 && q('.place-hollow .peek-soon'); day++) {
+      const before = marks();
+      tomorrow();
+      openFriend('bix');
+      click('Play');
+      for (let k = 0; k < 4; k++) {
+        if (k > 0) click(q('.party') ? 'Play again' : 'Next one');
+        solveHoney();
+        wait(1500);
+      }
+      click('Meadow');
+      // Each good day lights one mark, until the third brings the monster out.
+      if (q('.place-hollow .peek-soon')) expect(marks()).toBeGreaterThanOrEqual(Math.max(1, before));
     }
+    tomorrow();
+    click('Journal');
     click('Meadow');
     expect(q('.place-hollow .peek-soon')).toBeNull();
 
@@ -484,6 +496,14 @@ describe('first session', () => {
 
   it('says good night when the day is done, and can wake the meadow again', () => {
     // Three treats, three trips and a star: the day's goals are met.
+    openFriend('bix');
+    click('Play');
+    for (let k = 0; k < 3; k++) {
+      if (k > 0) click(q('.party') ? 'Play again' : 'Next one');
+      solveHoney();
+      wait(1500);
+    }
+    click('Meadow');
     openFriend('dab');
     click('Play');
     const target = Number(text('.target-badge'));

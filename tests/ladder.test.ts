@@ -3,8 +3,8 @@ import { record, steadiness, tuning, wantsStretch, type Mark, type Progress } fr
 import type { Delivery } from '../src/math/regroup';
 import { levelRows } from '../src/report';
 import type { SpeciesId } from '../src/data/monsters';
-import { metToday, nextWild, secure } from '../src/skill';
-import { befriend, canyonQueue, clock, freshSave, hollowQueue, monster, type Save } from '../src/state';
+import { goodDays, metToday, missing, nextWild, secure } from '../src/skill';
+import { befriend, canyonQueue, clock, freshSave, giveStar, hollowQueue, monster, starsLeftToday, type Save } from '../src/state';
 
 const at = (rung: number, ...recent: Mark[]): Progress => ({ rung, recent });
 
@@ -94,9 +94,9 @@ describe('stretch problems', () => {
   });
 });
 
-function trips(save: Save, type: Delivery, results: boolean[]): void {
+function trips(save: Save, type: Delivery, results: boolean[], day = '2026-11-13'): void {
   for (const firstTry of results) {
-    save.tripLog.push({ t: 0, day: '2026-11-13', monster: 'nub', type, a: 5, b: 3, answers: [8], firstTry, errors: [], usedBlocks: true });
+    save.tripLog.push({ t: 0, day, monster: 'nub', type, a: 5, b: 3, answers: [8], firstTry, errors: [], usedBlocks: true });
   }
 }
 
@@ -105,39 +105,36 @@ function met(save: Save, id: SpeciesId, day: string): void {
   (save.monsters[id] as { friendOn?: string }).friendOn = day;
 }
 
+const GOOD = [true, true, true, false];
+
 describe('the next monster comes out when the skill before it is secure', () => {
-  it('a skill met today is not secure until tomorrow, however well it went', () => {
+  it('a skill is secure after three good days, not after one long sitting', () => {
     const save = freshSave();
     befriend(save, 'nub');
-    trips(save, 'add', [true, true, true, true, true, true, true, true]);
-    expect(secure(save, 'nub')).toBe(false);
-    expect(nextWild(save, canyonQueue(save))).toEqual({ id: 'plum', ready: false, needs: 'nub' });
     met(save, 'nub', '2026-11-01');
+    trips(save, 'add', [true, true, true, true, true, true, true, true, true, true, true, true], '2026-11-10');
+    expect(goodDays(save, 'nub')).toBe(1);
+    expect(secure(save, 'nub')).toBe(false);
+    expect(nextWild(save, canyonQueue(save))).toEqual({ id: 'plum', ready: false, needs: 'nub', progress: 1 });
+    trips(save, 'add', GOOD, '2026-11-11');
+    // A day with too few problems, or too many misses, does not count.
+    trips(save, 'add', [true, true], '2026-11-12');
+    expect(goodDays(save, 'nub')).toBe(2);
+    trips(save, 'add', [true, false, false, true], '2026-11-13');
+    expect(secure(save, 'nub')).toBe(false);
+    trips(save, 'add', GOOD, '2026-11-14');
     expect(secure(save, 'nub')).toBe(true);
+    expect(nextWild(save, canyonQueue(save))).toEqual({ id: 'plum', ready: true });
   });
 
-  it('two new friends a day, then the next one waits for tomorrow', () => {
+  it('one new friend a day, then the next one waits for tomorrow', () => {
     const save = freshSave();
-    befriend(save, 'dab');
     expect(nextWild(save, canyonQueue(save))).toEqual({ id: 'nub', ready: true });
-    befriend(save, 'moss');
-    expect(metToday(save)).toBe(2);
+    befriend(save, 'dab');
+    expect(metToday(save)).toBe(1);
     expect(nextWild(save, canyonQueue(save))).toEqual({ id: 'nub', ready: false });
     met(save, 'dab', '2026-11-01');
     expect(nextWild(save, canyonQueue(save))).toEqual({ id: 'nub', ready: true });
-  });
-
-  it('holds Plum back until plain addition is secure', () => {
-    const save = freshSave();
-    expect(nextWild(save, canyonQueue(save))).toEqual({ id: 'nub', ready: true });
-    befriend(save, 'nub');
-    met(save, 'nub', '2026-11-01');
-    trips(save, 'add', [true, false, true, false, true]);
-    expect(secure(save, 'nub')).toBe(false);
-    expect(nextWild(save, canyonQueue(save))).toEqual({ id: 'plum', ready: false, needs: 'nub' });
-    trips(save, 'add', [true, true, true, true]);
-    expect(secure(save, 'nub')).toBe(true);
-    expect(nextWild(save, canyonQueue(save))).toEqual({ id: 'plum', ready: true });
   });
 
   it('skips ahead to a monster whose own skill is ready', () => {
@@ -146,10 +143,26 @@ describe('the next monster comes out when the skill before it is secure', () => 
     befriend(save, 'plum');
     met(save, 'nub', '2026-11-01');
     met(save, 'plum', '2026-11-01');
-    trips(save, 'add', [true, true, true, true, true, true]);
+    for (const day of ['2026-11-10', '2026-11-11', '2026-11-12']) trips(save, 'add', GOOD, day);
     // Regrouping is shaky, but taking away only needs plain addition.
     trips(save, 'addR', [false, false, false]);
     expect(nextWild(save, canyonQueue(save))).toEqual({ id: 'dusk', ready: true });
+  });
+
+  it('fractions that multiply wait for multiplication too', () => {
+    const save = freshSave();
+    for (const id of ['bix', 'glim'] as const) {
+      befriend(save, id);
+      met(save, id, '2026-11-01');
+    }
+    save.fast = {};
+    for (const day of ['2026-11-10', '2026-11-11', '2026-11-12']) {
+      for (let i = 0; i < 4; i++) save.fracLog = [...(save.fracLog ?? []), { t: 0, day, monster: 'bix', kind: 'name', text: '', answers: ['1/2'], firstTry: true, errors: [] }];
+    }
+    expect(secure(save, 'bix')).toBe(true);
+    expect(missing(save, 'tam')).toEqual([]);
+    expect(missing(save, 'zim')).toEqual(['glim']);
+    expect(missing(save, 'lux')).toEqual(['zim', 'tam']);
   });
 
   it('the first-day check can show a skill is secure straight away', () => {
@@ -162,9 +175,21 @@ describe('the next monster comes out when the skill before it is secure', () => 
   it('a grown-up can open everything', () => {
     const save = freshSave();
     befriend(save, 'bix');
-    expect(nextWild(save, hollowQueue(save))).toEqual({ id: 'tam', ready: false, needs: 'bix' });
+    met(save, 'bix', '2026-11-01');
+    expect(nextWild(save, hollowQueue(save))).toEqual({ id: 'tam', ready: false, needs: 'bix', progress: 0 });
     save.openAll = true;
     expect(nextWild(save, hollowQueue(save))).toEqual({ id: 'tam', ready: true });
+  });
+
+  it('a day gives six stars in all, then everyone is sleepy', () => {
+    const save = freshSave();
+    for (const id of ['dab', 'moss', 'glim', 'nub'] as const) befriend(save, id);
+    expect(giveStar(save, 'dab')).toBe('star');
+    expect(giveStar(save, 'dab')).toBe('star');
+    expect(giveStar(save, 'dab')).toBe('full-today');
+    for (const id of ['moss', 'moss', 'glim', 'glim'] as const) expect(giveStar(save, id)).toBe('star');
+    expect(giveStar(save, 'nub')).toBe('full-today');
+    expect(starsLeftToday(save, 'nub')).toBe(0);
   });
 });
 

@@ -1,4 +1,4 @@
-import type { SpeciesId } from './data/monsters';
+import { SPECIES, type SpeciesId } from './data/monsters';
 import { canReplay, LESSON_BEFORE, lessonSeen, type LessonId } from './lessons';
 import { dayKey } from './state';
 import type { App, ScreenName } from './ui/common';
@@ -36,3 +36,9 @@ export function teachIfDue(app: App, lesson: LessonId | undefined, back: Back): 
 
 /** How many misses or easy answers in a row count as "stuck". */
 export const STUCK_AFTER = 3;
+
+/** Go and play with a friend in the place where it lives. */
+export function playWithFriend(app: App, id: SpeciesId): void {
+  const habitat = SPECIES[id].habitat;
+  app.go(habitat === 'canyon' ? 'canyon' : habitat === 'hollow' ? 'hollow' : 'befriend', { id });
+}

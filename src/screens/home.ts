@@ -51,7 +51,7 @@ import {
 import { playAnim } from '../ui/anim';
 import { charmIcon, dress } from '../ui/charms';
 import { DECOR, moveDecor } from '../shop';
-import { easeAfterBreak, nextWild, type NextWild } from '../skill';
+import { easeAfterBreak, nextWild, SECURE_DAYS, type NextWild } from '../skill';
 import { decorImg } from './shop';
 import { h, pick, replace, times } from '../ui/dom';
 import { berry } from '../ui/models';
@@ -432,6 +432,8 @@ export const homeScreen: Screen = (app, params) => {
             { class: `peek ${next.ready ? '' : 'peek-soon'}` },
             monsterImg(next.id, 1, next.ready ? 84 : 68, 'silhouette'),
             h('span', { class: 'peek-mark' }, next.ready ? '?' : 'soon'),
+            // How close it is: one paw print for each good day with the friend to practise with.
+            !next.ready && next.needs ? h('span', { class: 'peek-steps' }, times(SECURE_DAYS, (i) => h('i', { class: i < (next.progress ?? 0) ? 'on' : '' }))) : null,
           )
         : null,
       button([icon(iconName), label], go, 'btn-place'),
