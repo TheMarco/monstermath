@@ -10,6 +10,7 @@ import {
   type SpeciesId,
   type Stage,
 } from './data/monsters';
+import type { CountError, CountKind } from './math/count';
 import type { Expr, Kind, Op } from './math/expr';
 import type { FracError, FracKind } from './math/fractions';
 import type { Delivery, ErrorPattern } from './math/regroup';
@@ -127,6 +128,31 @@ export interface FracEvent {
   helped?: boolean;
 }
 
+export interface CountEvent {
+  t: number;
+  day: string;
+  monster: SpeciesId;
+  kind: CountKind;
+  /** The problem in short text: "Count 7 berries", "Build 34 with crates and berries". */
+  text: string;
+  /** Every answer checked, in order. The last one is correct. */
+  answers: string[];
+  firstTry: boolean;
+  errors: CountError[];
+  rung?: number;
+  stretch?: boolean;
+  /** She asked for, or was given, the counting help. */
+  helped?: boolean;
+}
+
+/** Where she is on one early-number ladder (see ladder.ts). */
+export interface EarlyProgress {
+  step?: number;
+  recent?: number[];
+  /** Problems in a row where the answer had to be shown. */
+  shownRun?: number;
+}
+
 export interface PlacementItem {
   id: string;
   prompt: string;
@@ -182,6 +208,9 @@ export interface Save {
   buddy?: SpeciesId;
   /** Honey Hollow: every fraction problem she finished. */
   fracLog?: FracEvent[];
+  /** Early number work: her rung on each idea's ladder, and every problem she finished. */
+  early?: Partial<Record<CountKind, EarlyProgress>>;
+  countLog?: CountEvent[];
   /** Charms she owns, and decorations placed in the meadow. */
   charms?: string[];
   decor?: Array<{ id: string; x: number; y: number; away?: boolean }>;
@@ -356,7 +385,7 @@ export function readBackup(text: string): Save | null {
     save.introDone = false;
   }
   if (typeof save.buddy !== 'string' || !monsters[save.buddy]) delete save.buddy;
-  for (const key of ['seenTips', 'stickers', 'charms', 'decor', 'fracLog', 'out', 'rest', 'themes'] as const) {
+  for (const key of ['seenTips', 'stickers', 'charms', 'decor', 'fracLog', 'countLog', 'out', 'rest', 'themes'] as const) {
     if (save[key] !== undefined && !Array.isArray(save[key])) delete save[key];
   }
   save.seenTips ??= [];
@@ -412,6 +441,7 @@ export function persist(save: Save): void {
   if (save.exprLog.length > LOG_LIMIT) save.exprLog = save.exprLog.slice(-LOG_LIMIT);
   if (save.tripLog.length > LOG_LIMIT) save.tripLog = save.tripLog.slice(-LOG_LIMIT);
   if (save.fracLog && save.fracLog.length > LOG_LIMIT) save.fracLog = save.fracLog.slice(-LOG_LIMIT);
+  if (save.countLog && save.countLog.length > LOG_LIMIT) save.countLog = save.countLog.slice(-LOG_LIMIT);
   const player = currentPlayer();
   save.name = player.name;
   try {

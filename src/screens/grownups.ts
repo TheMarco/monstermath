@@ -1,9 +1,10 @@
 import { ALL_SPECIES, SPECIES } from '../data/monsters';
+import { COUNT_KINDS, type CountKind } from '../math/count';
 import { OP_SYMBOL, type Kind } from '../math/expr';
 import { FRAC_ERROR_TEXT } from '../math/fractions';
 import { ERROR_TEXT } from '../math/regroup';
 import { daysAgo, exprStats, FRAC_TEXT, fracStats, levelRows, intakeCeiling, intakeRows, intakeWarning, tutoringRows, walkthroughCount, KIND_TEXT, monsterStatus, pct, teacherSummary, tripStats, TYPE_TEXT } from '../report';
-import { adoptBackup, currentPlayer, daysPlayed, friends, NAME_MAX, players, readBackup, removePlayer, renamePlayer } from '../state';
+import { adoptBackup, buddyOf, currentPlayer, daysPlayed, friends, NAME_MAX, players, readBackup, removePlayer, renamePlayer } from '../state';
 import { button, monsterImg, type Screen } from '../ui/common';
 import { h, replace } from '../ui/dom';
 
@@ -111,6 +112,9 @@ export const grownupsScreen: Screen = (app, params) => {
           app.go('players');
         })
       : null;
+
+  const tryLevel = h('select', { class: 'gu-select' }, [1, 2, 3, 4, 5, 6].map((n) => h('option', { value: String(n - 1) }, String(n))));
+  const TRY_LABEL: Record<CountKind, string> = { count: 'Counting', more: 'Comparing', ten: 'Making ten', place: 'Tens and ones' };
 
   const openBtn = button(save.openAll ? 'Monsters: all open (click to follow progress again)' : 'Open all monsters now', () => {
     save.openAll = !save.openAll;
@@ -293,6 +297,23 @@ export const grownupsScreen: Screen = (app, params) => {
             ),
           )
         : null,
+
+      card(
+        'Early number games (in the making)',
+        h(
+          'p',
+          { class: 'gu-small' },
+          'For children who are not yet adding within 10: counting, comparing, making ten, and tens and ones. These games are not in the meadow yet. The buttons open each one for a look, starting at the level chosen. Nothing is saved and nothing is earned.',
+        ),
+        h(
+          'div',
+          { class: 'gu-actions' },
+          h('label', { class: 'gu-label' }, 'Start at level ', tryLevel),
+          COUNT_KINDS.map((kind) =>
+            button(TRY_LABEL[kind], () => app.go('early', { id: save.starter ? buddyOf(save) : 'puff', kind, practice: true, rung: Number(tryLevel.value) }), 'btn-small'),
+          ),
+        ),
+      ),
 
       card(
         'Player',

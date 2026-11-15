@@ -261,10 +261,10 @@ export function classifyCountError(p: CountProblem, given: number | Side): Count
 export function countCoaching(p: CountProblem, pattern: CountError): string {
   switch (pattern) {
     case 'count-slip':
-      return 'So close. Touch each berry once as you count.';
+      return 'So close! Touch each berry once as you count.';
     case 'other-pile':
       return p.kind === 'more' && p.mode === 'piles' && p.ask === 'fewer'
-        ? 'Fewer means not as many. Line the berries up and look again.'
+        ? 'Fewer means not as many. Look again.'
         : 'Line them up, side by side. Which one goes further?';
     case 'said-what-is-there':
       return 'Those are the berries that are there. Count the empty spots.';
@@ -273,11 +273,12 @@ export function countCoaching(p: CountProblem, pattern: CountError): string {
     case 'crates-as-ones':
       return 'A crate holds ten berries. Count the crate as ten, then count on.';
     case 'reversed-digits':
-      return 'So close. Crates come first, then the loose berries.';
+      return 'So close! Crates come first, then the loose berries.';
     case 'changed-the-ones':
-      return 'Ten more is one more crate. The loose berries stay the same.';
     case 'wrong-way':
-      return p.kind === 'place' && p.mode === 'shift' && p.by > 0 ? 'Ten more: add a crate.' : 'Ten less: take a crate away.';
+      return p.kind === 'place' && p.mode === 'shift' && p.by < 0
+        ? 'Ten less is one crate less. The loose berries stay the same.'
+        : 'Ten more is one more crate. The loose berries stay the same.';
     default:
       return 'Not yet. Let us use the berries to find out.';
   }

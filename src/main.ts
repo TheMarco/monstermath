@@ -6,6 +6,7 @@ import './style.css';
 import { audioSettings, hush, initAudio, music, musicLevel, type Track } from './audio';
 import { befriendScreen } from './screens/befriend';
 import { canyonScreen } from './screens/canyon';
+import { earlyScreen } from './screens/early';
 import { grownupsScreen } from './screens/grownups';
 import { hollowScreen } from './screens/hollow';
 import { homeScreen } from './screens/home';
@@ -34,6 +35,7 @@ const SCREENS: Record<ScreenName, Screen> = {
   stickers: stickersScreen,
   grownups: grownupsScreen,
   hollow: hollowScreen,
+  early: earlyScreen,
   shop: shopScreen,
   players: playersScreen,
 };
@@ -53,6 +55,7 @@ const MUSIC: Record<ScreenName, [Track | null | 'keep', number]> = {
   befriend: ['play', 0.7],
   canyon: ['think', 0.7],
   hollow: ['think', 0.7],
+  early: ['think', 0.7],
   lesson: ['keep', 0.5],
   grownups: [null, 0],
 };

@@ -16,7 +16,7 @@ export interface App {
   reload(): void;
 }
 
-export type ScreenName = 'title' | 'intro' | 'home' | 'befriend' | 'canyon' | 'journal' | 'stickers' | 'lesson' | 'grownups' | 'hollow' | 'shop' | 'players';
+export type ScreenName = 'title' | 'intro' | 'home' | 'befriend' | 'canyon' | 'journal' | 'stickers' | 'lesson' | 'grownups' | 'hollow' | 'shop' | 'players' | 'early';
 
 export interface ScreenHandle {
   el: HTMLElement;

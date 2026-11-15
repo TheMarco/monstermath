@@ -1,3 +1,4 @@
+import type { CountKind } from './math/count';
 import type { FracKind } from './math/fractions';
 import type { Delivery } from './math/regroup';
 import { addStory, subStory } from './voice/lines';
@@ -230,6 +231,19 @@ export function fracStartStep(levels: IntakeLevels | undefined, kind: FracKind):
   if (kind === 'same') return passed >= 4 ? 3 : passed >= 3 ? 2 : 0;
   if (kind === 'times') return passed >= 5 ? 1 : 0;
   return 0;
+}
+
+/**
+ * Where each early-number idea starts on its ladder, from the place-value and
+ * addition levels she passed.
+ */
+export function earlyStartStep(levels: IntakeLevels | undefined, kind: CountKind): number {
+  const place = levels?.place ?? 0;
+  const add = levels?.add ?? 0;
+  if (kind === 'count') return place >= 1 ? 3 : 0;
+  if (kind === 'more') return place >= 4 ? 5 : place >= 3 ? 4 : place >= 1 ? 2 : 0;
+  if (kind === 'ten') return place >= 2 ? 3 : add >= 1 ? 1 : 0;
+  return place >= 5 ? 4 : place >= 3 ? 3 : 0;
 }
 
 /** The game's easiest sums are within 10, with berries to count. Below that it has nothing to offer. */
