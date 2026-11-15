@@ -238,6 +238,60 @@ charm_on	Looking good!
 night_tip	When you are done playing, press Good night, to tuck everyone in.
 good_night	Good night, everyone! See you tomorrow.
 wake_up	Rise and shine! Everyone is awake.
+early_tip	These berries need counting! Tap a berry when you count it.
+eq_give	Fill the basket. Put in this many berries.
+eq_more	Which pile has more berries?
+eq_fewer	Which pile has fewer berries?
+eq_fill5	How many more berries make five?
+eq_fill10	A crate holds ten berries. How many more fill the crate?
+eq_pair	How many more make ten?
+eq_teen	One full crate, and some loose berries. How many berries in all?
+eq_split	Ten berries go in a crate. How many loose berries are left?
+eq_read	Each crate holds ten berries. How many berries are here?
+eq_build	Make this number, with crates and loose berries.
+eq_more10	What is ten more than this number?
+eq_less10	What is ten less than this number?
+eh_count	Let us count together. Touch each berry once.
+eh_basket	Count each berry as it goes in the basket.
+eh_line	Here they are, side by side. Which row goes further?
+eh_crates_first	Look at the crates first. More crates is more.
+eh_empty	Count the empty spots.
+eh_count_on	The crate is ten. Count on from ten.
+eh_places	Count the crates. Then count the loose berries.
+eh_crate_more	Ten more is one more crate. The loose berries stay the same.
+eh_crate_less	Ten less is one crate less. The loose berries stay the same.
+ec_slip	So close! Touch each berry once as you count.
+ec_line_up	Line them up, side by side. Which one goes further?
+ec_fewer	Fewer means not as many. Look again.
+ec_there	Those are the berries that are there. Count the empty spots.
+ec_whole	That is how many fit in all. Count only the ones that are missing.
+ec_crate_ten	A crate holds ten berries. Count the crate as ten, then count on.
+ec_reversed	So close! Crates come first, then the loose berries.
+show_you_look	Let me show you. Look, then press Check.
+l_count_1	Here are some berries. I touch each one, and say one number.
+l_count_2	One. Two. Three. Four. Five.
+l_count_3	The last number I say is how many there are. Five berries.
+l_count_4	It does not matter which berry I start with. It is still five.
+l_count_5	Your turn. Count each berry once. How many are there?
+l_count_6	Seven! The last number you say is how many.
+l_more_1	Two piles of berries. Which has more?
+l_more_2	I line them up, side by side.
+l_more_3	This row goes further. Six is more than four.
+l_more_4	The other row has fewer. Fewer means not as many.
+l_more_5	Your turn. Which is more?
+l_more_6	Yes. Eight is more than five.
+l_ten_1	A crate holds ten berries. This crate has six.
+l_ten_2	I count the empty spots. One. Two. Three. Four.
+l_ten_3	Six and four make ten.
+l_ten_4	Here is a full crate, and three loose berries. Ten, and three more, is thirteen.
+l_ten_5	Your turn. This crate has seven. How many more fill it?
+l_ten_6	Seven and three make ten.
+l_place_1	Each crate holds ten berries. Three crates. Ten, twenty, thirty.
+l_place_2	And four loose berries. Thirty-four.
+l_place_3	The first number says how many crates. The second number says how many loose berries.
+l_place_4	Four crates and three loose berries is forty-three. The same two numbers, but a different amount!
+l_place_5	Your turn. How many berries? Count the crates first.
+l_place_6	Twenty-six. Two crates, and six loose berries.
 name_puff	Puff!
 about2_puff	Puff. A storm ram. Carries a storm in its fleece. Charges like thunder. Loves all kinds of treats.
 name_pim	Pim!

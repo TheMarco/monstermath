@@ -143,3 +143,12 @@ l_open_7	You opened a crate! That is how to take away when there are not enough 
 l_rows_1	Look. Berries in rows. Three rows, with four berries in each row.
 l_rows_2	I could count four, and four, and four. That is twelve.
 l_rows_3	A faster way to say it: three times four. Three rows of four makes twelve.
+l_rows_4	Turn it around: four rows of three. Still twelve! Four times three is the same as three times four.
+l_rows_5	Your turn. Two rows of five. Which treat matches?
+l_rows_6	How many berries is two times five?
+l_rows_7	That is multiplication: equal rows.
+l_share_1	Twelve berries, and three friends. Everyone gets the same.
+l_share_2	I share them out, one each, until they are gone. Each friend gets four.
+l_share_3	We say: twelve divided by three is four.
+l_share_4	Look, it is the rows again! Three rows of four is twelve. Sharing is times, backwards.
+l_share_5	Your turn. Ten berries, two friends. Which treat matches?
