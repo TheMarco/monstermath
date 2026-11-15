@@ -161,6 +161,7 @@ export function skillLevel(save: Save, id: SpeciesId): { have: number; of: numbe
   if (!m) return null;
   if (sp.habitat === 'canyon' && sp.delivery) return { have: (m.step ?? save.startStep?.[sp.delivery] ?? 0) + 1, of: RUNG_TEXT[sp.delivery].length };
   if (sp.habitat === 'hollow' && sp.frac) return { have: (m.step ?? 0) + 1, of: FRAC_RUNG_TEXT[sp.frac].length };
+  if (sp.habitat === 'early' && sp.count) return { have: (save.early?.[sp.count]?.step ?? 0) + 1, of: COUNT_RUNG_TEXT[sp.count].length };
   if (m.pool !== undefined && sp.pools.length > 0) return { have: m.pool + 1, of: sp.pools.length };
   return null;
 }

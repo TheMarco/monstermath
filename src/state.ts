@@ -2,6 +2,7 @@ import {
   CANYON_ORDER,
   GRASS_ORDER,
   HOLLOW_ORDER,
+  EARLY_ORDER,
   SPECIES,
   STARS_PER_DAY,
   STARS_TO_EVOLVE,
@@ -561,6 +562,10 @@ export function canyonQueue(save: Save): SpeciesId[] {
 
 export function hollowQueue(save: Save): SpeciesId[] {
   return HOLLOW_ORDER.filter((id) => !isFriend(save, id));
+}
+
+export function earlyQueue(save: Save): SpeciesId[] {
+  return EARLY_ORDER.filter((id) => !isFriend(save, id));
 }
 
 export type StarResult = 'star' | 'grown' | 'full-today';

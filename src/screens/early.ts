@@ -67,7 +67,7 @@ function scatter(n: number): Array<[number, number]> {
 export const earlyScreen: Screen = (app, params) => {
   const { save } = app;
   const id = params.id as SpeciesId;
-  const ownKind = (COUNT_KINDS.includes(params.kind as CountKind) ? params.kind : 'count') as CountKind;
+  const ownKind = (COUNT_KINDS.includes(params.kind as CountKind) ? params.kind : (SPECIES[id].count ?? 'count')) as CountKind;
   const practice = params.practice === true;
   const sp = SPECIES[id];
   // Trying it out must not leave a trace in the save, not even a blank monster entry.

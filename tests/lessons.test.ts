@@ -30,7 +30,7 @@ describe('lessons', () => {
   });
 
   it('each new skill has a lesson before its monster', () => {
-    expect(LESSON_BEFORE).toEqual({ dab: 'parts', glim: 'rows', fenn: 'share', plum: 'pack', chip: 'open', bix: 'frac', tam: 'same', zim: 'ftimes', lux: 'ftray' });
+    expect(LESSON_BEFORE).toEqual({ dab: 'parts', glim: 'rows', fenn: 'share', plum: 'pack', chip: 'open', bix: 'frac', tam: 'same', zim: 'ftimes', lux: 'ftray', fig: 'count', flam: 'more', kelp: 'ten' });
     expect(LESSON_FOR_KIND.addR).toBe('pack');
     expect(LESSON_FOR_KIND.subR).toBe('open');
     expect(LESSON_FOR_KIND.mul).toBe('rows');

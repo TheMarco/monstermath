@@ -335,7 +335,7 @@ describe('first session', () => {
     expect(q(`.friend[data-id="${resting}"]`)).toBeNull();
     expect(qa('.friend')).toHaveLength(6);
     click('Journal');
-    expect(text('.journal-count')).toBe('7 of 21');
+    expect(text('.journal-count')).toBe('7 of 24');
     (qa('.journal-tile.known')[1] as HTMLElement).click();
     expect(q('.journal-page')).not.toBeNull();
     click('Meadow');

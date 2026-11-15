@@ -1,14 +1,16 @@
 import type { Treat } from '../math/expr';
 import type { FracKind } from '../math/fractions';
 import type { Delivery } from '../math/regroup';
+import type { CountKind } from '../math/count';
 
 export type SpeciesId =
   | 'puff' | 'pim' | 'bop'
   | 'dab' | 'moss' | 'glim' | 'fenn'
   | 'nub' | 'plum' | 'dusk' | 'chip'
   | 'bix' | 'tam' | 'zim' | 'lux'
+  | 'fig' | 'flam' | 'kelp'
   | 'tup' | 'jam' | 'mint' | 'pom' | 'nox' | 'fizz';
-export type Habitat = 'starter' | 'grass' | 'canyon' | 'hollow' | 'egg';
+export type Habitat = 'starter' | 'grass' | 'canyon' | 'hollow' | 'early' | 'egg';
 
 export interface Species {
   id: SpeciesId;
@@ -23,6 +25,8 @@ export interface Species {
   delivery?: Delivery;
   /** Hollow monsters: the kind of fraction work they stand for. */
   frac?: FracKind;
+  /** Berry Patch monsters: the kind of early number work they stand for. */
+  count?: CountKind;
   /** Target numbers, easiest pool first. */
   pools: number[][];
   /** For grown-ups: the skill this monster stands for. */
@@ -218,6 +222,39 @@ export const SPECIES = {
     pools: [],
     skill: 'A fraction times a fraction (a piece of a piece)',
   },
+  fig: {
+    id: 'fig',
+    name: 'Fig',
+    habitat: 'early',
+    what: 'paint lizard',
+    blurb: 'Drips paint from its tail. Stomps its feet when it is glad.',
+    fav: 'any',
+    count: 'count',
+    pools: [],
+    skill: 'Counting things one by one, up to 20',
+  },
+  flam: {
+    id: 'flam',
+    name: 'Flam',
+    habitat: 'early',
+    what: 'fire dragon',
+    blurb: 'Made of fire. A little spicy, but nice.',
+    fav: 'any',
+    count: 'more',
+    pools: [],
+    skill: 'Comparing: which is more, which is fewer',
+  },
+  kelp: {
+    id: 'kelp',
+    name: 'Kelp',
+    habitat: 'early',
+    what: 'pumpkin sprout',
+    blurb: 'A pumpkin head on a body of vines. Grins all day.',
+    fav: 'any',
+    count: 'ten',
+    pools: [],
+    skill: 'Making ten, and the numbers from 11 to 19',
+  },
   ...eggSpecies('tup', 'Tup', 'ember cat', 'Ears and a tail of flame. Always ready to pounce.'),
   ...eggSpecies('jam', 'Jam', 'berry bear', 'Strong and sweet. Hides snacks everywhere.'),
   ...eggSpecies('mint', 'Mint', 'leaf dragon', 'Wings like leaves. Afraid of nothing.'),
@@ -246,8 +283,10 @@ export const STARTERS: SpeciesId[] = ['puff', 'pim', 'bop'];
 export const GRASS_ORDER: SpeciesId[] = ['dab', 'moss', 'glim', 'fenn'];
 export const CANYON_ORDER: SpeciesId[] = ['nub', 'plum', 'dusk', 'chip'];
 export const HOLLOW_ORDER: SpeciesId[] = ['bix', 'tam', 'zim', 'lux'];
+/** The Berry Patch: early number sense. More monsters join as they are drawn. */
+export const EARLY_ORDER: SpeciesId[] = ['fig', 'flam', 'kelp'];
 export const EGG_ORDER: SpeciesId[] = ['tup', 'jam', 'mint', 'pom', 'nox', 'fizz'];
-export const ALL_SPECIES: SpeciesId[] = [...STARTERS, ...GRASS_ORDER, ...CANYON_ORDER, ...HOLLOW_ORDER, ...EGG_ORDER];
+export const ALL_SPECIES: SpeciesId[] = [...STARTERS, ...GRASS_ORDER, ...CANYON_ORDER, ...HOLLOW_ORDER, ...EARLY_ORDER, ...EGG_ORDER];
 
 export const TREAT_LABEL: Record<Treat, { symbol: string; text: string; speech: string }> = {
   any: { symbol: '★', text: 'all treats', speech: 'all kinds of treats' },
@@ -271,11 +310,19 @@ export const FRAC_LABEL: Record<FracKind, string> = {
   tray: 'a piece of a piece',
 };
 
+export const COUNT_LABEL: Record<CountKind, string> = {
+  count: 'counting berries',
+  more: 'the bigger pile',
+  ten: 'a full crate',
+  place: 'crates and loose berries',
+};
+
 /** What a monster loves, as a short phrase: "plus treats", "packing crates", "equal pieces". */
 export function lovesLabel(id: SpeciesId): string {
   const sp = SPECIES[id];
   if (sp.habitat === 'canyon' && sp.delivery) return DELIVERY_LABEL[sp.delivery];
   if (sp.habitat === 'hollow' && sp.frac) return FRAC_LABEL[sp.frac];
+  if (sp.habitat === 'early' && sp.count) return COUNT_LABEL[sp.count];
   return TREAT_LABEL[sp.fav].text;
 }
 

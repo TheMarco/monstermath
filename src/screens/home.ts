@@ -29,6 +29,7 @@ import {
   giveStar,
   grassQueue,
   hollowQueue,
+  earlyQueue,
   MEADOW_MAX,
   meadowFriends,
   starsLeftToday,
@@ -89,14 +90,16 @@ function pips(done: number, goal: number): HTMLElement {
 }
 
 /** The place a monster plays in: starters and egg monsters eat treats in the grass. */
-function placeOf(habitat: Habitat): 'grass' | 'canyon' | 'hollow' {
-  return habitat === 'canyon' || habitat === 'hollow' ? habitat : 'grass';
+type Place = 'grass' | 'canyon' | 'hollow' | 'early';
+
+function placeOf(habitat: Habitat): Place {
+  return habitat === 'canyon' || habitat === 'hollow' || habitat === 'early' ? habitat : 'grass';
 }
 
-const SCREEN_OF = { grass: 'befriend', canyon: 'canyon', hollow: 'hollow' } as const;
+const SCREEN_OF = { grass: 'befriend', canyon: 'canyon', hollow: 'hollow', early: 'early' } as const;
 
 /** Which friend to play with when every monster of a place is already a friend. */
-function friendToPlay(save: Save, habitat: 'grass' | 'canyon' | 'hollow'): SpeciesId | null {
+function friendToPlay(save: Save, habitat: Place): SpeciesId | null {
   const pool = friends(save).filter((m) => placeOf(SPECIES[m.id].habitat) === habitat);
   if (pool.length === 0) return null;
   const wishers = pool.filter((m) => wishing(save, m.id));
@@ -109,7 +112,7 @@ function friendToPlay(save: Save, habitat: 'grass' | 'canyon' | 'hollow'): Speci
  * Go to a place: meet the next monster when she is ready for it; otherwise
  * practise with the friend whose skill comes first, or any friend there.
  */
-function goPlace(app: App, place: 'grass' | 'canyon' | 'hollow', order: SpeciesId[]): void {
+function goPlace(app: App, place: Place, order: SpeciesId[]): void {
   const next = nextWild(app.save, order);
   if (next?.ready) goWithLesson(app, SCREEN_OF[place], next.id);
   else {
@@ -128,6 +131,10 @@ export function goCanyon(app: App): void {
 
 export function goHollow(app: App): void {
   goPlace(app, 'hollow', hollowQueue(app.save));
+}
+
+export function goEarly(app: App): void {
+  goPlace(app, 'early', earlyQueue(app.save));
 }
 
 export function playWith(app: App, id: SpeciesId): void {
@@ -434,8 +441,9 @@ export const homeScreen: Screen = (app, params) => {
   const grassNext = nextWild(save, grassQueue(save));
   const canyonNext = nextWild(save, canyonQueue(save));
   const hollowNext = nextWild(save, hollowQueue(save));
+  const earlyNext = nextWild(save, earlyQueue(save));
   /** A monster that is waiting for her to practise a little more first. */
-  const gated = [grassNext, canyonNext, hollowNext].find((n) => n && !n.ready && n.needs && save.monsters[n.needs]?.friend);
+  const gated = [earlyNext, grassNext, canyonNext, hollowNext].find((n) => n && !n.ready && n.needs && save.monsters[n.needs]?.friend);
 
   const place = (cls: string, label: string, iconName: string, next: NextWild | null, go: () => void): HTMLElement =>
     h(
@@ -617,6 +625,7 @@ export const homeScreen: Screen = (app, params) => {
     place('place-grass', 'Tall Grass', 'grass', grassNext, () => goGrass(app)),
     place('place-canyon', 'Berry Canyon', 'berry', canyonNext, () => goCanyon(app)),
     place('place-hollow', 'Honey Hollow', 'drop', hollowNext, () => goHollow(app)),
+    place('place-early', 'Berry Patch', 'berry', earlyNext, () => goEarly(app)),
     h('div', { class: `night-sky ${asleep ? 'on' : ''}`, 'aria-hidden': 'true' }, h('i', { class: 'moon' }), times(14, (i) => h('i', { class: 'night-star', style: `left:${(i * 83 + 40) % 1240}px;top:${(i * 47) % 190 + 14}px;animation-delay:${(i % 5) * 0.4}s` }))),
     h('div', { class: 'home-grownups' }, holdButton('Grown-ups (hold)', () => app.go('grownups'))),
     all.length > MEADOW_MAX

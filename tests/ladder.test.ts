@@ -4,7 +4,7 @@ import type { Delivery } from '../src/math/regroup';
 import { levelRows } from '../src/report';
 import type { SpeciesId } from '../src/data/monsters';
 import { goodDays, metToday, missing, nextWild, secure } from '../src/skill';
-import { befriend, canyonQueue, clock, freshSave, giveStar, hollowQueue, monster, starsLeftToday, type Save } from '../src/state';
+import { befriend, canyonQueue, clock, earlyQueue, freshSave, giveStar, hollowQueue, monster, starsLeftToday, type Save } from '../src/state';
 
 const at = (rung: number, ...recent: Mark[]): Progress => ({ rung, recent });
 
@@ -179,6 +179,19 @@ describe('the next monster comes out when the skill before it is secure', () => 
     expect(nextWild(save, hollowQueue(save))).toEqual({ id: 'tam', ready: false, needs: 'bix', progress: 0 });
     save.openAll = true;
     expect(nextWild(save, hollowQueue(save))).toEqual({ id: 'tam', ready: true });
+  });
+
+  it('the Berry Patch starts with Fig, and Flam waits for counting to be secure', () => {
+    const save = freshSave();
+    expect(nextWild(save, earlyQueue(save))).toEqual({ id: 'fig', ready: true });
+    befriend(save, 'fig');
+    met(save, 'fig', '2026-11-01');
+    expect(nextWild(save, earlyQueue(save))).toEqual({ id: 'flam', ready: false, needs: 'fig', progress: 0 });
+    for (const day of ['2026-11-02', '2026-11-03', '2026-11-04']) {
+      for (let i = 0; i < 4; i++) (save.countLog ??= []).push({ t: 0, day, monster: 'fig', kind: 'count', text: 'Count 5 berries', answers: ['5'], firstTry: true, errors: [], helped: false, rung: 0 } as never);
+    }
+    expect(secure(save, 'fig')).toBe(true);
+    expect(nextWild(save, earlyQueue(save))).toEqual({ id: 'flam', ready: true });
   });
 
   it('a day gives six stars in all, then everyone is sleepy', () => {

@@ -58,6 +58,7 @@ export const journalScreen: Screen = (app, params) => {
       .map(Number)
       .sort((x, y) => x - y);
     const trips = save.tripLog.filter((t) => t.monster === id).length;
+    const counted = (save.countLog ?? []).filter((t) => t.monster === id).length;
     const honey = (save.fracLog ?? []).filter((t) => t.monster === id).length;
 
     const nameInput = h('input', {
@@ -96,6 +97,8 @@ export const journalScreen: Screen = (app, params) => {
           ? [h('h3', null, 'Berry trips'), h('p', { class: 'big-number' }, String(trips))]
           : sp.habitat === 'hollow'
             ? [h('h3', null, 'Honey problems solved'), h('p', { class: 'big-number' }, String(honey))]
+          : sp.habitat === 'early'
+            ? [h('h3', null, 'Berry problems solved'), h('p', { class: 'big-number' }, String(counted))]
           : [
               h('h3', null, 'Numbers we made'),
               targets.length === 0

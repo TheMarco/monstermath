@@ -401,6 +401,9 @@ function lovesText(id: SpeciesId): string {
   if (sp.habitat === 'canyon') {
     return { add: 'Loves a big pile of berries.', addR: 'Loves to pack crates.', sub: 'Loves a berry snack.', subR: 'Loves to open crates.' }[sp.delivery ?? 'add'];
   }
+  if (sp.habitat === 'early') {
+    return { count: 'Loves to count berries.', more: 'Loves the bigger pile.', ten: 'Loves a full crate.', place: 'Loves crates and loose berries.' }[sp.count ?? 'count'];
+  }
   return { any: 'Loves all kinds of treats.', add: 'Loves plus treats.', sub: 'Loves minus treats.', mul: 'Loves times treats.', div: 'Loves sharing treats.' }[sp.fav];
 }
 

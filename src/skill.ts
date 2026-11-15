@@ -103,6 +103,8 @@ export function skillHealth(save: Save, id: SpeciesId): number | null {
     marks = save.tripLog.filter((t) => t.type === sp.delivery).slice(-8).map((t) => t.firstTry);
   } else if (sp.habitat === 'hollow') {
     marks = (save.fracLog ?? []).filter((f) => f.kind === sp.frac).slice(-8).map((f) => f.firstTry);
+  } else if (sp.habitat === 'early') {
+    marks = (save.countLog ?? []).filter((c) => c.kind === sp.count).slice(-8).map((c) => c.firstTry);
   } else {
     marks = save.exprLog.filter((e) => e.monster === id).slice(-12).map((e) => e.correct && !e.hinted);
   }
@@ -164,6 +166,9 @@ export const NEEDS: Partial<Record<SpeciesId, SpeciesId[]>> = {
   // Many copies of a piece is multiplication: equal rows come first.
   zim: ['bix', 'glim'],
   lux: ['zim', 'tam'],
+  // Counting comes before comparing two amounts.
+  flam: ['fig'],
+  kelp: ['fig'],
 };
 
 /** A good day for a skill: at least this many problems, this share right the first time. */
@@ -180,6 +185,8 @@ function marksByDay(save: Save, id: SpeciesId): Map<string, boolean[]> {
     marks = save.tripLog.filter((t) => t.type === sp.delivery).map((t) => [t.day, t.firstTry]);
   } else if (sp.habitat === 'hollow') {
     marks = (save.fracLog ?? []).filter((f) => f.kind === sp.frac).map((f) => [f.day, f.firstTry]);
+  } else if (sp.habitat === 'early') {
+    marks = (save.countLog ?? []).filter((c) => c.kind === sp.count).map((c) => [c.day, c.firstTry]);
   } else {
     marks = save.exprLog.filter((e) => e.monster === id).map((e) => [e.day, e.correct && !e.hinted]);
   }
