@@ -8,7 +8,7 @@ export type SpeciesId =
   | 'dab' | 'moss' | 'glim' | 'fenn'
   | 'nub' | 'plum' | 'dusk' | 'chip'
   | 'bix' | 'tam' | 'zim' | 'lux'
-  | 'fig' | 'flam' | 'kelp'
+  | 'fig' | 'flam' | 'kelp' | 'beary'
   | 'tup' | 'jam' | 'mint' | 'pom' | 'nox' | 'fizz';
 export type Habitat = 'starter' | 'grass' | 'canyon' | 'hollow' | 'early' | 'egg';
 
@@ -255,6 +255,17 @@ export const SPECIES = {
     pools: [],
     skill: 'Making ten, and the numbers from 11 to 19',
   },
+  beary: {
+    id: 'beary',
+    name: 'Beary',
+    habitat: 'early',
+    what: 'berry wing bear',
+    blurb: 'Has wings as red as berries. Hugs with its vines.',
+    fav: 'any',
+    count: 'place',
+    pools: [],
+    skill: 'Tens and ones: reading and building numbers to 100 and beyond',
+  },
   ...eggSpecies('tup', 'Tup', 'ember cat', 'Ears and a tail of flame. Always ready to pounce.'),
   ...eggSpecies('jam', 'Jam', 'berry bear', 'Strong and sweet. Hides snacks everywhere.'),
   ...eggSpecies('mint', 'Mint', 'leaf dragon', 'Wings like leaves. Afraid of nothing.'),
@@ -284,7 +295,7 @@ export const GRASS_ORDER: SpeciesId[] = ['dab', 'moss', 'glim', 'fenn'];
 export const CANYON_ORDER: SpeciesId[] = ['nub', 'plum', 'dusk', 'chip'];
 export const HOLLOW_ORDER: SpeciesId[] = ['bix', 'tam', 'zim', 'lux'];
 /** The Berry Patch: early number sense. More monsters join as they are drawn. */
-export const EARLY_ORDER: SpeciesId[] = ['fig', 'flam', 'kelp'];
+export const EARLY_ORDER: SpeciesId[] = ['fig', 'flam', 'kelp', 'beary'];
 export const EGG_ORDER: SpeciesId[] = ['tup', 'jam', 'mint', 'pom', 'nox', 'fizz'];
 export const ALL_SPECIES: SpeciesId[] = [...STARTERS, ...GRASS_ORDER, ...CANYON_ORDER, ...HOLLOW_ORDER, ...EARLY_ORDER, ...EGG_ORDER];
 

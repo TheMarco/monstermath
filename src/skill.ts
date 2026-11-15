@@ -169,6 +169,8 @@ export const NEEDS: Partial<Record<SpeciesId, SpeciesId[]>> = {
   // Counting comes before comparing two amounts.
   flam: ['fig'],
   kelp: ['fig'],
+  // Tens and ones stand on the full crate of ten.
+  beary: ['kelp'],
 };
 
 /** A good day for a skill: at least this many problems, this share right the first time. */

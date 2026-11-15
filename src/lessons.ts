@@ -345,6 +345,7 @@ export const LESSON_BEFORE: Partial<Record<SpeciesId, LessonId>> = {
   fig: 'count',
   flam: 'more',
   kelp: 'ten',
+  beary: 'place',
 };
 
 /** The lesson that explains a kind of treat or berry trip, when there is one. */

@@ -85,11 +85,12 @@ berries and crates: counting a set (5 in a row up to counting out 20), comparing
 crate, teen numbers as one crate and loose berries) and tens and ones (crates
 counted by tens, reading and building two-digit numbers, ten more and ten less,
 carts for hundreds). The problems are in `src/math/count.ts` and the screen in
-`src/screens/early.ts`. Three of the four monsters live in the Berry Patch
-on the meadow: Fig (counting), Flam (comparing) and Kelp (making ten), drawn
-from a child's own drawings. Flam and Kelp come out once counting with Fig is
-secure. Tens and ones has no monster yet; the grown-up page has buttons that
-open each of the four games for a look, and nothing is saved from there.
+`src/screens/early.ts`. Their monsters live in the Berry Patch on the
+meadow: Fig (counting), Flam (comparing), Kelp (making ten) and Beary (tens and
+ones), drawn from a child's own drawings. Flam and Kelp come out once counting
+with Fig is secure, Beary once making ten with Kelp is. The grown-up page has
+buttons that open each of the four games for a look; nothing is saved from
+there.
 
 **Treats (Tall Grass).** A monster shows a number and the child builds expressions
 that equal it. Hearts depend on the thinking: `n + 0` earns 1, a real addition
