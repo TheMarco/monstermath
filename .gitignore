@@ -18,3 +18,6 @@ trailer/
 # Local secrets (API keys)
 .env
 .env.*
+
+# Voice auditions
+voice-samples/
