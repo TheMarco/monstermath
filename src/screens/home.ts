@@ -60,13 +60,16 @@ import { aboutClip, nameClip } from '../voice/lines';
 
 /** Where friends stand on the meadow: [x, y, size]. The first slot is the buddy's. */
 const SLOTS: Array<[number, number, number]> = [
-  [640, 590, 176],
-  [360, 520, 146],
-  [920, 520, 146],
-  [500, 370, 120],
-  [780, 370, 120],
-  [1090, 400, 124],
+  [640, 580, 140],
+  [380, 520, 116],
+  [900, 520, 116],
+  [510, 380, 98],
+  [770, 380, 98],
+  [1080, 410, 100],
 ];
+
+/** Decorations stand in the meadow smaller than their shop size, so they do not crowd the friends. */
+const DECOR_SCALE = 0.72;
 
 function sized(el: HTMLElement, size: number): HTMLElement {
   el.dataset.size = String(size);
@@ -349,7 +352,7 @@ export const homeScreen: Screen = (app, params) => {
 
   /** Decorations she bought. Dragging one moves it; where it is dropped is saved. */
   function decorEl(item: { id: string; x: number; y: number }): HTMLElement {
-    const size = DECOR.find((d) => d.id === item.id)?.size ?? 120;
+    const size = Math.round((DECOR.find((d) => d.id === item.id)?.size ?? 120) * DECOR_SCALE);
     const node = h('div', { class: 'decor', 'data-decor': item.id, title: 'Drag to move' }, decorImg(item.id, size));
     const put = (): void => {
       node.style.left = `${item.x - size / 2}px`;

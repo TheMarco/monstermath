@@ -1,5 +1,5 @@
 import { STARTERS } from '../data/monsters';
-import { currentPlayer, friends, NAME_MAX, players, renamePlayer } from '../state';
+import { currentPlayer, meadowFriends, NAME_MAX, players, renamePlayer } from '../state';
 import { backdrop, button, holdButton, monsterImg, type Screen } from '../ui/common';
 import { h } from '../ui/dom';
 
@@ -7,9 +7,10 @@ export const titleScreen: Screen = (app) => {
   const { save } = app;
   const returning = save.introDone;
   const cast = returning
-    ? friends(save)
-        .slice(0, 5)
-        .map((m) => ({ id: m.id, stage: m.stage }))
+    ? // The buddy and two friends who are out today: three fit the screen at this size.
+      meadowFriends(save)
+        .slice(0, 3)
+        .map((id) => ({ id, stage: save.monsters[id]?.stage ?? 1 }))
     : STARTERS.map((id) => ({ id, stage: 1 as const }));
 
   // A new player with no name yet can type one beside Start. It is optional.
