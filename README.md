@@ -152,7 +152,8 @@ each other to greet, chat and play tag, and react when one of them is petted or
 fed. Six friends are out in the meadow at a time: the buddy, the two who
 asked to play, the ones met or called out most recently, and the rest in
 turns, a different group each day. "All friends" shows everyone, and tapping a
-resting friend brings it out. A monster that has all its stars for the day dozes. When the day's goals
+resting friend brings it out. "Rest" on a friend's card sends it in again
+(the buddy and the two who asked to play stay out). A monster that has all its stars for the day dozes. When the day's goals
 are done, "Good night" puts the meadow to sleep, which gives the session a
 clear end.
 

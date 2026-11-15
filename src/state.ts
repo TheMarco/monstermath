@@ -190,6 +190,8 @@ export interface Save {
   theme?: string;
   /** Friends called out to the meadow, latest first. The meadow shows only a few at a time. */
   out?: SpeciesId[];
+  /** Friends she sent to rest; they stay out of the meadow until called out. */
+  rest?: SpeciesId[];
   /** The last day played before a long break that the game already eased off for. */
   easedFor?: string;
   /** Set on the grown-up page: every monster can be met, whatever the skills before it look like. */
@@ -354,7 +356,7 @@ export function readBackup(text: string): Save | null {
     save.introDone = false;
   }
   if (typeof save.buddy !== 'string' || !monsters[save.buddy]) delete save.buddy;
-  for (const key of ['seenTips', 'stickers', 'charms', 'decor', 'fracLog', 'out', 'themes'] as const) {
+  for (const key of ['seenTips', 'stickers', 'charms', 'decor', 'fracLog', 'out', 'rest', 'themes'] as const) {
     if (save[key] !== undefined && !Array.isArray(save[key])) delete save[key];
   }
   save.seenTips ??= [];
@@ -481,6 +483,20 @@ export const MEADOW_MAX = 6;
 /** Bring a friend out to the meadow, ahead of the ones called before. */
 export function callOut(save: Save, id: SpeciesId): void {
   save.out = [id, ...(save.out ?? []).filter((x) => x !== id)].slice(0, MEADOW_MAX);
+  save.rest = (save.rest ?? []).filter((x) => x !== id);
+}
+
+/** The buddy and the friends who asked to play today always stay out. */
+export function canRest(save: Save, id: SpeciesId): boolean {
+  if (buddyOf(save) === id) return false;
+  return !(today(save).wishes ?? []).some((w) => w.id === id);
+}
+
+/** Send a friend to rest. It stays in until it is called out or asks to play. */
+export function sendRest(save: Save, id: SpeciesId): void {
+  if (!canRest(save, id)) return;
+  save.out = (save.out ?? []).filter((x) => x !== id);
+  save.rest = [...(save.rest ?? []).filter((x) => x !== id), id];
 }
 
 /**
@@ -495,8 +511,10 @@ export function meadowFriends(save: Save): SpeciesId[] {
   if (all.length === 0) return [];
   const turn = Object.keys(save.days).length % all.length;
   const wishes = (today(save).wishes ?? []).map((w) => w.id);
-  const order = [buddyOf(save), ...wishes, ...(save.out ?? []), ...all.slice(turn), ...all.slice(0, turn)];
-  return [...new Set(order)].filter((id) => all.includes(id)).slice(0, MEADOW_MAX);
+  const fixed = [buddyOf(save), ...wishes];
+  const resting = new Set((save.rest ?? []).filter((id) => !fixed.includes(id)));
+  const order = [...fixed, ...(save.out ?? []), ...all.slice(turn), ...all.slice(0, turn)];
+  return [...new Set(order)].filter((id) => all.includes(id) && !resting.has(id)).slice(0, MEADOW_MAX);
 }
 
 /** The grass monsters she can still meet, in teaching order, then the other starters. */

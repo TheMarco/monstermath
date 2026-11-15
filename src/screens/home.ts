@@ -19,6 +19,8 @@ import {
 import {
   buddyOf,
   callOut,
+  canRest,
+  sendRest,
   canyonQueue,
   DAILY_GOAL,
   dailyDone,
@@ -244,6 +246,15 @@ export const homeScreen: Screen = (app, params) => {
       app.go('home');
     };
 
+    // With more friends than places, she chooses who is out: this one can go and rest.
+    const goRest = (): void => {
+      sendRest(save, m.id);
+      app.commit();
+      sfx('soft');
+      app.go('home');
+    };
+    const mayRest = all.length > MEADOW_MAX && canRest(save, m.id);
+
     const charmRow = h('div', { class: 'charm-row' });
     const drawCharms = (): void => {
       const owned = save.charms ?? [];
@@ -306,6 +317,7 @@ export const homeScreen: Screen = (app, params) => {
           button('Play', () => playWith(app, m.id), wants ? 'btn-primary pulse' : 'btn-primary'),
           button('Page', () => app.go('journal', { id: m.id })),
           isBuddy ? h('span', { class: 'buddy-tag' }, 'Your buddy') : button('Make buddy', makeBuddy, 'buddy-btn'),
+          mayRest ? button('Rest', goRest, 'rest-btn') : null,
         ),
       ),
     );

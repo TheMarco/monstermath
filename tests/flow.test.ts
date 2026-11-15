@@ -330,7 +330,10 @@ describe('first session', () => {
     expect(q(`.friend[data-id="${resting}"]`)).not.toBeNull();
     expect(q('.friend-card')).not.toBeNull();
     expect(qa('.friend')).toHaveLength(6);
-    q('.card-close')!.click();
+    // She can send that friend back to rest, and the one it pushed out returns.
+    click('Rest');
+    expect(q(`.friend[data-id="${resting}"]`)).toBeNull();
+    expect(qa('.friend')).toHaveLength(6);
     click('Journal');
     expect(text('.journal-count')).toBe('7 of 21');
     (qa('.journal-tile.known')[1] as HTMLElement).click();
