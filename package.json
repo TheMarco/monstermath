@@ -2,6 +2,8 @@
   "name": "monstermath",
   "private": true,
   "version": "0.1.0",
+  "license": "MIT",
+  "author": "Marco van Hylckama Vlieg (https://ai-created.com/)",
   "type": "module",
   "scripts": {
     "dev": "vite --open",

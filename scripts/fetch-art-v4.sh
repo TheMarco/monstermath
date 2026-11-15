@@ -18,9 +18,12 @@ while read -r name url; do
   fi
   case "$name" in
     bg/*) sips -s format jpeg -s formatOptions 88 "$src" --out "public/art/$name.jpg" >/dev/null ;;
-    *) sips -Z 640 "$src" --out "public/art/$name.png" >/dev/null ;;
+    # Pictures already converted to WebP are left alone. To redo one, delete its .webp and its file in art-src-v2.
+    *) [ -s "public/art/$name.webp" ] || sips -Z 640 "$src" --out "public/art/$name.png" >/dev/null ;;
   esac
   ok=$((ok + 1))
   echo "ok      $name"
 done < scripts/art-urls-v4.txt
 echo "Done: $ok of 9 pictures."
+# The game reads WebP pictures: convert what was just fetched.
+bash scripts/shrink-art.sh

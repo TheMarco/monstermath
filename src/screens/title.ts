@@ -38,7 +38,7 @@ export const titleScreen: Screen = (app) => {
     'div',
     { class: 'screen title-screen' },
     backdrop('meadow'),
-    h('h1', { class: 'logo-art' }, h('img', { src: 'art/logo.png', alt: 'MonsterMath', draggable: 'false' })),
+    h('h1', { class: 'logo-art' }, h('img', { src: 'art/logo.webp', alt: 'MonsterMath', draggable: 'false' })),
     h(
       'div',
       { class: 'title-cast' },

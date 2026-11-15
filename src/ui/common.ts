@@ -40,8 +40,11 @@ export function monsterImg(id: SpeciesId, stage: Stage, size: number, cls = '', 
     wrap.replaceChildren(h('div', { class: `blob blob-${id}` }, SPECIES[id].name.charAt(0)));
   });
   wrap.appendChild(img);
-  mountAnim(wrap, id, stage, size, intro);
-  if (!cls.includes('silhouette')) dress(wrap, id, size);
+  // A monster she has not met stays a grey shape: no moving, coloured clip on top of it.
+  if (!cls.includes('silhouette')) {
+    mountAnim(wrap, id, stage, size, intro);
+    dress(wrap, id, size);
+  }
   return wrap;
 }
 

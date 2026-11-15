@@ -410,11 +410,11 @@ export type Stage = 1 | 2 | 3;
 export const STARS_PER_DAY = 2;
 
 export function art(id: SpeciesId, stage: Stage = 1): string {
-  return `${import.meta.env.BASE_URL}art/monsters/${id}${stage === 1 ? '' : `-${stage}`}.png`;
+  return `${import.meta.env.BASE_URL}art/monsters/${id}${stage === 1 ? '' : `-${stage}`}.webp`;
 }
 
 export function eggArt(): string {
-  return `${import.meta.env.BASE_URL}art/items/egg.png`;
+  return `${import.meta.env.BASE_URL}art/items/egg.webp`;
 }
 
 export type BgName = 'meadow' | 'canyon' | 'grass' | 'hollow' | 'bakery' | 'patch';
@@ -431,5 +431,5 @@ export function themeArt(id: string): string {
 }
 
 export function decorArt(id: string): string {
-  return `${import.meta.env.BASE_URL}art/items/decor-${id}.png`;
+  return `${import.meta.env.BASE_URL}art/items/decor-${id}.webp`;
 }

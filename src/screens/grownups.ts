@@ -465,6 +465,25 @@ export const grownupsScreen: Screen = (app, params) => {
         'Progress is stored in this browser on this computer only, and clearing the browser data erases it. A backup file holds one player. Loading one never overwrites anyone: it fills the current player if they have not started yet, and otherwise adds a new player. To move to another computer, save a backup here and load it on this page there.',
       ),
       ),
+
+      card(
+        'Credits',
+        h(
+          'p',
+          { class: 'gu-credits' },
+          'Created by ',
+          h('a', { href: 'https://ai-created.com/', target: '_blank', rel: 'noopener' }, 'Marco van Hylckama Vlieg'),
+          '.',
+        ),
+        h(
+          'p',
+          { class: 'gu-credits' },
+          'MonsterMath is free. If it helps your child, you can ',
+          h('a', { href: 'https://ko-fi.com/aianddesign', target: '_blank', rel: 'noopener' }, 'support its making on Ko-fi'),
+          '.',
+        ),
+        h('p', { class: 'gu-small' }, 'The code is open source under the MIT license.'),
+      ),
       ),
     ),
   );

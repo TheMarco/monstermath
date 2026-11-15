@@ -5885,3 +5885,16 @@ button.e-cell.empty {
   background: rgba(255, 255, 255, 0.86);
   border-radius: 10px;
 }
+
+/* ---- grown-up page: credits ------------------------------------------------ */
+
+.gu-credits {
+  margin: 6px 0 0;
+  font-size: 16px;
+}
+
+.gu-credits a {
+  color: #6a2c91;
+  font-weight: 700;
+  text-decoration: underline;
+}

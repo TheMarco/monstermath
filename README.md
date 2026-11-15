@@ -241,3 +241,11 @@ whose file is missing falls back to a synthesized tone (`src/audio.ts`).
 - `src/voice/lines.ts` every spoken line; `scripts/voice/export-lines.ts` exports the recording script
 - `src/report.ts` numbers for the grown-up page and the teacher summary
 - `scripts/*-spec.md` how the art and animation were generated
+- `scripts/shrink-art.sh` makes pictures and clips smaller after new art is fetched (needs `cwebp` and `ffmpeg`)
+
+## Credits and license
+
+Created by Marco van Hylckama Vlieg, <https://ai-created.com/>. If the game
+helps your child, you can support its making at <https://ko-fi.com/aianddesign>.
+
+The code is under the MIT license, see `LICENSE`.
