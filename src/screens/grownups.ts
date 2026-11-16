@@ -1,4 +1,5 @@
 import { ALL_SPECIES, SPECIES, UPPER_ORDER } from '../data/monsters';
+import { FORGETFUL_LONG, forgetfulBrowser } from '../ui/storage';
 import { GRADE_POINTS, gradeOf, START_POINTS } from '../intake';
 import { COUNT_ERROR_TEXT, COUNT_KINDS, type CountKind } from '../math/count';
 import { OP_SYMBOL, type Kind } from '../math/expr';
@@ -450,6 +451,7 @@ export const grownupsScreen: Screen = (app, params) => {
 
       card(
         'Share and back up',
+      forgetfulBrowser() ? h('p', { class: 'gu-warning', role: 'note' }, FORGETFUL_LONG) : null,
       h(
         'div',
         { class: 'gu-actions' },

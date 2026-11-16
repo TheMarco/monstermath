@@ -1,4 +1,5 @@
 import { STARTERS } from '../data/monsters';
+import { FORGETFUL_SHORT, forgetfulBrowser } from '../ui/storage';
 import { currentPlayer, meadowFriends, NAME_MAX, players, renamePlayer } from '../state';
 import { backdrop, button, holdButton, monsterImg, type Screen } from '../ui/common';
 import { h } from '../ui/dom';
@@ -57,6 +58,7 @@ export const titleScreen: Screen = (app) => {
       { class: 'corner-br' },
       holdButton('Grown-ups (hold)', () => app.go('grownups')),
     ),
+    forgetfulBrowser() ? h('p', { class: 'title-warning', role: 'note' }, FORGETFUL_SHORT) : null,
   );
 
   return {

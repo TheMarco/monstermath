@@ -243,6 +243,17 @@ whose file is missing falls back to a synthesized tone (`src/audio.ts`).
 - `scripts/*-spec.md` how the art and animation were generated
 - `scripts/shrink-art.sh` makes pictures and clips smaller after new art is fetched (needs `cwebp` and `ffmpeg`)
 
+## Browsers
+
+Use Chrome, Edge or Firefox on a computer. Progress is saved in the browser,
+and those keep it. Safari, and every browser on an iPhone or iPad, erases a
+site's saved data after seven days in which the browser was used but the game
+was not opened, so a child who skips a week can lose everything. The game shows
+a warning there, on the title screen and on the grown-up page. A backup file
+(grown-up page) or adding the game to the Home Screen avoids the loss. The game
+is tested in Chrome and in Safari's engine on a laptop; Firefox, tablets and
+touch are untested.
+
 ## Credits and license
 
 Created by Marco van Hylckama Vlieg, <https://ai-created.com/>. If the game
