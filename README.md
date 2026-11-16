@@ -243,6 +243,15 @@ whose file is missing falls back to a synthesized tone (`src/audio.ts`).
 - `scripts/*-spec.md` how the art and animation were generated
 - `scripts/shrink-art.sh` makes pictures and clips smaller after new art is fetched (needs `cwebp` and `ffmpeg`)
 
+## Privacy
+
+The game collects no information. There is no account, no tracking, no cookies
+and no ads, and the code makes no request to any other server: it only loads
+its own pictures, clips and sounds. Names, progress and answers stay in the
+browser's storage on the player's computer. `tests/privacy.test.ts` fails when
+the code gains an outside address or a way to send data. The grown-up page says
+the same in a "Privacy" card.
+
 ## Browsers
 
 Use Chrome, Edge or Firefox on a computer. Progress is saved in the browser,

@@ -5931,3 +5931,12 @@ button.e-cell.empty {
   border: 2px solid #c77700;
   border-radius: 10px;
 }
+
+/* ---- grown-up page: privacy ------------------------------------------------- */
+
+.gu-privacy {
+  max-width: 760px;
+  font-size: 14px;
+  line-height: 1.45;
+  color: #333;
+}

@@ -469,6 +469,17 @@ export const grownupsScreen: Screen = (app, params) => {
       ),
 
       card(
+        'Privacy',
+        h('p', { class: 'gu-credits' }, 'MonsterMath collects no information. None.'),
+        h(
+          'p',
+          { class: 'gu-small gu-privacy' },
+          'There is no account and no sign-up. The game has no tracking, no cookies and no ads. Names, progress and every answer are stored in this browser on this computer and are never sent to us or to anyone else. We cannot see them. A backup file or a teacher summary leaves this computer only when you save or copy it yourself.',
+        ),
+        h('p', { class: 'gu-small gu-privacy' }, 'The two links under Credits open other websites, which have their own rules.'),
+      ),
+
+      card(
         'Credits',
         h(
           'p',
