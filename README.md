@@ -263,6 +263,10 @@ a warning there, on the title screen and on the grown-up page. A backup file
 is tested in Chrome and in Safari's engine on a laptop; Firefox, tablets and
 touch are untested.
 
+## Share picture
+
+`public/og.jpg` (1200 by 630) is the picture a chat app or social site shows when the game's link is shared. The tags that point to it are added when the game is built (`vite.config.ts`). Those sites need the full address of the picture: on Vercel it is found by itself; anywhere else, build with `SITE_URL=https://your-address npm run build`. The picture is made from `scripts/og/og.html` (open it at 1200 by 630 and take a screenshot).
+
 ## Credits and license
 
 Created by Marco van Hylckama Vlieg, <https://ai-created.com/>. If the game
