@@ -9,7 +9,14 @@ import type { SpeciesId, Stage } from '../data/monsters';
 
 export type AnimKind = 'idle' | 'happy';
 
-const names = new Set<string>();
+/**
+ * How much of the clip's width the still picture takes: 0.8 in the first clips,
+ * 0.6 in the ones remade with more room to move.
+ */
+const fills = new Map<string, number>();
+const OLD_FILL = 0.8;
+/** The canvas always leaves this much room: the still picture is 0.6 of its width. */
+const ROOM = 0.6;
 const base = (): string => `${import.meta.env.BASE_URL}art/anim/`;
 
 /** At most this many clips play at once; the rest stay still, to keep the laptop cool. */
@@ -20,13 +27,23 @@ export async function loadAnimManifest(): Promise<number> {
   try {
     const res = await fetch(`${base()}manifest.json`, { cache: 'no-store' });
     if (!res.ok) return 0;
-    const list = (await res.json()) as string[];
-    names.clear();
-    for (const name of list) names.add(name);
+    readManifest((await res.json()) as string[] | Record<string, number>);
   } catch {
     /* no clips yet: still pictures everywhere */
   }
-  return names.size;
+  return fills.size;
+}
+
+/** The list is either plain names (all first clips) or each name with its share of the picture. */
+export function readManifest(data: string[] | Record<string, number>): void {
+  fills.clear();
+  if (Array.isArray(data)) for (const name of data) fills.set(name, OLD_FILL);
+  else for (const [name, fill] of Object.entries(data)) fills.set(name, fill >= ROOM && fill <= 1 ? fill : OLD_FILL);
+}
+
+/** The side of the square a clip is drawn into, on a canvas `px` wide, so the monster matches its still picture. */
+export function clipSide(name: string, px: number): number {
+  return Math.round((px * ROOM) / (fills.get(name) ?? OLD_FILL));
 }
 
 export function animName(id: SpeciesId, stage: Stage, kind: AnimKind): string {
@@ -39,11 +56,11 @@ export function introName(id: SpeciesId, stage: Stage, hatched = false): string 
 }
 
 export function hasClip(name: string): boolean {
-  return names.has(name);
+  return fills.has(name);
 }
 
 export function hasAnim(id: SpeciesId, stage: Stage, kind: AnimKind): boolean {
-  return names.has(animName(id, stage, kind));
+  return fills.has(animName(id, stage, kind));
 }
 
 /**
@@ -76,8 +93,6 @@ interface Mounted {
 
 const mounted = new WeakMap<HTMLElement, Mounted>();
 
-/** The clips leave room around the monster for jumping, so the picture is drawn a little larger. */
-const CLIP_SCALE = 1.25;
 
 /** Replace the still picture inside `wrap` with its idle clip, when there is one. */
 export function mountAnim(wrap: HTMLElement, id: SpeciesId, stage: Stage, size: number, intro?: string): void {
@@ -85,7 +100,8 @@ export function mountAnim(wrap: HTMLElement, id: SpeciesId, stage: Stage, size: 
   // "calm" monsters hold still and only stir now and then (the title screen).
   const calm = wrap.classList.contains('calm');
   const canvas = document.createElement('canvas');
-  const px = Math.min(420, Math.round(size * CLIP_SCALE * 1.5));
+  // The canvas is larger than the still picture, to leave room for jumps and wings.
+  const px = Math.min(560, Math.round((size / ROOM) * 1.5));
   canvas.width = px;
   canvas.height = px;
   const ctx = canvas.getContext('2d', { willReadFrequently: true });
@@ -104,6 +120,7 @@ export function mountAnim(wrap: HTMLElement, id: SpeciesId, stage: Stage, size: 
   let lastTime = -1;
   let shown = false;
   let raf = 0;
+  let side = px;
   let seenInPage = false;
   live += 1;
 
@@ -126,6 +143,7 @@ export function mountAnim(wrap: HTMLElement, id: SpeciesId, stage: Stage, size: 
   const setClip = (kind: AnimKind): void => {
     current = kind;
     video.loop = kind === 'idle' && !calm;
+    side = clipSide(animName(id, stage, kind), px);
     video.src = `${base()}${animName(id, stage, kind)}.mp4`;
     if (kind === 'idle' && calm) stirLater();
     else void video.play().catch(() => undefined);
@@ -134,6 +152,7 @@ export function mountAnim(wrap: HTMLElement, id: SpeciesId, stage: Stage, size: 
   const playIntro = (name: string): void => {
     current = 'intro';
     video.loop = false;
+    side = clipSide(name, px);
     video.src = `${base()}${name}.mp4`;
     void video.play().catch(() => undefined);
   };
@@ -156,10 +175,11 @@ export function mountAnim(wrap: HTMLElement, id: SpeciesId, stage: Stage, size: 
     if (video.readyState < 2 || video.currentTime === lastTime) return;
     lastTime = video.currentTime;
     ctx.clearRect(0, 0, px, px);
-    ctx.drawImage(video, 0, 0, px, px);
-    const image = ctx.getImageData(0, 0, px, px);
+    const off = (px - side) >> 1;
+    ctx.drawImage(video, off, off, side, side);
+    const image = ctx.getImageData(off, off, side, side);
     removeKey(image.data);
-    ctx.putImageData(image, 0, 0);
+    ctx.putImageData(image, off, off);
     if (!shown) {
       shown = true;
       canvas.style.display = '';
@@ -177,6 +197,7 @@ export function mountAnim(wrap: HTMLElement, id: SpeciesId, stage: Stage, size: 
     }).observe(wrap, { attributes: true, attributeFilter: ['class'] });
   }
 
+  if (!hasAnim(id, stage, 'happy')) wrap.classList.add('no-happy');
   wrap.appendChild(canvas);
   if (intro && hasClip(intro)) playIntro(intro);
   else setClip('idle');

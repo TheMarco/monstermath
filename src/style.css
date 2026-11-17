@@ -386,6 +386,11 @@ button {
   animation: jump 0.7s ease-out;
 }
 
+/* A monster with no joy clip of its own hops while its idle clip plays on. */
+.monster.jump.no-happy > .anim-canvas {
+  animation: jump 0.7s ease-out;
+}
+
 .monster.tilt > img,
 .monster.tilt > .blob {
   animation: tilt 0.6s ease-in-out;
@@ -2848,11 +2853,12 @@ button {
 /* ---- animated monsters ------------------------------------------------- */
 
 .anim-canvas {
+  /* The still picture is 0.6 of the canvas: room on every side for jumps and wings. */
   position: absolute;
-  left: -12.5%;
-  top: -12.5%;
-  width: 125%;
-  height: 125%;
+  left: -33.333%;
+  top: -33.333%;
+  width: 166.667%;
+  height: 166.667%;
   pointer-events: none;
 }
 

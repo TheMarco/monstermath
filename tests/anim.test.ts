@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { animName, removeKey } from '../src/ui/anim';
+import { animName, clipSide, hasClip, readManifest, removeKey } from '../src/ui/anim';
 
 const px = (...rgba: number[]): Uint8ClampedArray => new Uint8ClampedArray(rgba);
 
@@ -50,5 +50,25 @@ describe('clip names', () => {
     expect(animName('puff', 1, 'idle')).toBe('puff-idle');
     expect(animName('puff', 2, 'happy')).toBe('puff-2-happy');
     expect(animName('puff', 3, 'idle')).toBe('puff-3-idle');
+  });
+});
+
+describe('animation list', () => {
+  it('reads a plain list of names as first clips', () => {
+    readManifest(['nox-idle']);
+    expect(hasClip('nox-idle')).toBe(true);
+    expect(hasClip('nox-happy')).toBe(false);
+    expect(clipSide('nox-idle', 400)).toBe(300);
+  });
+
+  it('draws a clip with more room across the whole canvas', () => {
+    readManifest({ 'nox-idle': 0.6, 'glim-idle': 0.8 });
+    expect(clipSide('nox-idle', 400)).toBe(400);
+    expect(clipSide('glim-idle', 400)).toBe(300);
+  });
+
+  it('falls back to the first size for a number that makes no sense', () => {
+    readManifest({ 'nox-idle': 7 });
+    expect(clipSide('nox-idle', 400)).toBe(300);
   });
 });

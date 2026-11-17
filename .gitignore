@@ -5,6 +5,8 @@ dist
 # Signed download links (they expire, and the files they point to are committed)
 scripts/art-urls*.txt
 scripts/anim-urls*.txt
+scripts/anim-wide-urls*.txt
+public/art/anim/.fetched
 scripts/voice/urls-*.txt
 scripts/audio-urls.txt
 
