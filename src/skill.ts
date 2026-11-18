@@ -1,85 +1,124 @@
 import { EGG_ORDER, SPECIES, type SpeciesId } from './data/monsters';
+import { recordRound, wantsStretch, type Mark, type Moved } from './ladder';
+import type { Treat } from './math/expr';
 import type { Delivery } from './math/regroup';
-import { clock, dayKey, daysPlayed, friends, isFriend, monster, type MonsterState, type Save } from './state';
+import { clock, dayKey, daysPlayed, friends, isFriend, nextTarget, type MonsterState, type Round, type Save, type TreatProgress } from './state';
 import { steppedDown } from './start';
 
 /**
  * What the game knows about where she is, and how it uses it: how big the
- * treat numbers are, when the berry blocks can step back, which skill most
+ * treat numbers are (one shared ladder per kind of treat), when the berry blocks can step back, which skill most
  * needs another visit, and easing off after a long break.
  */
 
 type Levels = Partial<Record<string, number>>;
 
-/** Where a monster's treat numbers start (0 is the smallest pool), from the first-day check. */
-export function startPool(levels: Levels | undefined, id: SpeciesId, isFirstStarter: boolean): number {
-  const sp = SPECIES[id];
-  const last = Math.max(0, sp.pools.length - 1);
+/** Monsters that play treats: the starters, the Tall Grass monsters and the egg monsters. */
+export function playsTreats(id: SpeciesId): boolean {
+  const habitat = SPECIES[id].habitat;
+  return habitat === 'starter' || habitat === 'grass' || habitat === 'egg';
+}
+
+/** The biggest treats size for a kind of treat, over every monster that asks for it. */
+export function treatTop(fav: Treat): number {
+  const sizes = (Object.keys(SPECIES) as SpeciesId[]).filter((id) => playsTreats(id) && SPECIES[id].fav === fav).map((id) => SPECIES[id].pools.length);
+  return Math.max(0, Math.max(0, ...sizes) - 1);
+}
+
+/** Where a kind of treat starts (0 is the smallest numbers), from the first-day check. */
+export function treatStart(levels: Levels | undefined, fav: Treat): number {
   if (!levels) return 0;
   const passed = (strand: string): number => levels[strand] ?? 0;
-  const ladder = (n: number, high: number, mid: number): number => (n >= high ? 2 : n >= mid ? 1 : 0);
+  // Adding and taking away: sums within 20, then two-digit plus one-digit, then two-digit plus two-digit with regrouping.
+  const sums = (n: number): number => (n >= 6 ? 3 : n >= 4 ? 2 : n >= 2 ? 1 : 0);
+  const facts = (n: number): number => (n >= 5 ? 2 : n >= 3 ? 1 : 0);
   let pool: number;
-  switch (sp.fav) {
-    case 'add':
-      pool = ladder(passed('add'), 5, 2);
-      break;
+  switch (fav) {
     case 'sub':
-      pool = ladder(passed('sub'), 5, 2);
+      pool = sums(passed('sub'));
       break;
     case 'mul':
-      pool = ladder(passed('mul'), 5, 3);
+      pool = facts(passed('mul'));
       break;
     case 'div':
-      pool = ladder(passed('div'), 5, 3);
+      pool = facts(passed('div'));
       break;
     default:
-      // Any-treat monsters: the first starter begins smallest; later ones a pool up, when sums within 20 are solid.
-      pool = (passed('add') >= 5 ? 1 : 0) + (!isFirstStarter && passed('add') >= 2 ? 1 : 0);
+      pool = sums(passed('add'));
   }
   // Until two-digit numbers read as tens and ones, stay with numbers up to about 20.
   if (passed('place') < 3) pool = Math.min(pool, 1);
-  return Math.min(pool, last);
+  return Math.min(pool, treatTop(fav));
 }
 
-/** The pool a monster's next number comes from. Set once, then moved by how rounds go. */
-export function poolOf(save: Save, id: SpeciesId): number {
-  const m = monster(save, id);
-  const last = Math.max(0, SPECIES[id].pools.length - 1);
-  if (m.pool === undefined) {
-    m.pool = save.intakeLevels
-      ? startPool(save.intakeLevels, id, save.starter === id)
-      : // Saves from before the first-day check: the old rule, a pool every two rounds.
-        Math.floor(m.rounds / 2) + (SPECIES[id].habitat === 'starter' && save.starter !== id ? 1 : 0);
+/**
+ * Her treats ladder for a kind of treat. Every monster that asks for that
+ * kind shares it, so getting better with one shows with all of them. Saves
+ * from before kept a size per monster: the biggest one carries over.
+ */
+export function treatLevel(save: Save, fav: Treat): TreatProgress {
+  save.treatLevels ??= {};
+  let p = save.treatLevels[fav];
+  if (!p) {
+    p = { rung: treatRung(save, fav), recent: [] };
+    save.treatLevels[fav] = p;
   }
-  m.pool = Math.max(0, Math.min(last, m.pool));
-  return m.pool;
+  p.rung = Math.max(0, Math.min(treatTop(fav), p.rung));
+  return p;
+}
+
+/** Her treats size for a kind of treat, without saving anything: for the grown-up page. */
+export function treatRung(save: Save, fav: Treat): number {
+  const kept = save.treatLevels?.[fav];
+  if (kept) return Math.max(0, Math.min(treatTop(fav), kept.rung));
+  const held = (Object.values(save.monsters) as MonsterState[])
+    .filter((m) => playsTreats(m.id) && SPECIES[m.id].fav === fav && m.pool !== undefined)
+    .map((m) => m.pool as number);
+  return Math.max(0, Math.min(treatTop(fav), Math.max(treatStart(save.intakeLevels, fav), ...held)));
+}
+
+/**
+ * A new treats round with this monster: a number from her size, or now and
+ * then a stretch round from the size above. The very first round ever is a
+ * size down, as a warm-up.
+ */
+export function startTreatRound(save: Save, id: SpeciesId, rng: () => number = Math.random): Round {
+  const fav = SPECIES[id].fav;
+  const p = treatLevel(save, fav);
+  const last = Math.max(0, SPECIES[id].pools.length - 1);
+  const warmUp = save.exprLog.length === 0;
+  const stretch = !warmUp && wantsStretch({ rung: p.rung, recent: p.recent as Mark[] }, Math.min(last, treatTop(fav)), rng);
+  const pool = warmUp ? Math.max(0, p.rung - 1) : Math.min(last, p.rung + (stretch ? 1 : 0));
+  // A warm-up round is below her size, so it is not marked on the ladder (no rung).
+  return { target: nextTarget(save, id, rng, pool), hearts: 0, found: [], hints: 0, misses: 0, rung: warmUp ? undefined : p.rung, stretch, helped: 0, solo: 0, dropped: 0 };
 }
 
 export type RoundQuality = 'clean' | 'ok' | 'rough';
 
-/** Wrong tries are free and part of exploring, so a few do not count against a round. */
-export function roundQuality(misses: number, hints: number): RoundQuality {
-  if (misses >= 5 || hints >= 2) return 'rough';
-  return misses <= 2 && hints === 0 ? 'clean' : 'ok';
+/**
+ * Wrong tries are free and part of exploring, so a few do not count against a
+ * round. A hint is fine when she then made one of her own; letting a "your
+ * turn" go means the numbers were too big.
+ */
+export function roundQuality(round: Pick<Round, 'misses' | 'helped' | 'solo' | 'dropped'>): RoundQuality {
+  const misses = round.misses ?? 0;
+  if (misses >= 5 || (round.dropped ?? 0) > 0) return 'rough';
+  return misses <= 2 && (round.solo ?? 0) >= (round.helped ?? 0) ? 'clean' : 'ok';
 }
 
-/** After a treats round: two clean rounds move the numbers up, one rough round moves them down. */
-export function adaptPool(save: Save, id: SpeciesId, quality: RoundQuality): void {
-  const m = monster(save, id);
-  const last = Math.max(0, SPECIES[id].pools.length - 1);
-  const pool = poolOf(save, id);
-  if (quality === 'rough') {
-    m.pool = Math.max(0, pool - 1);
-    m.poolRun = 0;
-  } else if (quality === 'clean') {
-    const run = (m.poolRun ?? 0) + 1;
-    if (run >= 2) {
-      m.pool = Math.min(last, pool + 1);
-      m.poolRun = 0;
-    } else {
-      m.poolRun = run;
-    }
-  }
+/**
+ * After a treats round: move her treats size by how it went. A round that
+ * began at another size (she left it and came back later) says nothing about
+ * this one. Returns null when nothing was recorded.
+ */
+export function finishTreatRound(save: Save, id: SpeciesId, round: Round): Moved | null {
+  const fav = SPECIES[id].fav;
+  const p = treatLevel(save, fav);
+  if (round.rung !== p.rung) return null;
+  const moved = recordRound({ rung: p.rung, recent: p.recent as Mark[] }, Math.min(SPECIES[id].pools.length - 1, treatTop(fav)), roundQuality(round), !!round.stretch);
+  p.rung = moved.rung;
+  p.recent = moved.recent;
+  return moved;
 }
 
 /**
@@ -147,12 +186,23 @@ export function easeAfterBreak(save: Save): boolean {
   if (!last || last === now || save.easedFor === last) return false;
   if (daysBetween(last, now) < BREAK_DAYS) return false;
   save.easedFor = last;
+  // Treats sizes kept per monster in older saves become shared first, so they step down too.
+  for (const m of Object.values(save.monsters) as MonsterState[]) if (playsTreats(m.id)) treatLevel(save, SPECIES[m.id].fav);
   for (const m of Object.values(save.monsters) as MonsterState[]) {
     if (m.step !== undefined && m.step > 0) m.step -= 1;
     m.run = 0;
     m.recent = [];
-    if (m.pool !== undefined && m.pool > 0) m.pool -= 1;
-    m.poolRun = 0;
+  }
+  const ladders: Array<{ step?: number; recent?: number[] } | undefined> = [...Object.values(save.early ?? {}), ...Object.values(save.upper ?? {})];
+  for (const at of ladders) {
+    if (!at) continue;
+    if (at.step !== undefined && at.step > 0) at.step -= 1;
+    at.recent = [];
+  }
+  for (const p of Object.values(save.treatLevels ?? {})) {
+    if (!p) continue;
+    if (p.rung > 0) p.rung -= 1;
+    p.recent = [];
   }
   return true;
 }
@@ -210,11 +260,25 @@ function marksByDay(save: Save, id: SpeciesId): Map<string, boolean[]> {
   return days;
 }
 
+/**
+ * Skills the first-day check already showed, so the monsters that wait on
+ * them do not hold her on work below her level: berry trips she did at full
+ * two-digit size, counting once she reads two-digit numbers as tens and
+ * ones, and the crate of ten once she also adds across ten.
+ */
+export function shownByCheck(save: Save, id: SpeciesId): boolean {
+  const sp = SPECIES[id];
+  const passed = (strand: string): number => save.intakeLevels?.[strand] ?? 0;
+  if (sp.habitat === 'canyon' && sp.delivery) return !!save.fast[sp.delivery];
+  if (sp.habitat === 'early' && sp.count === 'count') return passed('place') >= 3 || passed('count') >= 5;
+  if (sp.habitat === 'early' && sp.count === 'ten') return passed('place') >= 3 && passed('add') >= 2;
+  return false;
+}
+
 /** How many different days she practised this skill enough, and well. Capped at SECURE_DAYS. */
 export function goodDays(save: Save, id: SpeciesId): number {
   if (!isFriend(save, id)) return 0;
-  const sp = SPECIES[id];
-  if (sp.habitat === 'canyon' && sp.delivery && save.fast[sp.delivery]) return SECURE_DAYS;
+  if (shownByCheck(save, id)) return SECURE_DAYS;
   let good = 0;
   for (const marks of marksByDay(save, id).values()) {
     if (marks.length >= GOOD_DAY_PROBLEMS && marks.filter(Boolean).length / marks.length >= SECURE_RATE) good += 1;

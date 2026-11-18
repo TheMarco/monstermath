@@ -1,4 +1,4 @@
-import { classify, type Expr, type Kind, type Treat } from './expr';
+import { classify, isFlip, sameExpr, type Expr, type Kind, type Treat } from './expr';
 
 /**
  * A hint shows a picture and gives one of the two numbers. The child still
@@ -123,4 +123,58 @@ export function hintFor(target: number, fav: Treat, found: readonly Expr[]): Hin
     if (hint) return hint;
   }
   return null;
+}
+
+// ---- your turn, after a hint -------------------------------------------------
+
+/** Extra hearts for a "your turn" answer made alone. */
+export const SOLO_BONUS = 2;
+/** Tries at a "your turn" before the game lets it go. */
+export const TURN_TRIES = 2;
+
+type RealKind = 'add' | 'sub' | 'mul' | 'div';
+const isReal = (k: Kind): k is RealKind => k === 'add' || k === 'sub' || k === 'mul' || k === 'div';
+
+function isNew(e: Expr, avoid: number, found: readonly Expr[]): boolean {
+  return e.a !== avoid && e.b !== avoid && !found.some((f) => sameExpr(f, e) || isFlip(f, e));
+}
+
+/** Is there still a way of this kind to make the number, without the hint's number and not one she has? */
+export function ownWayLeft(target: number, kind: RealKind, avoid: number, found: readonly Expr[]): boolean {
+  const ok = (e: Expr): boolean => classify(e) === kind && isNew(e, avoid, found);
+  if (kind === 'add') {
+    for (let a = 2; a <= target - 2; a++) if (ok({ a, op: '+', b: target - a })) return true;
+  } else if (kind === 'sub') {
+    for (let b = 2; b <= 100; b++) if (ok({ a: target + b, op: '-', b })) return true;
+  } else if (kind === 'mul') {
+    for (let a = 2; a <= target / 2; a++) if (target % a === 0 && ok({ a, op: '*', b: target / a })) return true;
+  } else {
+    for (let b = 2; b <= 12; b++) if (ok({ a: target * b, op: '/', b })) return true;
+  }
+  return false;
+}
+
+/**
+ * After an answer made with a hint, she makes one more of her own: the same
+ * kind, without the number the hint gave. When that kind has no new way
+ * left (12 has only so many times treats), any kind of her own will do: null.
+ */
+export function turnKind(target: number, helped: Expr, avoid: number, found: readonly Expr[]): RealKind | null {
+  const kind = classify(helped);
+  return isReal(kind) && ownWayLeft(target, kind, avoid, found) ? kind : null;
+}
+
+/** Does this correct answer count as her own "your turn"? */
+export function isOwnTurn(e: Expr, turn: { kind: Kind | null; avoid: number }, prior: readonly Expr[]): boolean {
+  const kind = classify(e);
+  if (!isReal(kind) || !isNew(e, turn.avoid, prior)) return false;
+  return turn.kind === null || kind === turn.kind;
+}
+
+/** A correct answer that tried the "your turn" but reused the hint's number or an old answer. */
+export function missedTurn(e: Expr, turn: { kind: Kind | null; avoid: number }, prior: readonly Expr[]): boolean {
+  if (isOwnTurn(e, turn, prior)) return false;
+  if (prior.some((f) => sameExpr(f, e))) return true;
+  const kind = classify(e);
+  return (turn.kind === null ? isReal(kind) : kind === turn.kind) && (e.a === turn.avoid || e.b === turn.avoid || prior.some((f) => isFlip(f, e)));
 }

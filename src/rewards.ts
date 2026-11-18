@@ -3,7 +3,7 @@ import type { Kind } from './math/expr';
 import type { FracKind } from './math/fractions';
 import type { Delivery } from './math/regroup';
 import { weakestFriend } from './skill';
-import { befriend, dayKey, daysPlayed, friends, isFriend, monster, today, type Save } from './state';
+import { befriend, dayKey, daysPlayed, friends, giveStar, isFriend, monster, today, type Save, type StarResult } from './state';
 
 /**
  * The reward layer around the math: ranger levels, eggs, bonds, wishes and
@@ -282,6 +282,71 @@ export function onRound(save: Save, id: SpeciesId): Gain {
     wishGranted: !!wish,
     bondUp: level ? { id, level, title: bondLevel(monster(save, id).bond ?? 0).title } : null,
   };
+}
+
+// ---- stars for climbing ----------------------------------------------------
+
+/** The highest level reached on a skill so far. Saves from before this was kept read it from the problem logs. */
+function bestSoFar(save: Save, skill: string): number {
+  const kept = save.best?.[skill];
+  if (kept !== undefined) return kept;
+  const [place, kind] = skill.split('.');
+  const rungs: Array<number | undefined> =
+    place === 'trip'
+      ? save.tripLog.filter((t) => t.type === kind).map((t) => t.rung)
+      : place === 'frac'
+        ? (save.fracLog ?? []).filter((f) => f.kind === kind).map((f) => f.rung)
+        : place === 'count'
+          ? (save.countLog ?? []).filter((c) => c.kind === kind).map((c) => c.rung)
+          : place === 'upper'
+            ? (save.upperLog ?? []).filter((u) => u.kind === kind).map((u) => u.rung)
+            : [];
+  return Math.max(-1, ...rungs.filter((r): r is number => r !== undefined));
+}
+
+/**
+ * She moved from one level of a skill to another. When that is higher than
+ * she has ever been on it, the friend she is playing with earns a bonus star,
+ * given at the end of the round. Climbing back after a step down pays nothing.
+ * Returns true for a new best.
+ */
+export function climbed(save: Save, skill: string, from: number, to: number, id: SpeciesId): boolean {
+  const best = Math.max(bestSoFar(save, skill), from);
+  save.best = { ...(save.best ?? {}), [skill]: Math.max(best, to) };
+  if (to <= best) return false;
+  const m = monster(save, id);
+  m.climbStars = (m.climbStars ?? 0) + 1;
+  return true;
+}
+
+/** The toast for moving up: a bonus star is on its way when the level is a new best. */
+export function levelUpLine(best: boolean, name: string, words = 'problems'): GainLine {
+  return best
+    ? { text: `Level up! ${name} gets a bonus star.`, kind: 'level', clip: 't_best' }
+    : { text: `Level up! The ${words} grow with you.`, kind: 'level', clip: 't_harder' };
+}
+
+/**
+ * The star for a finished round with a friend, plus the bonus stars waiting
+ * from new levels. Bonus stars do not count toward the daily limits.
+ */
+export function roundStars(save: Save, id: SpeciesId): { result: StarResult; bonus: number } {
+  const m = monster(save, id);
+  const bonus = m.climbStars ?? 0;
+  m.climbStars = 0;
+  let result = giveStar(save, id);
+  for (let i = 0; i < bonus; i++) {
+    const r = giveStar(save, id, { bonus: true });
+    if (r === 'grown') result = 'grown';
+    else if (result === 'full-today') result = 'star';
+  }
+  return { result, bonus };
+}
+
+/** The line on a round's party that explains a bonus star. */
+export function bonusLines(bonus: number): string[] {
+  if (bonus <= 0) return [];
+  return [bonus === 1 ? 'Plus a bonus star for a new level!' : `Plus ${bonus} bonus stars for new levels!`];
 }
 
 /** Short lines for the toasts, in the order they should appear. */

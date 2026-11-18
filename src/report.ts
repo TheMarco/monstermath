@@ -1,4 +1,5 @@
 import { ALL_SPECIES, CANYON_ORDER, GRASS_ORDER, HOLLOW_ORDER, SPECIES, type SpeciesId } from './data/monsters';
+import { playsTreats, treatRung, treatTop } from './skill';
 import { COUNT_ERROR_TEXT, COUNT_KINDS, COUNT_RUNG_TEXT, type CountError, type CountKind } from './math/count';
 import { OP_SYMBOL, type Kind } from './math/expr';
 import { FRAC_ERROR_TEXT, FRAC_KINDS, FRAC_RUNG_TEXT, type FracError, type FracKind } from './math/fractions';
@@ -182,12 +183,12 @@ export function upperStats(save: Save): UpperStats[] {
 export function monsterStatus(save: Save, id: SpeciesId): string {
   const m = save.monsters[id];
   if (!m) return 'Not met';
-  const pools = SPECIES[id].pools.length;
+  const fav = SPECIES[id].fav;
   const size =
     m.step !== undefined
       ? `, level ${m.step + 1}`
-      : m.pool !== undefined && pools > 0
-        ? `, number size ${m.pool + 1} of ${pools}`
+      : playsTreats(id)
+        ? `, number size ${treatRung(save, fav) + 1} of ${treatTop(fav) + 1}`
         : '';
   if (!m.friend) return `Met, not yet a friend${size}`;
   return `Friend, stage ${m.stage} of 3 (${m.stars} stars)` + size;
@@ -202,7 +203,7 @@ export function skillLevel(save: Save, id: SpeciesId): { have: number; of: numbe
   if (sp.habitat === 'hollow' && sp.frac) return { have: (m.step ?? 0) + 1, of: FRAC_RUNG_TEXT[sp.frac].length };
   if (sp.habitat === 'early' && sp.count) return { have: (save.early?.[sp.count]?.step ?? 0) + 1, of: COUNT_RUNG_TEXT[sp.count].length };
   if (sp.habitat === 'upper' && sp.upper) return { have: (save.upper?.[sp.upper]?.step ?? 0) + 1, of: UPPER_RUNG_TEXT[sp.upper].length };
-  if (m.pool !== undefined && sp.pools.length > 0) return { have: m.pool + 1, of: sp.pools.length };
+  if (playsTreats(id) && sp.pools.length > 0) return { have: Math.min(treatRung(save, sp.fav), sp.pools.length - 1) + 1, of: sp.pools.length };
   return null;
 }
 
@@ -223,17 +224,23 @@ export function levelRows(save: Save): LevelRow[] {
     const last = marks.slice(-8);
     return last.length === 0 ? 'no problems yet' : `${last.filter(Boolean).length} of last ${last.length} right first try`;
   };
-  for (const id of GRASS_ORDER) {
-    const m = save.monsters[id];
-    const pools = SPECIES[id].pools;
-    const pool = m?.pool;
-    const from = pool !== undefined ? (pools[pool] ?? []) : [];
+  // Treats: one ladder per kind of treat. The starters and egg monsters share the "any treat" one.
+  const treatGroups: Array<{ ids: SpeciesId[]; monster: string }> = [
+    { ids: ALL_SPECIES.filter((id) => playsTreats(id) && SPECIES[id].fav === 'any'), monster: 'Starters and egg monsters' },
+    ...GRASS_ORDER.map((id) => ({ ids: [id], monster: SPECIES[id].name })),
+  ];
+  for (const group of treatGroups) {
+    const first = group.ids[0] as SpeciesId;
+    const fav = SPECIES[first].fav;
+    const met = group.ids.some((id) => save.monsters[id]);
+    const pool = treatRung(save, fav);
+    const from = SPECIES[first].pools[pool] ?? [];
     rows.push({
-      skill: SPECIES[id].skill,
-      monster: SPECIES[id].name,
-      level: pool === undefined ? 'not started' : `${pool + 1} of ${pools.length}`,
-      working: from.length ? `Makes numbers from ${Math.min(...from)} to ${Math.max(...from)}` : '',
-      recent: rate(save.exprLog.filter((e) => e.monster === id).map((e) => e.correct && !e.hinted)),
+      skill: SPECIES[first].skill,
+      monster: group.monster,
+      level: met ? `${pool + 1} of ${treatTop(fav) + 1}` : 'not started',
+      working: met && from.length ? `Makes numbers from ${Math.min(...from)} to ${Math.max(...from)}` : '',
+      recent: rate(save.exprLog.filter((e) => group.ids.includes(e.monster)).map((e) => e.correct && !e.hinted)),
     });
   }
   for (const id of CANYON_ORDER) {

@@ -248,7 +248,9 @@ describe('the level table for grown-ups', () => {
     monster(save, 'plum').step = 3;
     trips(save, 'addR', [true, false, true]);
     const rows = levelRows(save);
-    expect(rows).toHaveLength(12);
+    expect(rows).toHaveLength(13);
+    // The starters and egg monsters share one treats row; nothing met yet.
+    expect(rows.find((r) => r.monster === 'Starters and egg monsters')?.level).toBe('not started');
     const plum = rows.find((r) => r.monster === 'Plum');
     expect(plum).toMatchObject({ level: '4 of 6', working: 'Two-digit plus two-digit with regrouping, up to 99', recent: '2 of last 3 right first try' });
     expect(rows.find((r) => r.monster === 'Nub')?.level).toBe('2 of 6');

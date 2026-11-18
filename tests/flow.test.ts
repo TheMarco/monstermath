@@ -219,16 +219,16 @@ describe('first session', () => {
   });
 
   it('asks for the favorite treat when the meter fills without it', () => {
-    // She passed every subtraction level in the first-day check, so Moss starts two pools up.
-    // Pin the number to the top of that pool (35).
+    // She passed every subtraction level in the first-day check, so Moss starts at its biggest numbers.
+    // Pin the number to the top of that size (75).
     tomorrow();
     const random = vi.spyOn(Math, 'random').mockReturnValue(0.99);
     click('Tall Grass');
     random.mockRestore();
     expect(text('.nameplate')).toBe('Wild Moss');
     const target = Number(text('.target-badge'));
-    expect(target).toBe(35);
-    expect(saved().monsters.moss?.pool).toBe(2);
+    expect(target).toBe(75);
+    expect(saved().treatLevels?.sub?.rung).toBe(3);
     giveTreat(target - 2, '+', 2);
     giveTreat(target - 3, '+', 3);
     giveTreat(target - 4, '+', 4);
@@ -238,10 +238,24 @@ describe('first session', () => {
     click('Help me');
     expect(text('.hint-text')).toContain('−');
     const start = Number(text('.slot'));
+    const hearts = qa('.meter .icon.on').length;
     type(String(start - target));
     key('Enter');
+    // Made with the hint: true, but no hearts. Now one of her own, without the hint's number.
+    expect(qa('.meter .icon.on').length).toBe(hearts);
+    expect(text('.feedback-text')).toContain(`Your turn: make ${target} with\u00a0−, without ${start}.`);
+    wait(1600);
+    expect(q('.party')).toBeNull();
+    // Reusing the hint's number is not her own way.
+    giveTreat(start, '-', start - target);
+    expect(text('.feedback-text')).toContain('Your turn');
+    giveTreat(start + 5, '-', start + 5 - target);
+    expect(text('.feedback-text')).toContain('All by yourself');
     wait(1600);
     expect(text('.party h2')).toBe('Moss is your friend!');
+    const log = saved().exprLog.filter((e) => e.monster === 'moss' && e.correct);
+    expect(log.at(-3)).toMatchObject({ a: start, op: '-', hearts: 0, hinted: true });
+    expect(log.at(-1)?.hearts).toBeGreaterThan(4);
     click('Hooray!');
   });
 
@@ -453,7 +467,14 @@ describe('first session', () => {
       openFriend('bix');
       click('Play');
       for (let k = 0; k < 4; k++) {
-        if (k > 0) click(q('.party') ? 'Play again' : 'Next one');
+        if (k > 0 && !q('.party')) click('Next one');
+        else if (k > 0 && qa('.party button').some((b) => b.textContent?.trim() === 'Play again')) click('Play again');
+        else if (k > 0) {
+          // Bix evolved (bonus stars for new levels help): that party only goes back to the meadow.
+          click('Meadow');
+          openFriend('bix');
+          click('Play');
+        }
         solveHoney();
         wait(1500);
       }

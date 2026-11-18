@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import type { Delivery } from '../src/math/regroup';
 import { ensureWishes } from '../src/rewards';
-import { adaptPool, easeAfterBreak, fluent, poolOf, roundQuality, skillHealth, startPool, weakestFriend } from '../src/skill';
+import { easeAfterBreak, finishTreatRound, fluent, roundQuality, skillHealth, startTreatRound, treatLevel, treatStart, weakestFriend } from '../src/skill';
 import { befriend, clock, freshSave, monster, today, type Save } from '../src/state';
 
 function setDay(day: number): void {
@@ -15,50 +15,122 @@ function trip(save: Save, type: Delivery, firstTry: boolean, helped = false): vo
 beforeEach(() => setDay(13));
 
 describe('where treat numbers start', () => {
-  it('follows the first-day check, strand by strand', () => {
-    expect(startPool(undefined, 'glim', false)).toBe(0);
-    expect(startPool({ place: 5, mul: 1 }, 'glim', false)).toBe(0);
-    expect(startPool({ place: 5, mul: 3 }, 'glim', false)).toBe(1);
-    expect(startPool({ place: 5, mul: 6 }, 'glim', false)).toBe(2);
-    expect(startPool({ place: 5, div: 5 }, 'fenn', false)).toBe(2);
-    expect(startPool({ place: 5, add: 2 }, 'dab', false)).toBe(1);
-    expect(startPool({ place: 5, sub: 1 }, 'moss', false)).toBe(0);
-    // The first starter begins smallest; a starter met later begins a pool up.
-    expect(startPool({ place: 5, add: 3 }, 'puff', true)).toBe(0);
-    expect(startPool({ place: 5, add: 3 }, 'pim', false)).toBe(1);
+  it('follows the first-day check, one kind of treat at a time', () => {
+    expect(treatStart(undefined, 'mul')).toBe(0);
+    expect(treatStart({ place: 5, mul: 1 }, 'mul')).toBe(0);
+    expect(treatStart({ place: 5, mul: 3 }, 'mul')).toBe(1);
+    expect(treatStart({ place: 5, mul: 6 }, 'mul')).toBe(2);
+    expect(treatStart({ place: 5, div: 5 }, 'div')).toBe(2);
+    expect(treatStart({ place: 5, add: 2 }, 'add')).toBe(1);
+    expect(treatStart({ place: 5, sub: 1 }, 'sub')).toBe(0);
+    expect(treatStart({ place: 5, sub: 7 }, 'sub')).toBe(3);
+    // Any-treat monsters follow addition: 27 + 5 done means numbers from 24 to 36.
+    expect(treatStart({ place: 4, add: 4 }, 'any')).toBe(2);
+    expect(treatStart({ place: 4, add: 3 }, 'any')).toBe(1);
+    expect(treatStart({ place: 5, add: 7 }, 'any')).toBe(3);
   });
 
   it('keeps numbers small until two-digit numbers read as tens and ones', () => {
-    expect(startPool({ place: 2, mul: 6 }, 'glim', false)).toBe(1);
-    expect(startPool({ place: 2, add: 7 }, 'dab', false)).toBe(1);
+    expect(treatStart({ place: 2, mul: 6 }, 'mul')).toBe(1);
+    expect(treatStart({ place: 2, add: 7 }, 'add')).toBe(1);
+    expect(treatStart({ place: 2, add: 7 }, 'any')).toBe(1);
+  });
+
+  it('is one ladder for every monster that wants the same kind of treat', () => {
+    const save = freshSave();
+    save.intakeLevels = { place: 4, add: 4 };
+    save.starter = 'puff';
+    save.exprLog.push({ t: 0, day: '2026-11-13', monster: 'puff', target: 12, a: 10, op: '+', b: 2, correct: true, kind: 'add', hearts: 4, hinted: false });
+    // The first starter is no longer held back: it starts where the check says.
+    expect(treatLevel(save, 'any').rung).toBe(2);
+    treatLevel(save, 'any').rung = 3;
+    for (const id of ['puff', 'pim', 'fizz', 'tup'] as const) {
+      const round = startTreatRound(save, id, () => 0.99);
+      expect(round.rung).toBe(3);
+      expect([40, 48, 50, 60]).toContain(round.target);
+    }
+    // Glim loves times treats and keeps its own ladder.
+    expect(treatLevel(save, 'mul').rung).toBe(0);
+  });
+
+  it('carries over the biggest size from saves that kept one per monster', () => {
+    const save = freshSave();
+    save.intakeLevels = { place: 4, add: 2 };
+    monster(save, 'puff').pool = 0;
+    monster(save, 'fizz').pool = 3;
+    monster(save, 'tup').pool = 1;
+    monster(save, 'glim').pool = 2;
+    expect(treatLevel(save, 'any').rung).toBe(3);
+    expect(treatLevel(save, 'mul').rung).toBe(2);
+  });
+
+  it('starts the very first round a size down, as a warm-up', () => {
+    const save = freshSave();
+    save.intakeLevels = { place: 4, add: 4 };
+    const warm = startTreatRound(save, 'puff', () => 0.99);
+    expect(warm.target).toBe(20);
+    // Not marked on the ladder: it was below her size.
+    expect(finishTreatRound(save, 'puff', { ...warm, misses: 0 })).toBeNull();
+    save.exprLog.push({ t: 0, day: '2026-11-13', monster: 'puff', target: 20, a: 10, op: '+', b: 10, correct: true, kind: 'add', hearts: 4, hinted: false });
+    expect(startTreatRound(save, 'puff', () => 0.99).target).toBe(36);
   });
 });
 
 describe('treat numbers follow how the rounds go', () => {
-  it('two clean rounds move up, one rough round moves down', () => {
+  const clean = { misses: 0, helped: 0, solo: 0, dropped: 0 };
+  const rough = { misses: 6, helped: 0, solo: 0, dropped: 0 };
+  function play(save: Save, id: 'puff' | 'fizz' | 'glim', how: typeof clean): void {
+    const round = startTreatRound(save, id, () => 0.99);
+    finishTreatRound(save, id, { ...round, ...how });
+  }
+
+  it('three clean rounds out of four move up, with any monster of the kind; two rough rounds move down', () => {
     const save = freshSave();
-    save.intakeLevels = { place: 5, mul: 3 };
-    expect(poolOf(save, 'glim')).toBe(1);
-    adaptPool(save, 'glim', 'clean');
-    expect(poolOf(save, 'glim')).toBe(1);
-    adaptPool(save, 'glim', 'clean');
-    expect(poolOf(save, 'glim')).toBe(2);
-    adaptPool(save, 'glim', 'ok');
-    expect(poolOf(save, 'glim')).toBe(2);
-    adaptPool(save, 'glim', 'rough');
-    expect(poolOf(save, 'glim')).toBe(1);
-    adaptPool(save, 'glim', 'rough');
-    adaptPool(save, 'glim', 'rough');
-    expect(poolOf(save, 'glim')).toBe(0);
+    save.intakeLevels = { place: 4, add: 2 };
+    save.exprLog.push({ t: 0, day: '2026-11-13', monster: 'puff', target: 12, a: 10, op: '+', b: 2, correct: true, kind: 'add', hearts: 4, hinted: false });
+    expect(treatLevel(save, 'any').rung).toBe(1);
+    play(save, 'puff', clean);
+    play(save, 'fizz', { ...clean, misses: 3 });
+    play(save, 'fizz', clean);
+    expect(treatLevel(save, 'any').rung).toBe(1);
+    play(save, 'puff', clean);
+    expect(treatLevel(save, 'any').rung).toBe(2);
+    play(save, 'fizz', rough);
+    expect(treatLevel(save, 'any').rung).toBe(2);
+    play(save, 'puff', rough);
+    expect(treatLevel(save, 'any').rung).toBe(1);
+    // The times-treat ladder did not move.
+    expect(treatLevel(save, 'mul').rung).toBe(0);
   });
 
-  it('a few wrong tries are exploring, many wrong tries or two hints are a rough round', () => {
-    expect(roundQuality(0, 0)).toBe('clean');
-    expect(roundQuality(2, 0)).toBe('clean');
-    expect(roundQuality(3, 0)).toBe('ok');
-    expect(roundQuality(1, 1)).toBe('ok');
-    expect(roundQuality(5, 0)).toBe('rough');
-    expect(roundQuality(0, 2)).toBe('rough');
+  it('a round that began at another size says nothing about this one', () => {
+    const save = freshSave();
+    save.intakeLevels = { place: 4, add: 4 };
+    save.exprLog.push({ t: 0, day: '2026-11-13', monster: 'puff', target: 12, a: 10, op: '+', b: 2, correct: true, kind: 'add', hearts: 4, hinted: false });
+    const old = startTreatRound(save, 'puff', () => 0.99);
+    treatLevel(save, 'any').rung = 3;
+    expect(finishTreatRound(save, 'puff', { ...old, ...rough })).toBeNull();
+    expect(treatLevel(save, 'any').recent).toEqual([]);
+  });
+
+  it('a few wrong tries are exploring; a hint counts when she then makes one of her own', () => {
+    expect(roundQuality({ misses: 0 })).toBe('clean');
+    expect(roundQuality({ misses: 2 })).toBe('clean');
+    expect(roundQuality({ misses: 3 })).toBe('ok');
+    expect(roundQuality({ misses: 5 })).toBe('rough');
+    expect(roundQuality({ misses: 1, helped: 1, solo: 0 })).toBe('ok');
+    expect(roundQuality({ misses: 1, helped: 1, solo: 1 })).toBe('clean');
+    expect(roundQuality({ misses: 0, helped: 2, solo: 2 })).toBe('clean');
+    expect(roundQuality({ misses: 0, helped: 1, solo: 0, dropped: 1 })).toBe('rough');
+  });
+
+  it('steps every treats ladder down after a long break', () => {
+    const save = freshSave();
+    save.intakeLevels = { place: 4, add: 4 };
+    monster(save, 'puff');
+    save.days['2026-11-01'] = { treats: 3, trips: 0, wins: 1, rewarded: false };
+    expect(easeAfterBreak(save)).toBe(true);
+    expect(save.treatLevels?.any?.rung).toBe(1);
   });
 });
 
@@ -117,7 +189,8 @@ describe('after a long break', () => {
     setDay(13);
     expect(easeAfterBreak(save)).toBe(true);
     expect(monster(save, 'plum').step).toBe(1);
-    expect(monster(save, 'glim').pool).toBe(2);
+    // Glim's old size of its own becomes the shared times-treat size, then steps down.
+    expect(save.treatLevels?.mul?.rung).toBe(2);
     expect(easeAfterBreak(save)).toBe(false);
     expect(monster(save, 'plum').step).toBe(1);
   });

@@ -142,7 +142,11 @@ that equal it. Hearts depend on the thinking: `n + 0` earns 1, a real addition
 3, subtraction 4, multiplication or division 5, with a bonus for the first use
 of an operation. Easy answers alone cannot fill the 10-heart meter, and each
 monster also needs one treat of its favorite operation. A wrong try costs
-nothing and shows what the expression made.
+nothing and shows what the expression made. "Help me" fills in one number and
+the sign; the answer finished from it is true but earns no hearts. The game
+then asks for one more of the same kind without the hint's number ("your
+turn"), which earns its hearts plus 2. Two tries that are not her own let the
+your-turn go quietly, and the round ends only once it is made or let go.
 
 **Berry Canyon.** A crate holds ten berries. Packing a crate is carrying and
 opening one is borrowing, and the written column sum updates along the way.
@@ -180,15 +184,25 @@ picks the rung of the first thing the child has not shown yet. From there:
   child's own rung, and the lesson for that skill replays.
 - A miss on a stretch problem never counts and brings the
   step-by-step help at once.
-- Treat numbers move up after two clean rounds and down after one rough round
-  (five or more wrong tries, or two hints).
+- Treats have one ladder per kind of treat, shared by every monster that asks
+  for it: the starters and egg monsters share one, and Dab, Moss, Glim and Fenn
+  have one each. It starts where the first-day check puts it (any-treat
+  monsters follow addition: 27 + 5 done means numbers from 24 to 36), and the
+  very first round is a size down as a warm-up. Each round is one mark: clean
+  (at most two wrong tries, and every hint followed by her own your-turn) or
+  rough (five or more wrong tries, or a your-turn let go). Three clean rounds
+  out of four, or two clean stretch rounds, move up; two rough rounds in a row
+  move down. About one round in four is a stretch round from the size above.
 - The berry blocks start hidden only when recent trips of that kind were right
   the first time without help.
 - A new monster comes out when the skills before it are secure: three different
   days with at least four problems, at least 70% right the first time. The dots
   under a waiting monster count those days. Fraction times a whole number also
   waits for multiplication; fraction times a fraction waits for that and for
-  comparing fractions. One new monster can be befriended per day, one egg
+  comparing fractions. The first-day check can show a skill is already secure:
+  berry trips done at full two-digit size, counting once two-digit numbers
+  read as tens and ones, and the crate of ten once she also adds across ten.
+  One new monster can be befriended per day, one egg
   hatches per day, and a day gives six stars in all. Until then the place
   button leads to the friend to practise with.
 - When the answer had to be shown twice in a row on a skill's easiest level,
@@ -198,7 +212,11 @@ picks the rung of the first thing the child has not shown yet. From there:
   toward a friendship, a star or the day's goals. The grown-up page has a
   switch that opens every monster, for when the class has moved on.
 - Each day the friend whose skill has gone worst lately asks to play first.
-- After a break of a week or more every rung steps down one.
+- Reaching a level she has never reached before on any skill earns the friend
+  she is playing with a bonus star at the end of the round, outside the daily
+  star limit. Climbing back after a step down earns nothing extra.
+- After a break of a week or more every rung steps down one, treats sizes
+  included.
 
 The grown-up page lists the rung on every ladder, what that rung covers, and
 how the last problems went. The thresholds are constants at the top of

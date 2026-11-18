@@ -1,3 +1,7 @@
+uc_other	Not yet. Let us use the picture to find out.
+l_mult_1	A tray of buns. Three rows of twelve. I split it in a tens part, and a ones part.
+l_mult_2	The tens part is three rows of ten. That is thirty.
+l_mult_3	The ones part is three rows of two. That is six.
 l_mult_4	I add the parts. Thirty and six is thirty-six.
 l_mult_5	Your turn. Four rows of thirteen. The parts are forty, and twelve. How many buns in all?
 l_mult_6	Fifty-two! A big tray is easy in parts.
@@ -163,5 +167,3 @@ n62	62.
 n63	63.
 n64	64.
 n65	65.
-n66	66.
-n67	67.

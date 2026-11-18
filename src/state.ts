@@ -13,7 +13,7 @@ import {
   type Stage,
 } from './data/monsters';
 import type { CountError, CountKind } from './math/count';
-import type { Expr, Kind, Op } from './math/expr';
+import type { Expr, Kind, Op, Treat } from './math/expr';
 import type { FracError, FracKind } from './math/fractions';
 import type { Delivery, ErrorPattern } from './math/regroup';
 import type { UpperError, UpperKind } from './math/upper';
@@ -40,6 +40,23 @@ export interface Round {
   hints: number;
   /** Tries in this round that did not make the number. */
   misses?: number;
+  /** Her treats size when the round began, and whether the number came from the size above. */
+  rung?: number;
+  stretch?: boolean;
+  /** Answers finished from a hint, "your turn" answers she then made alone, and ones that were let go. */
+  helped?: number;
+  solo?: number;
+  dropped?: number;
+  /** The hint on screen: the number and sign it filled in. */
+  hint?: { give: number; op: Op };
+  /** After an answer made with a hint: one more of her own, without the hint's number. Null kind means any kind. */
+  turn?: { kind: Kind | null; avoid: number; misses: number };
+}
+
+/** Where she is on one treats ladder: the size of the numbers, and how recent rounds went. */
+export interface TreatProgress {
+  rung: number;
+  recent: number[];
 }
 
 export interface MonsterState {
@@ -68,9 +85,11 @@ export interface MonsterState {
   recent?: number[];
   /** Problems in a row where the answer had to be shown. */
   shownRun?: number;
-  /** Treats: which pool of numbers this monster asks from, and the streak of clean rounds. */
+  /** Treats, before sizes were shared: this monster's own pool and streak. Read once to carry the size over. */
   pool?: number;
   poolRun?: number;
+  /** Bonus stars for new best levels, given at the end of the next round with this monster. */
+  climbStars?: number;
   /** Friendship points from playing, petting and granted wishes. */
   bond?: number;
   petsByDay?: Record<string, number>;
@@ -254,6 +273,10 @@ export interface Save {
   openAll?: boolean;
   /** 2 once problem sizes are rungs on the longer ladders. */
   ladder?: number;
+  /** Treats: one ladder per kind of treat, shared by every monster that asks for that kind. */
+  treatLevels?: Partial<Record<Treat, TreatProgress>>;
+  /** The highest level she has reached on each skill ("trip.add", "treat.any"), so a level pays a bonus star once. */
+  best?: Record<string, number>;
 }
 
 export function freshSave(): Save {
@@ -412,6 +435,12 @@ export function readBackup(text: string): Save | null {
     save.introDone = false;
   }
   if (typeof save.buddy !== 'string' || !monsters[save.buddy]) delete save.buddy;
+  for (const key of ['treatLevels', 'best'] as const) {
+    if (save[key] !== undefined && !isObj(save[key])) delete save[key];
+  }
+  for (const [fav, p] of Object.entries(save.treatLevels ?? {})) {
+    if (!isObj(p) || typeof p.rung !== 'number' || !Array.isArray(p.recent)) delete save.treatLevels?.[fav as keyof typeof save.treatLevels];
+  }
   for (const key of ['seenTips', 'stickers', 'charms', 'decor', 'fracLog', 'countLog', 'upperLog', 'out', 'rest', 'themes'] as const) {
     if (save[key] !== undefined && !Array.isArray(save[key])) delete save[key];
   }

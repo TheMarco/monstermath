@@ -59,6 +59,36 @@ export function record(p: Progress, top: number, clean: boolean, stretch: boolea
   return { rung: p.rung, recent, moved: 0 };
 }
 
+/**
+ * Treats are played in rounds of three to five answers, so one round is one
+ * mark. A round in between clean and rough is not marked at all.
+ */
+export const ROUND_WINDOW = 4;
+/** Clean rounds out of the last ROUND_WINDOW that move her up. */
+export const ROUNDS_UP = 3;
+
+/** Add a finished round and decide whether she moves. */
+export function recordRound(p: Progress, top: number, quality: 'clean' | 'ok' | 'rough', stretch: boolean): Moved {
+  if (quality === 'ok') return { ...p, moved: 0 };
+  const clean = quality === 'clean';
+  const mark: Mark = stretch ? (clean ? 3 : 2) : clean ? 1 : 0;
+  const recent = [...p.recent, mark].slice(-ROUND_WINDOW);
+  const cleanRounds = recent.filter(isClean).length;
+  const rough = recent.filter((m) => m === 0).length;
+  const stretchWins = recent.filter((m) => m === 3).length;
+
+  // Up: three clean rounds out of four, ending on a clean one, or two stretch rounds done cleanly.
+  const steady = clean && cleanRounds >= ROUNDS_UP && rough <= 1;
+  const leaping = stretchWins >= 2 && rough === 0;
+  if (p.rung < top && (steady || leaping)) return { rung: p.rung + 1, recent: [], moved: 1 };
+
+  // Down: two rough rounds in a row at her own size. A rough stretch round never counts.
+  const own = recent.filter((m) => !isStretch(m));
+  if (p.rung > 0 && own.length >= 2 && own.at(-1) === 0 && own.at(-2) === 0) return { rung: p.rung - 1, recent: [], moved: -1 };
+
+  return { rung: p.rung, recent, moved: 0 };
+}
+
 /** Share of recent problems at her own rung that were clean. Null when there are too few. */
 export function steadiness(p: Progress): number | null {
   const own = p.recent.filter((m) => !isStretch(m));

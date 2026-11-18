@@ -22,9 +22,9 @@ import {
   type UpperKind,
   type UpperProblem,
 } from '../math/upper';
-import { gainLines, onRound, onTrip } from '../rewards';
+import { bonusLines, climbed, gainLines, levelUpLine, onRound, onTrip, roundStars } from '../rewards';
 import { teach, teachIfDue } from '../tutor';
-import { befriend, dayKey, displayName, freshSave, giveStar, growth, growthLine, monster, today, type EarlyProgress } from '../state';
+import { befriend, dayKey, displayName, freshSave, growth, growthLine, monster, today, type EarlyProgress } from '../state';
 import { bunTray, crumbTrays, loaf, loafOf, shareModel, type Slice } from '../ui/bakery';
 import { backButton, backdrop, button, celebrate, floatUp, icon, monsterImg, speaker, starRow, toasts, type Screen } from '../ui/common';
 import { h, replace, times, type Child } from '../ui/dom';
@@ -624,7 +624,9 @@ export const upperScreen: Screen = (app, params) => {
     if (worked) floatUp(pet, 'heart', firstTry ? 3 : 1);
     // Working it out earns the reward, with or without help. Trying answers until one fits does not.
     if (worked) toasts(el, gainLines(onTrip(save, firstTry)));
-    if (moved.moved > 0) toasts(el, [{ text: 'Level up! The problems grow with you.', kind: 'level', clip: 't_harder' }]);
+    // A level she has never reached before earns the friend here a bonus star at the end of the round.
+    const best = moved.moved > 0 && climbed(save, `upper.${p.kind}`, before, moved.rung, id);
+    if (moved.moved > 0) toasts(el, [levelUpLine(best, name, 'problems')]);
 
     if (wild) {
       m.trips = Math.min(goal, m.trips + (firstTry ? 2 : worked ? 1 : 0));
@@ -656,16 +658,16 @@ export const upperScreen: Screen = (app, params) => {
         day.wins += 1;
         partied = true;
         toasts(el, gainLines(onRound(save, id)));
-        const result = giveStar(save, id);
+        const { result, bonus } = roundStars(save, id);
         app.commit();
         draw();
         const again = { label: 'Play again', onClick: () => app.go('upper', { id, kind: ownKind }) };
         const home = { label: 'Meadow', onClick: () => app.go('home'), primary: true };
         window.setTimeout(() => {
           if (result === 'grown') {
-            celebrate(el, { id, stage: m.stage, title: `${name} evolved!`, fx: { kind: 'evolve', from: (m.stage - 1) as Stage }, voice: [nameClip(id), 'grew_up'], lines: ['Look how strong!'], buttons: [home], big: true });
+            celebrate(el, { id, stage: m.stage, title: `${name} evolved!`, fx: { kind: 'evolve', from: (m.stage - 1) as Stage }, voice: [nameClip(id), 'grew_up'], lines: [...bonusLines(bonus), 'Look how strong!'], buttons: [home], big: true });
           } else if (result === 'star') {
-            celebrate(el, { id, stage: m.stage, title: `${name} got a star!`, voice: [nameClip(id), 'got_star'], lines: [growthLine(m, name)], buttons: [again, home] });
+            celebrate(el, { id, stage: m.stage, title: `${name} got a star!`, voice: [nameClip(id), 'got_star'], lines: [...bonusLines(bonus), growthLine(m, name)], buttons: [again, home] });
           } else {
             celebrate(el, {
               id,

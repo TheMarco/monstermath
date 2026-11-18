@@ -18,8 +18,8 @@ import {
   type Side,
 } from '../math/fractions';
 import { record, wantsStretch, type Mark } from '../ladder';
-import { gainLines, onRound, onTrip } from '../rewards';
-import { befriend, dayKey, displayName, giveStar, growth, growthLine, isFriend, monster, today } from '../state';
+import { bonusLines, climbed, gainLines, levelUpLine, onRound, onTrip, roundStars } from '../rewards';
+import { befriend, dayKey, displayName, growth, growthLine, isFriend, monster, today } from '../state';
 import { playWithFriend, teach, teachIfDue } from '../tutor';
 import { goodDays, NEEDS } from '../skill';
 import {
@@ -589,7 +589,9 @@ export const hollowScreen: Screen = (app, params) => {
     // Working it out earns the reward, with or without help. Trying answers until one fits does not.
     if (worked) toasts(el, gainLines(onTrip(save, firstTry)));
     if (moved.moved > 0) sfx('level');
-    if (moved.moved > 0) toasts(el, [{ text: 'Level up! The problems grow with you.', kind: 'level', clip: 't_harder' }]);
+    // A level she has never reached before earns the friend here a bonus star at the end of the round.
+    const best = moved.moved > 0 && climbed(save, `frac.${p.kind}`, before, moved.rung, id);
+    if (moved.moved > 0) toasts(el, [levelUpLine(best, name, 'problems')]);
     const equal = p.kind === 'same' && (p.mode === 'match' || p.answer === 'same');
     replace(bubble, equal ? 'Yes! Different pieces, same amount.' : 'Yes! You got it!');
     if (sendBack) {
@@ -629,16 +631,16 @@ export const hollowScreen: Screen = (app, params) => {
         day.wins += 1;
         partied = true;
         toasts(el, gainLines(onRound(save, id)));
-        const result = giveStar(save, id);
+        const { result, bonus } = roundStars(save, id);
         app.commit();
         draw();
         const again = { label: 'Play again', onClick: () => app.go('hollow', { id }) };
         const home = { label: 'Meadow', onClick: () => app.go('home'), primary: true };
         window.setTimeout(() => {
           if (result === 'grown') {
-            celebrate(el, { id, stage: m.stage, title: `${name} evolved!`, fx: { kind: 'evolve', from: (m.stage - 1) as Stage }, voice: [nameClip(id), 'grew_up'], lines: ['Look how strong!'], buttons: [home], big: true });
+            celebrate(el, { id, stage: m.stage, title: `${name} evolved!`, fx: { kind: 'evolve', from: (m.stage - 1) as Stage }, voice: [nameClip(id), 'grew_up'], lines: [...bonusLines(bonus), 'Look how strong!'], buttons: [home], big: true });
           } else if (result === 'star') {
-            celebrate(el, { id, stage: m.stage, title: `${name} got a star!`, voice: [nameClip(id), 'got_star'], lines: [growthLine(m, name)], buttons: [again, home] });
+            celebrate(el, { id, stage: m.stage, title: `${name} got a star!`, voice: [nameClip(id), 'got_star'], lines: [...bonusLines(bonus), growthLine(m, name)], buttons: [again, home] });
           } else {
             celebrate(el, {
               id,

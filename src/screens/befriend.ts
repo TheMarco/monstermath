@@ -10,9 +10,9 @@ import {
   type Op,
   type Score,
 } from '../math/expr';
-import { hintFor, type Hint } from '../math/hints';
-import { gainLines, onRound, onTreat } from '../rewards';
-import { befriend, buddyOf, dayKey, displayName, giveStar, growthLine, monster, nextTarget, today } from '../state';
+import { hintFor, isOwnTurn, missedTurn, SOLO_BONUS, TURN_TRIES, turnKind, type Hint } from '../math/hints';
+import { bonusLines, climbed, gainLines, levelUpLine, onRound, onTreat, roundStars } from '../rewards';
+import { befriend, buddyOf, dayKey, displayName, growthLine, monster, today, type Round } from '../state';
 import {
   backButton,
   backdrop,
@@ -27,7 +27,7 @@ import {
 } from '../ui/common';
 import { h, replace, times } from '../ui/dom';
 import { LESSON_FOR_KIND } from '../lessons';
-import { adaptPool, poolOf, roundQuality } from '../skill';
+import { finishTreatRound, startTreatRound } from '../skill';
 import { STUCK_AFTER, teach, teachIfDue } from '../tutor';
 import { makeClip, nameClip } from '../voice/lines';
 import { keypad, pushDigit } from '../ui/keypad';
@@ -61,17 +61,18 @@ export const befriendScreen: Screen = (app, params) => {
   const favLabel = TREAT_LABEL[fav];
 
   if (!m.current) {
-    m.current = { target: nextTarget(save, id, Math.random, poolOf(save, id)), hearts: 0, found: [], hints: 0, misses: 0 };
+    m.current = startTreatRound(save, id);
     app.commit();
   }
   const round = m.current;
   const target = round.target;
+  // A hint on screen is gone once she leaves; a "your turn" waits for her.
+  round.hint = undefined;
 
   let a = '';
   let b = '';
   let op: Op | null = null;
   let slot: 'a' | 'b' = 'a';
-  let hinted = false;
   let finished = false;
   let gone = false;
   /** Streaks the game watches to decide when to step in. */
@@ -164,8 +165,24 @@ export const befriendScreen: Screen = (app, params) => {
     drawExpr();
   }
 
-  const promptClips = (): Array<string | null> =>
-    wild ? [nameClip(id), `wild2_${fav}`, makeClip(target)] : [nameClip(id), 'lets_play', makeClip(target)];
+  const promptClips = (): Array<string | null> => [
+    ...(wild ? [nameClip(id), `wild2_${fav}`, makeClip(target)] : [nameClip(id), 'lets_play', makeClip(target)]),
+    round.stretch ? 'stretch_try' : null,
+  ];
+
+  /** What a waiting "your turn" asks for, in words and as a clip. */
+  function turnAsk(turn: NonNullable<Round['turn']>): { text: string; clip: string } {
+    const kind = turn.kind && turn.kind in OP_FOR_KIND ? turn.kind : null;
+    // A no-break space keeps the sign on the same line as "with".
+    const how = kind ? `with\u00a0${OP_SYMBOL[OP_FOR_KIND[kind] as Op]}` : 'your own way';
+    return { text: `Your turn: make ${target} ${how}, without ${turn.avoid}.`, clip: `turn_${kind ?? 'any'}` };
+  }
+
+  /** A "your turn" she could not make in two tries is let go without a word. */
+  function letGo(): void {
+    round.turn = undefined;
+    round.dropped = (round.dropped ?? 0) + 1;
+  }
 
   function tell(text: string, visual: HTMLElement | null, clips: Array<string | null>): void {
     replace(feedback, visual ?? null, h('p', { class: 'feedback-text' }, text));
@@ -206,16 +223,24 @@ export const befriendScreen: Screen = (app, params) => {
     const result = evaluate(e);
     const correct = result.ok && result.value === target;
     const day = today(save);
+    const hint = round.hint;
+    // An answer made with the hint keeps its number and sign. Typing over them makes it her own.
+    const usedHint = !!hint && e.op === hint.op && e.a === hint.give;
 
     if (!correct) {
       round.misses = (round.misses ?? 0) + 1;
       missStreak += 1;
       easyStreak = 0;
+      const hadTurn = !!round.turn;
+      if (round.turn) {
+        round.turn.misses += 1;
+        if (round.turn.misses >= TURN_TRIES) letGo();
+      }
       if (missStreak === STUCK_AFTER) {
         missStreak = 0;
         stepIn(() => help(true));
       }
-      save.exprLog.push({ t: Date.now(), day: dayKey(), monster: id, target, a: e.a, op: e.op, b: e.b, correct: false, hearts: 0, hinted });
+      save.exprLog.push({ t: Date.now(), day: dayKey(), monster: id, target, a: e.a, op: e.op, b: e.b, correct: false, hearts: 0, hinted: usedHint });
       app.commit();
       sfx('soft');
       react('tilt');
@@ -235,10 +260,13 @@ export const befriendScreen: Screen = (app, params) => {
       // Keep the expression so she can adjust one part instead of starting over.
       slot = 'b';
       drawExpr();
+      // The meter was already full: letting the "your turn" go ends the round.
+      if (hadTurn && !round.turn && roundComplete(round.hearts, METER, round.found, fav)) finish();
       return;
     }
 
-    const s = score(e, round.found);
+    const prior = [...round.found];
+    const s = score(e, prior);
     missStreak = 0;
     const easy = s.kind === 'identity' || s.kind === 'near' || s.repeat === 'same' || s.repeat === 'easy-again';
     easyStreak = easy ? easyStreak + 1 : 0;
@@ -247,20 +275,55 @@ export const befriendScreen: Screen = (app, params) => {
       const key = String(target);
       (m.ways[key] ??= []).push(e);
     }
-    round.hearts = Math.min(METER, round.hearts + s.hearts);
-    if (s.hearts > 0) {
-      day.treats += 1;
-      toasts(el, gainLines(onTreat(save, s.hearts)));
-    }
-    save.exprLog.push({ t: Date.now(), day: dayKey(), monster: id, target, a: e.a, op: e.op, b: e.b, correct: true, kind: s.kind, hearts: s.hearts, hinted });
-    hinted = false;
 
-    const words = praise(e, s);
+    let hearts = s.hearts;
+    let words = praise(e, s);
+    const turn = round.turn;
+    if (usedHint) {
+      // Made with the hint: true, and shown, but the hearts come from the next one she makes alone.
+      hearts = 0;
+      round.helped = (round.helped ?? 0) + 1;
+      round.turn = { kind: turnKind(target, e, hint.give, round.found), avoid: hint.give, misses: 0 };
+      const ask = turnAsk(round.turn);
+      words = { text: `${show(e)} = ${target}. We did that one together. ${ask.text}`, clips: ['together', ask.clip] };
+    } else if (turn && isOwnTurn(e, turn, prior)) {
+      hearts = s.hearts + SOLO_BONUS;
+      round.solo = (round.solo ?? 0) + 1;
+      round.turn = undefined;
+      words = { text: `${show(e)} = ${target}. All by yourself! Bonus hearts.`, clips: ['solo_yes'] };
+    } else if (turn) {
+      // With the meter already full, any answer that is not the your-turn uses up a try, so she cannot get stuck.
+      // Answers of her own in another kind are not a struggle: that your-turn ends without counting against her.
+      const tried = missedTurn(e, turn, prior);
+      if (tried || round.hearts + hearts >= METER) {
+        turn.misses += 1;
+        if (turn.misses >= TURN_TRIES) {
+          if (tried) letGo();
+          else round.turn = undefined;
+        }
+      }
+      if (round.turn) {
+        const ask = turnAsk(round.turn);
+        words = { text: `${words.text} ${ask.text}`, clips: [...words.clips, ask.clip] };
+      }
+    }
+    round.hint = undefined;
+
+    round.hearts = Math.min(METER, round.hearts + hearts);
+    if (hearts > 0) {
+      day.treats += 1;
+      toasts(el, gainLines(onTreat(save, hearts)));
+    }
+    save.exprLog.push({ t: Date.now(), day: dayKey(), monster: id, target, a: e.a, op: e.op, b: e.b, correct: true, kind: s.kind, hearts, hinted: usedHint });
+
     const showModel = s.repeat !== 'same' && s.repeat !== 'easy-again';
-    if (s.hearts > 0) {
+    if (hearts > 0) {
       sfx('yes');
       react('jump');
-      floatUp(pet, 'heart', s.hearts);
+      floatUp(pet, 'heart', hearts);
+    } else if (usedHint) {
+      sfx('yes');
+      react('jump');
     } else {
       sfx('soft');
       react('tilt');
@@ -274,10 +337,17 @@ export const befriendScreen: Screen = (app, params) => {
     drawExpr();
     drawFound();
 
-    const done = roundComplete(round.hearts, METER, round.found, fav);
+    const done = !round.turn && roundComplete(round.hearts, METER, round.found, fav);
     if (done) {
       tell(words.text, showModel ? exprModel(e) : null, words.clips);
       finish();
+      return;
+    }
+    if (round.turn) {
+      // Waiting for her own one: no other nudges until then.
+      easyStreak = 0;
+      tell(words.text, showModel ? exprModel(e) : null, words.clips);
+      app.commit();
       return;
     }
     if (easyStreak === STUCK_AFTER) {
@@ -310,11 +380,16 @@ export const befriendScreen: Screen = (app, params) => {
     const ways = round.found.length;
     m.current = undefined;
     m.rounds += 1;
-    // How the round went sets how big the next number is.
-    adaptPool(save, id, roundQuality(round.misses ?? 0, round.hints));
+    // How the round went sets how big the next numbers are, for every monster that wants this kind of treat.
+    const moved = finishTreatRound(save, id, round);
+    const best = moved !== null && moved.moved > 0 && climbed(save, `treat.${fav}`, moved.rung - 1, moved.rung, id);
     today(save).wins += 1;
     if (wild) befriend(save, id);
     toasts(el, gainLines(onRound(save, id)));
+    if (moved && moved.moved > 0) {
+      sfx('level');
+      toasts(el, [levelUpLine(best, name, 'numbers')]);
+    }
     const waysLine = `You found ${ways} ${ways === 1 ? 'way' : 'ways'} to make ${target}.`;
 
     if (wild) {
@@ -332,7 +407,7 @@ export const befriendScreen: Screen = (app, params) => {
       return;
     }
 
-    const result = giveStar(save, id);
+    const { result, bonus } = roundStars(save, id);
     app.commit();
     const again = { label: 'Play again', onClick: () => app.go('befriend', { id }) };
     const home = { label: 'Meadow', onClick: () => app.go('home'), primary: true };
@@ -342,7 +417,7 @@ export const befriendScreen: Screen = (app, params) => {
           id,
           stage: m.stage,
           title: `${name} evolved!`, fx: { kind: 'evolve', from: (m.stage - 1) as Stage }, voice: [nameClip(id), 'grew_up'],
-          lines: [waysLine, 'Look how strong!'],
+          lines: [waysLine, ...bonusLines(bonus), 'Look how strong!'],
           buttons: [home],
           big: true,
         });
@@ -351,7 +426,7 @@ export const befriendScreen: Screen = (app, params) => {
           id,
           stage: m.stage,
           title: `${name} got a star!`, voice: [nameClip(id), 'got_star'],
-          lines: [waysLine, growthLine(m, name)],
+          lines: [waysLine, ...bonusLines(bonus), growthLine(m, name)],
           buttons: [again, home],
         });
       } else {
@@ -392,8 +467,10 @@ export const befriendScreen: Screen = (app, params) => {
       tell('You found so many! Try any numbers you like.', null, ['no_hint']);
       return;
     }
+    // Asking again before her own one: that "your turn" is let go.
+    if (round.turn) letGo();
     round.hints += 1;
-    hinted = true;
+    round.hint = { give: hint.give, op: OP_FOR_KIND[hint.kind] as Op };
     a = String(hint.give);
     op = OP_FOR_KIND[hint.kind] as Op;
     b = '';
@@ -460,6 +537,7 @@ export const befriendScreen: Screen = (app, params) => {
         h('h2', null, `Make ${target}`),
         speaker(promptClips),
         fav !== 'any' ? h('span', { class: 'fav-chip' }, h('b', null, favLabel.symbol), `${sp.name} loves ${favLabel.text}`) : null,
+        round.stretch ? h('span', { class: 'fav-chip tricky-chip' }, 'A tricky one') : null,
       ),
       exprRow,
       h('div', { class: 'bf-controls' }, keypad(digit, erase), opsEl, giveBtn),
@@ -478,9 +556,15 @@ export const befriendScreen: Screen = (app, params) => {
     say(...promptClips(), 'how_to');
     replace(feedback, h('p', { class: 'feedback-text' }, 'Pick a number, a sign, and another number. Then give the treat!'));
   } else {
-    say(...promptClips());
-    if (round.found.length > 0) {
-      replace(feedback, h('p', { class: 'feedback-text' }, `Keep going! ${name} still wants treats.`));
+    if (round.turn) {
+      const ask = turnAsk(round.turn);
+      say(...promptClips(), ask.clip);
+      replace(feedback, h('p', { class: 'feedback-text' }, ask.text));
+    } else {
+      say(...promptClips());
+      if (round.found.length > 0) {
+        replace(feedback, h('p', { class: 'feedback-text' }, `Keep going! ${name} still wants treats.`));
+      }
     }
   }
 

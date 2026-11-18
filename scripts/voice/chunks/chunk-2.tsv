@@ -1,3 +1,8 @@
+w_count	Now count. Crates first, then the loose berries. Pick the numbers below.
+help_hint	Here is a little help.
+hollow_tip	Welcome to Honey Hollow! The monsters here love honey bars, cut into equal pieces.
+wild_honey	A wild monster! It loves honey.
+fq_name	How much of the honey bar is gold? Pick how many pieces are gold, and how many pieces there are in all.
 fq_name_s	How much of the bar is gold?
 fq_build	Fill the honey bar to make this fraction.
 fq_build_cut	First cut the bar into equal pieces. Then fill it to make this fraction.
@@ -61,6 +66,7 @@ stretch_try	Ooh, a tricky one! Give it a try. If it is too hard, we will do it t
 stretch_yes	Wow! That was a tricky one, and you got it!
 stretch_miss	That one was extra tricky. Let us look at it together.
 t_harder	You are getting stronger! The problems grow with you.
+t_best	Level up! Your friend gets a bonus star.
 gate_tip	A new monster is watching you! Play a bit more with your friends, and it will come out.
 shop_tip	Spend your berries here! Charms are for your monsters. Decorations go in your meadow.
 shop_bought	Got it! It is yours now.
@@ -161,7 +167,3 @@ uc_tenths	A strip is one tenth. A small square is one hundredth. Look again.
 uc_longer	More digits does not mean more. Look at the tenths first.
 uc_line_up	Tenths go with tenths. Hundredths go with hundredths.
 uc_past_one	Ten strips fill a whole tray. That makes one.
-uc_other	Not yet. Let us use the picture to find out.
-l_mult_1	A tray of buns. Three rows of twelve. I split it in a tens part, and a ones part.
-l_mult_2	The tens part is three rows of ten. That is thirty.
-l_mult_3	The ones part is three rows of two. That is six.

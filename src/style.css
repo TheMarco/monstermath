@@ -1395,6 +1395,15 @@ button {
   padding: 3px 14px 3px 4px;
 }
 
+.fav-chip + .tricky-chip {
+  margin-left: 0;
+}
+
+.tricky-chip {
+  padding: 3px 14px;
+  background: var(--pink);
+}
+
 .fav-chip b {
   width: 32px;
   height: 32px;

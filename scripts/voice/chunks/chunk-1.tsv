@@ -87,6 +87,13 @@ hint_mul	Look at the rows of berries. How many are in each row?
 hint_div	Look at the groups of berries. How many groups are there?
 no_hint	You found so many! Try any numbers you like.
 keep_going	Keep going! Your friend still wants treats.
+together	We did that one together.
+turn_add	Your turn! Make one more with plus, all by yourself, with new numbers.
+turn_sub	Your turn! Make one more with minus, all by yourself, with new numbers.
+turn_mul	Your turn! Make one more with times, all by yourself, with new numbers.
+turn_div	Your turn! Make one more with sharing, all by yourself, with new numbers.
+turn_any	Your turn! Make one more your own way, all by yourself, with new numbers.
+solo_yes	You did it all by yourself! Bonus hearts!
 new_friend	You made a new friend!
 got_star	Your friend got a star!
 grew_up	Your friend grew up! Look how big and strong!
@@ -160,8 +167,3 @@ w_pack	More than nine loose berries. Ten of them go in a crate.
 w_sub	Let us do it together. First, feed the crates.
 w_open	Not enough loose berries. So we open a crate.
 w_feed	Now feed the loose berries.
-w_count	Now count. Crates first, then the loose berries. Pick the numbers below.
-help_hint	Here is a little help.
-hollow_tip	Welcome to Honey Hollow! The monsters here love honey bars, cut into equal pieces.
-wild_honey	A wild monster! It loves honey.
-fq_name	How much of the honey bar is gold? Pick how many pieces are gold, and how many pieces there are in all.

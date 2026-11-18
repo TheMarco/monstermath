@@ -103,6 +103,13 @@ export const LINES = {
   hint_div: 'Look at the groups of berries. How many groups are there?',
   no_hint: 'You found so many! Try any numbers you like.',
   keep_going: 'Keep going! Your friend still wants treats.',
+  together: 'We did that one together.',
+  turn_add: 'Your turn! Make one more with plus, all by yourself, with new numbers.',
+  turn_sub: 'Your turn! Make one more with minus, all by yourself, with new numbers.',
+  turn_mul: 'Your turn! Make one more with times, all by yourself, with new numbers.',
+  turn_div: 'Your turn! Make one more with sharing, all by yourself, with new numbers.',
+  turn_any: 'Your turn! Make one more your own way, all by yourself, with new numbers.',
+  solo_yes: 'You did it all by yourself! Bonus hearts!',
   new_friend: 'You made a new friend!',
   got_star: 'Your friend got a star!',
   grew_up: 'Your friend grew up! Look how big and strong!',
@@ -254,6 +261,7 @@ export const LINES = {
   stretch_yes: 'Wow! That was a tricky one, and you got it!',
   stretch_miss: 'That one was extra tricky. Let us look at it together.',
   t_harder: 'You are getting stronger! The problems grow with you.',
+  t_best: 'Level up! Your friend gets a bonus star.',
   gate_tip: 'A new monster is watching you! Play a bit more with your friends, and it will come out.',
 
   // shop, decorations, bedtime
