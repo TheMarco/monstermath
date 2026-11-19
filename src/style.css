@@ -1304,6 +1304,8 @@ select:focus-visible {
 
 .friend-buttons {
   display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 14px;
   margin-top: 10px;
 }
@@ -6072,5 +6074,394 @@ button.e-cell.empty {
   .friends-card.closing {
     animation: none;
     opacity: 0;
+  }
+}
+
+/* ---- a match: the other monster's power is a number on a bar ------------- */
+
+.mt-side {
+  position: absolute;
+  top: 78px;
+  width: 240px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.mt-mine {
+  left: 24px;
+}
+
+.mt-foe {
+  right: 24px;
+}
+
+.mt-top {
+  position: absolute;
+  left: 290px;
+  top: 70px;
+  width: 700px;
+  height: 250px;
+  padding: 14px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.mt-meter {
+  align-items: center;
+  gap: 10px;
+  padding: 8px 16px;
+}
+
+.mt-dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #e7dccb;
+  border: 3px solid var(--plum);
+}
+
+.mt-dot.on {
+  background: var(--yellow);
+}
+
+.mt-bar-host {
+  width: 600px;
+}
+
+.mt-whole {
+  font-size: 30px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.mt-whole b {
+  font-size: 44px;
+  font-weight: 700;
+  margin-left: 6px;
+}
+
+.mt-whole b.ask,
+.mt-step b.ask {
+  color: var(--berry-alt);
+}
+
+.mt-bar {
+  position: relative;
+  display: flex;
+  height: 56px;
+  margin-bottom: 44px;
+}
+
+/* The last piece of the bar gets the round end, whichever piece that is. */
+.mt-bar > .mt-part:nth-last-child(2) {
+  border-radius: 0 14px 14px 0;
+}
+
+.mt-bar > .mt-part:first-child:nth-last-child(2),
+.mt-bar > .mt-part:only-child {
+  border-radius: 14px;
+}
+
+.mt-part {
+  position: relative;
+  height: 100%;
+  box-sizing: border-box;
+  border: 4px solid var(--plum);
+  background: #6cc3ff;
+  transition:
+    width 0.5s ease,
+    opacity 0.5s ease,
+    transform 0.5s ease;
+}
+
+.mt-part + .mt-part {
+  border-left-width: 0;
+}
+
+.mt-part:first-child {
+  border-radius: 14px 0 0 14px;
+}
+
+/* The piece her move takes away. */
+.mt-part.take {
+  background: repeating-linear-gradient(135deg, #ffd0dc 0 10px, #ffb0c4 10px 20px);
+  border-style: dashed;
+}
+
+.mt-part.take.gone {
+  opacity: 0.25;
+  transform: translateY(14px) rotate(3deg);
+}
+
+/* The piece the other monster adds. */
+.mt-part.grow {
+  background: repeating-linear-gradient(135deg, #d9f5c8 0 10px, #b9ea9c 10px 20px);
+  border-style: dashed;
+}
+
+.mt-part.grow.joined {
+  background: #6cc3ff;
+  border-style: solid;
+}
+
+.mt-part.low {
+  background: #ffd0dc;
+}
+
+.mt-part-label {
+  position: absolute;
+  left: 50%;
+  top: calc(100% + 8px);
+  transform: translateX(-50%);
+  font-size: 30px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.mt-part.cut .mt-part-label {
+  font-size: 22px;
+}
+
+/* Neighbouring small pieces: every second label sits a line lower so they do not touch. */
+.mt-part.cut:nth-child(odd) .mt-part-label {
+  top: calc(100% + 30px);
+}
+
+.mt-ticks {
+  position: absolute;
+  left: 0;
+  top: 4px;
+  bottom: 4px;
+  pointer-events: none;
+  background-image: linear-gradient(90deg, transparent calc(100% - 2px), rgba(74, 37, 69, 0.45) calc(100% - 2px));
+  background-repeat: repeat-x;
+}
+
+.mt-panel {
+  position: absolute;
+  left: 20px;
+  top: 340px;
+  width: 1240px;
+  height: 364px;
+  padding: 16px 22px;
+  display: flex;
+  gap: 24px;
+}
+
+.mt-words {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.mt-story {
+  font-size: 26px;
+  line-height: 1.35;
+}
+
+.mt-coach {
+  font-size: 22px;
+  min-height: 30px;
+  color: var(--plum);
+}
+
+.mt-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.mt-step {
+  font-size: 30px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.mt-work {
+  width: 430px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.mt-sum {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 46px;
+  font-weight: 700;
+  min-height: 72px;
+}
+
+.mt-op {
+  color: var(--plum);
+}
+
+.mt-slot {
+  min-width: 110px;
+  height: 72px;
+  padding: 0 14px;
+  font: inherit;
+  background: #fff;
+  border: 4px solid var(--plum);
+  border-radius: 16px;
+}
+
+.mt-slot.empty {
+  color: #b9a9b6;
+}
+
+.mt-slot.ok {
+  background: #dff6d0;
+}
+
+.mt-work .keypad.off {
+  visibility: hidden;
+}
+
+.mt-action {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 64px;
+}
+
+/* The moves. The stage is a fixed size, so the path is given in stage pixels. */
+.mt-fx {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 15;
+}
+
+.mt-fx .mt-starter,
+.mt-fx .mt-grass {
+  --mv: #7ee08a;
+}
+
+.mt-fx .mt-canyon,
+.mt-fx .mt-early {
+  --mv: #ff6f91;
+}
+
+.mt-fx .mt-hollow {
+  --mv: #ffc83d;
+}
+
+.mt-fx .mt-upper {
+  --mv: #ffa65c;
+}
+
+.mt-fx .mt-egg {
+  --mv: #b79cf0;
+}
+
+.mt-orb {
+  position: absolute;
+  left: 230px;
+  top: 170px;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #fff 0 18%, var(--mv, #8ec5ff) 55%);
+  box-shadow:
+    0 0 0 4px rgba(255, 255, 255, 0.7),
+    0 0 26px 10px var(--mv, #8ec5ff);
+  animation: mtOrb 0.43s cubic-bezier(0.5, 0, 0.8, 0.6) forwards;
+}
+
+.mt-orb.big {
+  width: 70px;
+  height: 70px;
+  top: 158px;
+}
+
+@keyframes mtOrb {
+  from {
+    transform: translateX(0) scale(0.5);
+  }
+  to {
+    transform: translateX(860px) scale(1.1);
+  }
+}
+
+.mt-burst {
+  position: absolute;
+  left: 1126px;
+  top: 190px;
+}
+
+.mt-burst i {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--mv, #8ec5ff);
+  box-shadow: 0 0 10px 3px rgba(255, 255, 255, 0.8);
+  animation: mtSpark 0.65s ease-out forwards;
+}
+
+.mt-burst.big i {
+  width: 24px;
+  height: 24px;
+}
+
+@keyframes mtSpark {
+  from {
+    transform: rotate(var(--a)) translateX(10px) scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: rotate(var(--a)) translateX(150px) scale(0.3);
+    opacity: 0;
+  }
+}
+
+.mt-rings {
+  position: absolute;
+  left: 1136px;
+  top: 190px;
+}
+
+.mt-rings i {
+  position: absolute;
+  left: -110px;
+  top: -40px;
+  width: 220px;
+  height: 80px;
+  border-radius: 50%;
+  border: 6px solid #b9ea9c;
+  box-shadow: 0 0 14px 2px rgba(185, 234, 156, 0.8);
+  opacity: 0;
+  animation: mtRing 0.8s ease-out forwards;
+}
+
+@keyframes mtRing {
+  from {
+    transform: translateY(110px) scale(0.6);
+    opacity: 0.95;
+  }
+  to {
+    transform: translateY(-90px) scale(1.05);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mt-orb,
+  .mt-burst i,
+  .mt-rings i {
+    animation-duration: 0.01s;
+  }
+
+  .mt-part {
+    transition: none;
   }
 }

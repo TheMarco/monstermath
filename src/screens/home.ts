@@ -57,6 +57,7 @@ import { charmIcon, dress } from '../ui/charms';
 import { dayGift, DECOR, decorOut, moveDecor } from '../shop';
 import { levelRow } from '../ui/level';
 import { themeArt } from '../data/monsters';
+import { canMatch } from '../match';
 import { easeAfterBreak, nextWild, SECURE_DAYS, type NextWild } from '../skill';
 import { decorImg } from './shop';
 import { h, pick, replace, times } from '../ui/dom';
@@ -338,6 +339,7 @@ export const homeScreen: Screen = (app, params) => {
           'div',
           { class: 'friend-buttons' },
           button('Play', () => playWith(app, m.id), wants ? 'btn-primary pulse' : 'btn-primary'),
+          canMatch(save) ? button('Match', () => app.go('match', { id: m.id }), 'match-btn') : null,
           button('Page', () => app.go('journal', { id: m.id })),
           isBuddy ? h('span', { class: 'buddy-tag' }, 'Your buddy') : button('Make buddy', makeBuddy, 'buddy-btn'),
           mayRest ? button('Rest', goRest, 'rest-btn') : null,

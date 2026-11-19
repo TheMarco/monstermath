@@ -17,6 +17,7 @@ import { playersScreen } from './screens/players';
 import { shopScreen } from './screens/shop';
 import { stickersScreen } from './screens/stickers';
 import { titleScreen } from './screens/title';
+import { matchScreen } from './screens/match';
 import { upperScreen } from './screens/upper';
 import { freshSave, loadSave, persist, players, today, wipeSave } from './state';
 import { loadAnimManifest } from './ui/anim';
@@ -40,6 +41,7 @@ const SCREENS: Record<ScreenName, Screen> = {
   hollow: hollowScreen,
   early: earlyScreen,
   upper: upperScreen,
+  match: matchScreen,
   shop: shopScreen,
   players: playersScreen,
 };
@@ -61,6 +63,7 @@ const MUSIC: Record<ScreenName, [Track | null | 'keep', number]> = {
   hollow: ['think', 0.7],
   early: ['think', 0.7],
   upper: ['think', 0.7],
+  match: ['play', 0.6],
   lesson: ['keep', 0.5],
   grownups: [null, 0],
 };

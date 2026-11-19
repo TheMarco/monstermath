@@ -98,6 +98,20 @@ new_friend	You made a new friend!
 got_star	Your friend got a star!
 grew_up	Your friend grew up! Look how big and strong!
 full_today	That was so much fun! Your friend is full of stars for today. More stars tomorrow!
+mt_start	A match! Take away their power with your moves.
+mt_power	Their power is:
+mt_takes	Your move takes away:
+mt_left	How much power is left?
+mt_up	They power up by:
+mt_now	How much power now?
+mt_breath	They catch their breath.
+mt_hit	Yes! It hit!
+mt_miss	The move missed. Look at the bar, and try again.
+mt_not_yet	Not yet. Look at the bar, and try again.
+mt_steps	Take it in small steps. Tens first, then ones.
+mt_copy	Let me show you. Type the answer you see.
+mt_finish	Your power move is ready! Press the power button.
+mt_won	You won the match! Good game!
 how_many_now	How many now?
 how_many_left	How many are left?
 tip_add	Put the berries together. Then count the crates and the loose berries.
@@ -202,15 +216,3 @@ fc_times_added	It is times, not plus. Count every piece you put down.
 fc_times_other	Not yet. Put the pieces down, and count them.
 fc_tray_added	Do not add the bottom numbers. Count all the small pieces in the whole tray.
 fc_tray_one	That is only one of the two cuts. Cut the tray both ways, and count.
-fc_tray_other	Not yet. Cut the tray both ways. Then count the dark pieces, and all the small pieces.
-l_frac_1	Here is one whole honey bar.
-l_frac_2	I cut it into four equal pieces. Every piece is the same size.
-l_frac_3	I fill one piece with honey. That is one fourth of the bar.
-l_frac_4	The bottom number says how many equal pieces are in the whole bar. The top number says how many are gold.
-l_frac_5	Now three pieces are gold. Three fourths.
-l_frac_6	Your turn. How many equal pieces are in this whole bar?
-l_frac_7	And how many pieces are gold?
-l_frac_8	Two thirds! Two gold pieces, out of three.
-l_same_1	This honey bar is cut in two. One half is gold.
-l_same_2	This bar is the same size, but cut in four. Two fourths are gold.
-l_same_3	Look! The gold goes just as far. One half, and two fourths, are the same amount.

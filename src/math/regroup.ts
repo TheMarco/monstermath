@@ -151,6 +151,23 @@ export function makeProblem(type: Delivery, rng: () => number = Math.random, run
   return FALLBACK[type];
 }
 
+/**
+ * A problem of this kind at this rung that starts from a given number, for a
+ * match where one answer is the next problem's first number. Null when the
+ * rung has no problem that starts there.
+ */
+export function problemFrom(type: Delivery, a: number, rng: () => number = Math.random, rung?: number): Problem | null {
+  const full = type === 'add' || type === 'sub' ? 4 : 3;
+  const at = Math.max(0, Math.min(topRung(type), rung ?? full));
+  const adding = type === 'add' || type === 'addR';
+  for (let tries = 0; tries < 3000; tries++) {
+    const [first, b] = draw(type, at, rng);
+    if (first !== a || !fits(type, at, a, b)) continue;
+    return { type, a, b, answer: adding ? a + b : a - b };
+  }
+  return null;
+}
+
 /** Place-value blocks: [hundreds (carts), tens (crates), ones (loose berries)]. */
 export type Blocks = [number, number, number];
 

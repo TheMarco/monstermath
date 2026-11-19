@@ -144,6 +144,7 @@ export const grownupsScreen: Screen = (app, params) => {
     ],
   );
 
+  const matchLevel = h('select', { class: 'gu-select' }, [1, 2, 3, 4, 5].map((n) => h('option', { value: String(n - 1), selected: n === 4 }, String(n))));
   const tryLevel = h('select', { class: 'gu-select' }, [1, 2, 3, 4, 5, 6].map((n) => h('option', { value: String(n - 1) }, String(n))));
   const TRY_LABEL: Record<CountKind, string> = { count: 'Counting', more: 'Comparing', ten: 'Making ten', place: 'Tens and ones' };
 
@@ -425,6 +426,21 @@ export const grownupsScreen: Screen = (app, params) => {
           COUNT_KINDS.map((kind) =>
             button(TRY_LABEL[kind], () => app.go('early', { id: save.starter ? buddyOf(save) : 'puff', kind, practice: true, rung: Number(tryLevel.value) }), 'btn-small'),
           ),
+        ),
+      ),
+
+      card(
+        'A match',
+        h(
+          'p',
+          { class: 'gu-small' },
+          'Two monsters have a match. The other monster\'s power is a number on a bar: a move takes some away (taking away), then it powers up (adding). The problems are the Berry Canyon\'s, at the child\'s own level, and nothing is timed or lost. A child sees the Match button on a friend\'s card once a take-away monster is a friend. The button here opens one for a look. Nothing is saved and nothing is earned.',
+        ),
+        h(
+          'div',
+          { class: 'gu-actions' },
+          h('label', { class: 'gu-label' }, 'Start at level ', matchLevel),
+          button('Match', () => app.go('match', { id: save.starter ? buddyOf(save) : 'puff', practice: true, rung: Number(matchLevel.value) }), 'btn-small'),
         ),
       ),
 

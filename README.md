@@ -241,6 +241,22 @@ resting friend brings it out. "Rest" on a friend's card sends it in again
 are done, "Good night" puts the meadow to sleep, which gives the session a
 clear end.
 
+**A match.** Children who tested the game asked for battles. A match gives
+them one in which the fight is the sum. The other monster's power is a number,
+drawn as a bar with a mark at every ten. Her monster's move takes some away and
+she works out what is left; then the other monster powers up and she works out
+the new total. Five problems make a match, and each answer is the first number
+of the next problem. They are Berry Canyon problems at her own level, they
+count for that level, and they are logged like berry trips. Nothing is timed
+and nothing can be lost: after a wrong answer the move has missed and she tries
+again. A second miss shows the problem in small steps (52 − 27 as 52 − 20,
+32 − 2, 30 − 5) and cuts the bar the same way; a third shows the answer for her
+to type, which earns nothing. After the fifth problem her power move is ready
+and one press ends the match, which counts as a round for her monster. The
+Match button is on a friend's card once a take-away monster (Dusk or Chip) is a
+friend. The moves are drawn by the game, so a new monster needs no extra art
+(`src/match.ts`, `src/screens/match.ts`).
+
 **Sound.** Every instruction is a recorded voice line. Music plays under it,
 at a low level, and drops further whenever a line is spoken, because music
 that competes with speech makes spoken instructions harder to follow. The

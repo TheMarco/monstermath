@@ -115,6 +115,21 @@ export const LINES = {
   got_star: 'Your friend got a star!',
   grew_up: 'Your friend grew up! Look how big and strong!',
   full_today: 'That was so much fun! Your friend is full of stars for today. More stars tomorrow!',
+  // a match: the other monster's power is a number, and her moves take it away
+  mt_start: 'A match! Take away their power with your moves.',
+  mt_power: 'Their power is:',
+  mt_takes: 'Your move takes away:',
+  mt_left: 'How much power is left?',
+  mt_up: 'They power up by:',
+  mt_now: 'How much power now?',
+  mt_breath: 'They catch their breath.',
+  mt_hit: 'Yes! It hit!',
+  mt_miss: 'The move missed. Look at the bar, and try again.',
+  mt_not_yet: 'Not yet. Look at the bar, and try again.',
+  mt_steps: 'Take it in small steps. Tens first, then ones.',
+  mt_copy: 'Let me show you. Type the answer you see.',
+  mt_finish: 'Your power move is ready! Press the power button.',
+  mt_won: 'You won the match! Good game!',
 
   // berry canyon
   how_many_now: 'How many now?',
