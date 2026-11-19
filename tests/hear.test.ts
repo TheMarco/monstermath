@@ -151,6 +151,33 @@ describe('clicking a number', () => {
     expect(picked).toHaveBeenCalledTimes(1);
   });
 
+  it('says a typed number in its box on one click, and still picks the box', () => {
+    const picked = vi.fn();
+    const b = h('button', { type: 'button', 'data-hear': true, onclick: picked }, '24');
+    stage.appendChild(b);
+    press(b, 'pointerdown', 50);
+    press(b, 'pointerup', 50);
+    press(b, 'click', 50);
+    expect(spokenLog).toEqual(['n24']);
+    expect(picked).toHaveBeenCalledTimes(1);
+  });
+
+  it('reads a number written one digit to a box as one number', () => {
+    const at = { left: 0, right: 200, top: 0, bottom: 40, width: 200, height: 40, x: 0, y: 0, toJSON: () => ({}) } as DOMRect;
+    const row = (cls: string, ...cells: string[]): HTMLElement => {
+      const el = h('div', { class: cls }, h('span', { class: 'n-sign' }, '+'), cells.map((c) => h('span', null, c)));
+      el.getBoundingClientRect = () => at;
+      stage.appendChild(el);
+      return el;
+    };
+    expect(numberAt(row('n-row', '', '4', '7').lastElementChild as Element, 150, 20)?.clips).toEqual(['n47']);
+    expect(numberAt(row('e-digits u-dec', '0', '.', '4', '7').lastElementChild as Element, 150, 20)?.clips).toEqual(['d0_47']);
+    // Half written, or the small regrouping marks: each digit on its own.
+    expect(numberAt(row('n-row', '1', '', '7'), 50, 20)?.clips).toEqual(['n1']);
+    expect(numberAt(row('e-digits', '?', '7').lastElementChild as Element, 50, 20)?.clips).toEqual(['n7']);
+    expect(numberAt(row('n-row n-marks', '1', '3'), 50, 20)?.clips).toEqual(['n1']);
+  });
+
   it('reads a stacked fraction whole', () => {
     const frac = fracEl(3, 4);
     frac.getBoundingClientRect = () => ({ left: 0, right: 60, top: 0, bottom: 80, width: 60, height: 80, x: 0, y: 0, toJSON: () => ({}) }) as DOMRect;

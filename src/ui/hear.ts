@@ -9,14 +9,15 @@ import { h } from './dom';
  * itself, which also covers numbers added to the game later.
  *
  * A number on a button would press the button, so there it is press and hold:
- * she can hear each answer before she picks one.
+ * she can hear each answer before she picks one. The boxes that hold a number
+ * she typed are the exception: one click says it.
  */
 
 export interface Heard {
   clips: string[];
   /** Where the number is on the screen, for the glow. */
   rect: DOMRect;
-  /** The working button the number sits on, if any. */
+  /** The working button the number sits on, if a click there does more than choose where to type. */
   button: Element | null;
 }
 
@@ -25,6 +26,11 @@ export const HOLD_MS = 600;
 /** Typing fields, and the grown-ups page, which has no voice. */
 const SKIP = 'input, textarea, .grownups-screen';
 const REACH = 3;
+/**
+ * A box that shows the number she typed is a button only so she can pick which
+ * box to type in. Marked `data-hear`, a click there also says the number.
+ */
+const pressed = (el: Element): Element | null => el.closest('button:not(:disabled):not([data-hear])');
 
 const within = (r: DOMRect, x: number, y: number): boolean =>
   r.width > 0 && r.height > 0 && x >= r.left - REACH && x <= r.right + REACH && y >= r.top - REACH && y <= r.bottom + REACH;
@@ -37,7 +43,23 @@ function fractionAt(frac: Element, x: number, y: number): Heard | null {
   const clips = fractionClips(Number(top), Number(bottom));
   const rect = frac.getBoundingClientRect();
   if (!clips || !within(rect, x, y)) return null;
-  return { clips, rect, button: frac.closest('button:not(:disabled)') };
+  return { clips, rect, button: pressed(frac) };
+}
+
+/** Numbers drawn one digit to a box: an answer in place colours, a line of a written sum. */
+const DIGIT_GROUP = '.e-digits, .n-row:not(.n-marks)';
+
+/** Such a number is said whole, "forty-seven", once every digit is there. */
+function digitsAt(group: Element, x: number, y: number): Heard | null {
+  const parts = [...group.children].filter((el) => !el.classList.contains('n-sign')).map((el) => (el.textContent ?? '').trim());
+  while (parts.length && parts[0] === '') parts.shift();
+  // A gap in the middle means she is still writing it: each digit then speaks for itself.
+  if (parts.length < 2 || parts.includes('')) return null;
+  const text = parts.join('');
+  const [token] = numberTokens(text);
+  const rect = group.getBoundingClientRect();
+  if (!token?.clips || token.start !== 0 || token.end !== text.length || !within(rect, x, y)) return null;
+  return { clips: token.clips, rect, button: pressed(group) };
 }
 
 /** The number drawn at this point of the screen, if there is one that can be said. */
@@ -45,7 +67,7 @@ export function numberAt(target: Element, x: number, y: number): Heard | null {
   if (target.closest(SKIP)) return null;
   const range = document.createRange();
   if (typeof range.getClientRects !== 'function') return null;
-  const root = target.closest('button, .frac') ?? target;
+  const root = target.closest(`button, .frac, ${DIGIT_GROUP}`) ?? target;
   const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
   for (let node = walker.nextNode(); node; node = walker.nextNode()) {
     const text = node as Text;
@@ -53,14 +75,15 @@ export function numberAt(target: Element, x: number, y: number): Heard | null {
     if (!parent || !/\d/.test(text.data) || parent.closest(SKIP)) continue;
     if (typeof parent.checkVisibility === 'function' && !parent.checkVisibility({ checkOpacity: true, checkVisibilityCSS: true })) continue;
     const frac = parent.closest('.frac');
-    const whole = frac ? fractionAt(frac, x, y) : null;
+    const group = parent.closest(DIGIT_GROUP);
+    const whole = frac ? fractionAt(frac, x, y) : group ? digitsAt(group, x, y) : null;
     if (whole) return whole;
     for (const token of numberTokens(text.data)) {
       if (!token.clips) continue;
       range.setStart(text, token.start);
       range.setEnd(text, token.end);
       if ([...range.getClientRects()].some((r) => within(r, x, y))) {
-        return { clips: token.clips, rect: range.getBoundingClientRect(), button: parent.closest('button:not(:disabled)') };
+        return { clips: token.clips, rect: range.getBoundingClientRect(), button: pressed(parent) };
       }
     }
   }

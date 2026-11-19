@@ -110,6 +110,7 @@ export const befriendScreen: Screen = (app, params) => {
         {
           class: `slot ${slot === which ? 'active' : ''} ${value ? '' : 'empty'}`,
           type: 'button',
+          'data-hear': true,
           onclick: () => {
             slot = which;
             drawExpr();

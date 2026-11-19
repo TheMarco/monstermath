@@ -255,7 +255,9 @@ fractions ("three fourths"). Telling 47 from 74 by eye is hard work with
 dyslexia, and this lets a child check what a number is without asking. On a
 button a click still presses the button, so there she presses and holds for
 about half a second to hear the number and the button is not pressed. That way
-she can listen to each answer before picking one. The number is found in the
+she can listen to each answer before picking one. A box that holds a number
+she typed says it on one click, and a number written one digit to a box (an
+answer in place colours, a line of a written sum) is said as one number. The number is found in the
 text under the pointer (`src/ui/hear.ts`), so new screens need no extra work.
 Numbers up to 200 have a clip each; bigger ones are put together from a few
 clips (`src/voice/numbers.ts`). The grown-ups page stays silent.

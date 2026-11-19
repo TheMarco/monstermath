@@ -359,6 +359,7 @@ export const upperScreen: Screen = (app, params) => {
                 class: `u-box ${i === active && !solved && !revealed ? 'on' : ''} ${locked[i] ? 'ok' : ''} ${bad[i] ? 'bad' : ''} ${revealed && !solved ? 'shown' : ''}`,
                 type: 'button',
                 'data-role': box.role,
+                'data-hear': true,
                 'aria-label': box.label,
                 onclick: () => pickBox(i),
               },
