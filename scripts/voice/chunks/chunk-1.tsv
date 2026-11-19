@@ -1,4 +1,5 @@
 welcome	Welcome to Monster Meadow! Three little monsters want a friend. Who do you pick?
+more_wait	Many more monsters are waiting to meet you!
 q_place	Your friend is hungry! Each crate holds ten berries. How many berries are here?
 q_add	Your friend has twenty-three berries. Here come fourteen more. How many now?
 q_addR	Your friend has twenty-seven berries. Here come fifteen more. How many now?
@@ -217,4 +218,3 @@ fc_fill	Look at the top number. That is how many pieces to fill.
 fc_bigger_bottom	A bigger bottom number means more cuts. More cuts make smaller pieces.
 fc_look_bars	Not yet. Look at how far the gold goes in each bar.
 fc_match	Not yet. Make the gold go just as far as in the top bar.
-fc_times_both	The pieces stay the same size, so the bottom number stays the same. Only the top number grows.

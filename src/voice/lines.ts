@@ -12,6 +12,7 @@ import { capital, numberRecordings, spoken } from './numbers';
 export const LINES = {
   // first run
   welcome: 'Welcome to Monster Meadow! Three little monsters want a friend. Who do you pick?',
+  more_wait: 'Many more monsters are waiting to meet you!',
   q_place: 'Your friend is hungry! Each crate holds ten berries. How many berries are here?',
   q_add: 'Your friend has twenty-three berries. Here come fourteen more. How many now?',
   q_addR: 'Your friend has twenty-seven berries. Here come fifteen more. How many now?',

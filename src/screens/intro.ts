@@ -53,6 +53,7 @@ export const introScreen: Screen = (app) => {
 
   function pickStep(): void {
     let chosen: SpeciesId | null = null;
+    const waiting = ALL_SPECIES.filter((id) => !STARTERS.includes(id));
     const confirm = h('div', { class: 'pick-confirm' });
     const cards = STARTERS.map((id) => {
       const sp = SPECIES[id];
@@ -95,12 +96,19 @@ export const introScreen: Screen = (app) => {
       h(
         'div',
         { class: 'card intro-card' },
-        h('h2', null, 'Pick your first friend', speaker(() => ['welcome'])),
+        h('h2', null, 'Pick your first friend', speaker(() => ['welcome', 'more_wait'])),
         h('div', { class: 'pick-row' }, cards),
         confirm,
+        // Three to choose from now, and she can see there are many more to find.
+        h(
+          'div',
+          { class: 'pick-more' },
+          h('div', { class: 'pick-more-row' }, waiting.filter((_, i) => i % 2 === 0).map((id) => monsterImg(id, 1, 44, 'silhouette'))),
+          h('p', null, `${waiting.length} more monsters are waiting to meet you!`),
+        ),
       ),
     );
-    say('welcome');
+    say('welcome', 'more_wait');
     onKey = () => {};
   }
 
