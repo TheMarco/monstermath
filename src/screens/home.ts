@@ -57,7 +57,7 @@ import { charmIcon, dress } from '../ui/charms';
 import { dayGift, DECOR, decorOut, moveDecor } from '../shop';
 import { levelRow } from '../ui/level';
 import { themeArt } from '../data/monsters';
-import { canMatch } from '../match';
+import { matchInvite } from '../match';
 import { easeAfterBreak, nextWild, SECURE_DAYS, type NextWild } from '../skill';
 import { decorImg } from './shop';
 import { h, pick, replace, times } from '../ui/dom';
@@ -160,6 +160,8 @@ export const homeScreen: Screen = (app, params) => {
   const ordered = meadowFriends(save)
     .map((id) => save.monsters[id])
     .filter((m): m is MonsterState => !!m);
+  /** The friend who asks for today's match, if a match is on offer. */
+  const matchFoe = day.asleep ? null : matchInvite(save, ordered.map((m) => m.id));
 
   const cardHost = h('div', { class: 'friend-card-host' });
   /** Closes the open card with a short fade, so it does not just vanish. */
@@ -312,7 +314,9 @@ export const homeScreen: Screen = (app, params) => {
 
     sfx('pop');
     cry(ALL_SPECIES.indexOf(m.id));
-    if (wants) say(nameClip(m.id), 'wants_play');
+    const asksMatch = matchFoe === m.id;
+    if (asksMatch) say(nameClip(m.id), 'mt_invite');
+    else if (wants) say(nameClip(m.id), 'wants_play');
     else say(aboutClip(m.id));
     drawTummy();
     cardHost.replaceChildren(
@@ -322,7 +326,7 @@ export const homeScreen: Screen = (app, params) => {
         h('button', { class: 'card-close', type: 'button', 'aria-label': 'Close', onclick: closeCard }, '×'),
         h('button', { class: 'pet-target', type: 'button', 'aria-label': `Pet ${name}`, onclick: doPet }, portrait),
         h('h3', null, name),
-        h('p', { class: 'friend-what' }, wants ? `${name} wants to play today!` : `${sp.what}. ${loves}.`),
+        h('p', { class: 'friend-what' }, asksMatch ? `${name} wants a match with ${displayName(save, buddyOf(save))}!` : wants ? `${name} wants to play today!` : `${sp.what}. ${loves}.`),
         bondHost,
         growthRow(m),
         levelRow(save, m.id),
@@ -338,11 +342,12 @@ export const homeScreen: Screen = (app, params) => {
         h(
           'div',
           { class: 'friend-buttons' },
-          button('Play', () => playWith(app, m.id), wants ? 'btn-primary pulse' : 'btn-primary'),
-          canMatch(save) ? button('Match', () => app.go('match', { id: m.id }), 'match-btn') : null,
+          button('Play', () => playWith(app, m.id), asksMatch ? '' : wants ? 'btn-primary pulse' : 'btn-primary'),
+          asksMatch ? button('Match', () => app.go('match', { id: buddyOf(save), foe: m.id }), 'btn-primary pulse match-btn') : null,
           button('Page', () => app.go('journal', { id: m.id })),
-          isBuddy ? h('span', { class: 'buddy-tag' }, 'Your buddy') : button('Make buddy', makeBuddy, 'buddy-btn'),
-          mayRest ? button('Rest', goRest, 'rest-btn') : null,
+          // A friend who asks for a match keeps the card to one row: buddy and rest wait until the match is played.
+          asksMatch ? null : isBuddy ? h('span', { class: 'buddy-tag' }, 'Your buddy') : button('Make buddy', makeBuddy, 'buddy-btn'),
+          mayRest && !asksMatch ? button('Rest', goRest, 'rest-btn') : null,
         ),
       ),
     );
@@ -449,7 +454,7 @@ export const homeScreen: Screen = (app, params) => {
           style: `left:${x - size / 2}px;top:${y - size}px;z-index:${Math.round(y)}`,
           onclick: () => openCard(m),
         },
-        wishing(save, m.id) ? h('span', { class: 'wish-bubble' }, icon('heart', 'on'), 'Play?') : null,
+        matchFoe === m.id ? h('span', { class: 'wish-bubble match-bubble' }, icon('star', 'on'), 'Match?') : wishing(save, m.id) ? h('span', { class: 'wish-bubble' }, icon('heart', 'on'), 'Play?') : null,
         sized(monsterImg(m.id, m.stage, size, `bob bob-${i % 3}`), size),
         h('span', { class: 'friend-name' }, displayName(save, m.id)),
       );

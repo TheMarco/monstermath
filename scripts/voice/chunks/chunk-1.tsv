@@ -98,14 +98,18 @@ new_friend	You made a new friend!
 got_star	Your friend got a star!
 grew_up	Your friend grew up! Look how big and strong!
 full_today	That was so much fun! Your friend is full of stars for today. More stars tomorrow!
+mt_invite	This friend wants a match with your buddy!
 mt_start	A match! Take away their power with your moves.
 mt_power	Their power is:
 mt_takes	Your move takes away:
 mt_left	How much power is left?
-mt_up	They power up by:
-mt_now	How much power now?
 mt_breath	They catch their breath.
+mt_attack	They attack! Block it!
+mt_shield	Your shield is:
+mt_block	A good block adds:
+mt_shield_now	How much shield now?
 mt_hit	Yes! It hit!
+mt_blocked	Yes! Blocked!
 mt_miss	The move missed. Look at the bar, and try again.
 mt_not_yet	Not yet. Look at the bar, and try again.
 mt_steps	Take it in small steps. Tens first, then ones.
@@ -213,7 +217,3 @@ fc_fill	Look at the top number. That is how many pieces to fill.
 fc_bigger_bottom	A bigger bottom number means more cuts. More cuts make smaller pieces.
 fc_look_bars	Not yet. Look at how far the gold goes in each bar.
 fc_match	Not yet. Make the gold go just as far as in the top bar.
-fc_times_both	The pieces stay the same size, so the bottom number stays the same. Only the top number grows.
-fc_times_added	It is times, not plus. Count every piece you put down.
-fc_times_other	Not yet. Put the pieces down, and count them.
-fc_tray_added	Do not add the bottom numbers. Count all the small pieces in the whole tray.

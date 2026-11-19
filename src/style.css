@@ -6077,105 +6077,130 @@ button.e-cell.empty {
   }
 }
 
-/* ---- a match: the other monster's power is a number on a bar ------------- */
+/* ---- a match: a fight scene, with the sum on the bars -------------------- */
 
+.mt-arena {
+  background-size: cover;
+  background-position: center 62%;
+}
+
+/* The two monsters stand on the arena floor, facing each other. */
 .mt-side {
   position: absolute;
-  top: 78px;
-  width: 240px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
+  top: 246px;
+  width: 250px;
 }
 
 .mt-mine {
-  left: 24px;
+  left: 70px;
 }
 
 .mt-foe {
-  right: 24px;
+  right: 70px;
 }
 
-.mt-top {
+/* The flip sits on a wrapper, since the monster's own transform is busy with its idle bob. */
+.mt-flip {
+  transform: scaleX(-1);
+}
+
+/* Each side's number and bar, the way a fighting game shows them. */
+.mt-hud {
   position: absolute;
-  left: 290px;
-  top: 70px;
-  width: 700px;
-  height: 250px;
-  padding: 14px 20px;
+  top: 66px;
+  width: 590px;
+  height: 170px;
+  box-sizing: border-box;
+  padding: 10px 18px 0;
+  border-radius: 22px;
+  background: rgba(28, 27, 46, 0.78);
+  border: 4px solid rgba(28, 27, 46, 0.9);
+  color: #fff;
+  transition:
+    background 0.3s ease,
+    border-color 0.3s ease,
+    opacity 0.3s ease;
+}
+
+.mt-hud-mine {
+  left: 20px;
+}
+
+.mt-hud-foe {
+  right: 20px;
+}
+
+/* The bar whose turn it is stands out; the other one waits. */
+.mt-hud:not(.live) {
+  opacity: 0.82;
+}
+
+.mt-hud.live {
+  background: rgba(28, 27, 46, 0.9);
+  border-color: var(--yellow);
+}
+
+.mt-hud.none {
+  height: 62px;
+}
+
+.mt-hud-top {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
+  align-items: baseline;
+  gap: 12px;
+  height: 52px;
 }
 
-.mt-meter {
-  align-items: center;
-  gap: 10px;
-  padding: 8px 16px;
+.mt-who {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
-.mt-dot {
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: #e7dccb;
-  border: 3px solid var(--plum);
-}
-
-.mt-dot.on {
-  background: var(--yellow);
-}
-
-.mt-bar-host {
-  width: 600px;
+.mt-what {
+  margin-left: auto;
+  font-size: 22px;
+  font-weight: 600;
+  opacity: 0.85;
 }
 
 .mt-whole {
-  font-size: 30px;
-  font-weight: 600;
-  margin-bottom: 6px;
-}
-
-.mt-whole b {
   font-size: 44px;
   font-weight: 700;
-  margin-left: 6px;
+  line-height: 1;
+  min-width: 56px;
+  text-align: right;
 }
 
-.mt-whole b.ask,
+.mt-whole.ask,
 .mt-step b.ask {
-  color: var(--berry-alt);
+  color: #ff8fb1;
 }
 
 .mt-bar {
   position: relative;
   display: flex;
-  height: 56px;
-  margin-bottom: 44px;
-}
-
-/* The last piece of the bar gets the round end, whichever piece that is. */
-.mt-bar > .mt-part:nth-last-child(2) {
-  border-radius: 0 14px 14px 0;
-}
-
-.mt-bar > .mt-part:first-child:nth-last-child(2),
-.mt-bar > .mt-part:only-child {
-  border-radius: 14px;
+  height: 44px;
+  width: 520px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.12);
 }
 
 .mt-part {
   position: relative;
   height: 100%;
   box-sizing: border-box;
-  border: 4px solid var(--plum);
-  background: #6cc3ff;
+  border: 3px solid #fff;
+  background: #4fb4ff;
   transition:
     width 0.5s ease,
     opacity 0.5s ease,
     transform 0.5s ease;
+}
+
+.mt-hud-mine .mt-part {
+  background: #ffc83d;
 }
 
 .mt-part + .mt-part {
@@ -6183,134 +6208,195 @@ button.e-cell.empty {
 }
 
 .mt-part:first-child {
-  border-radius: 14px 0 0 14px;
+  border-radius: 12px 0 0 12px;
+}
+
+/* The last piece of the bar gets the round end, whichever piece that is. */
+.mt-bar > .mt-part:nth-last-child(2) {
+  border-radius: 0 12px 12px 0;
+}
+
+.mt-bar > .mt-part:first-child:nth-last-child(2) {
+  border-radius: 12px;
 }
 
 /* The piece her move takes away. */
 .mt-part.take {
-  background: repeating-linear-gradient(135deg, #ffd0dc 0 10px, #ffb0c4 10px 20px);
+  background: repeating-linear-gradient(135deg, #ff9db5 0 10px, #ff7396 10px 20px);
   border-style: dashed;
 }
 
 .mt-part.take.gone {
-  opacity: 0.25;
-  transform: translateY(14px) rotate(3deg);
+  opacity: 0.2;
+  transform: translateY(12px) rotate(3deg);
 }
 
-/* The piece the other monster adds. */
+/* The piece her block adds. */
 .mt-part.grow {
-  background: repeating-linear-gradient(135deg, #d9f5c8 0 10px, #b9ea9c 10px 20px);
+  background: repeating-linear-gradient(135deg, #c9f2a6 0 10px, #9fe070 10px 20px);
   border-style: dashed;
 }
 
 .mt-part.grow.joined {
-  background: #6cc3ff;
+  background: #ffc83d;
   border-style: solid;
-}
-
-.mt-part.low {
-  background: #ffd0dc;
 }
 
 .mt-part-label {
   position: absolute;
   left: 50%;
-  top: calc(100% + 8px);
+  top: calc(100% + 6px);
   transform: translateX(-50%);
-  font-size: 30px;
+  font-size: 28px;
   font-weight: 700;
   white-space: nowrap;
 }
 
 .mt-part.cut .mt-part-label {
-  font-size: 22px;
+  font-size: 21px;
 }
 
 /* Neighbouring small pieces: every second label sits a line lower so they do not touch. */
 .mt-part.cut:nth-child(odd) .mt-part-label {
-  top: calc(100% + 30px);
+  top: calc(100% + 26px);
 }
 
 .mt-ticks {
   position: absolute;
   left: 0;
-  top: 4px;
-  bottom: 4px;
+  top: 3px;
+  bottom: 3px;
   pointer-events: none;
-  background-image: linear-gradient(90deg, transparent calc(100% - 2px), rgba(74, 37, 69, 0.45) calc(100% - 2px));
+  background-image: linear-gradient(90deg, transparent calc(100% - 2px), rgba(28, 27, 46, 0.5) calc(100% - 2px));
   background-repeat: repeat-x;
 }
 
+/* Between the monsters: how far the match is, what the coach says, and the small steps. */
+.mt-mid {
+  position: absolute;
+  left: 340px;
+  top: 250px;
+  width: 600px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.mt-meter {
+  display: flex;
+  gap: 10px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  background: rgba(28, 27, 46, 0.78);
+}
+
+.mt-dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.25);
+  border: 3px solid #fff;
+}
+
+.mt-dot.on {
+  background: var(--yellow);
+}
+
+.mt-coach {
+  max-width: 560px;
+  padding: 8px 18px;
+  border-radius: 18px;
+  background: #fff;
+  border: 4px solid var(--plum);
+  font-size: 22px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.mt-coach.off,
+.mt-steps.off {
+  display: none;
+}
+
+.mt-steps {
+  padding: 10px 22px;
+  border-radius: 18px;
+  background: #fff8ec;
+  border: 4px solid var(--plum);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.mt-step {
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+/* The controls: dark, so the arena stays the picture. */
 .mt-panel {
   position: absolute;
   left: 20px;
-  top: 340px;
+  top: 524px;
   width: 1240px;
-  height: 364px;
-  padding: 16px 22px;
+  height: 184px;
+  box-sizing: border-box;
+  padding: 14px 20px;
   display: flex;
-  gap: 24px;
+  align-items: center;
+  gap: 22px;
+  border-radius: 26px;
+  background: rgba(28, 27, 46, 0.88);
+  border: 4px solid rgba(28, 27, 46, 0.95);
+  color: #fff;
 }
 
 .mt-words {
   flex: 1;
   min-width: 0;
   display: flex;
-  flex-direction: column;
-  gap: 10px;
+  align-items: center;
+  gap: 12px;
 }
 
 .mt-story {
-  font-size: 26px;
+  flex: 1;
+  font-size: 23px;
+  font-weight: 600;
   line-height: 1.35;
 }
 
-.mt-coach {
-  font-size: 22px;
-  min-height: 30px;
-  color: var(--plum);
-}
-
-.mt-steps {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.mt-step {
-  font-size: 30px;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-}
-
 .mt-work {
-  width: 430px;
+  width: 330px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
 }
 
 .mt-sum {
   display: flex;
   align-items: center;
-  gap: 12px;
-  font-size: 46px;
+  gap: 10px;
+  font-size: 42px;
   font-weight: 700;
-  min-height: 72px;
+  min-height: 66px;
 }
 
 .mt-op {
-  color: var(--plum);
+  color: var(--yellow);
 }
 
 .mt-slot {
-  min-width: 110px;
-  height: 72px;
-  padding: 0 14px;
+  min-width: 100px;
+  height: 66px;
+  padding: 0 12px;
   font: inherit;
+  color: var(--ink, #1c1b2e);
   background: #fff;
-  border: 4px solid var(--plum);
+  border: 4px solid var(--yellow);
   border-radius: 16px;
 }
 
@@ -6322,18 +6408,18 @@ button.e-cell.empty {
   background: #dff6d0;
 }
 
-.mt-work .keypad.off {
+.mt-panel .keypad.off {
   visibility: hidden;
 }
 
 .mt-action {
   display: flex;
   align-items: center;
-  gap: 14px;
-  min-height: 64px;
+  gap: 12px;
+  min-height: 62px;
 }
 
-/* The moves. The stage is a fixed size, so the path is given in stage pixels. */
+/* The moves. The stage is a fixed size, so the paths are given in stage pixels. */
 .mt-fx {
   position: absolute;
   inset: 0;
@@ -6365,8 +6451,8 @@ button.e-cell.empty {
 
 .mt-orb {
   position: absolute;
-  left: 230px;
-  top: 170px;
+  left: 300px;
+  top: 350px;
   width: 46px;
   height: 46px;
   border-radius: 50%;
@@ -6374,13 +6460,19 @@ button.e-cell.empty {
   box-shadow:
     0 0 0 4px rgba(255, 255, 255, 0.7),
     0 0 26px 10px var(--mv, #8ec5ff);
+  --to: 640px;
   animation: mtOrb 0.43s cubic-bezier(0.5, 0, 0.8, 0.6) forwards;
+}
+
+.mt-orb.from-foe {
+  left: 930px;
+  --to: -560px;
 }
 
 .mt-orb.big {
   width: 70px;
   height: 70px;
-  top: 158px;
+  top: 338px;
 }
 
 @keyframes mtOrb {
@@ -6388,14 +6480,21 @@ button.e-cell.empty {
     transform: translateX(0) scale(0.5);
   }
   to {
-    transform: translateX(860px) scale(1.1);
+    transform: translateX(var(--to)) scale(1.1);
   }
 }
 
 .mt-burst {
   position: absolute;
-  left: 1126px;
-  top: 190px;
+  top: 372px;
+}
+
+.mt-burst.at-foe {
+  left: 1070px;
+}
+
+.mt-burst.at-mine {
+  left: 372px;
 }
 
 .mt-burst i {
@@ -6424,40 +6523,44 @@ button.e-cell.empty {
   }
 }
 
-.mt-rings {
+/* Her monster's shield: an arc of light in front of it. */
+.mt-guard {
   position: absolute;
-  left: 1136px;
-  top: 190px;
+  left: 318px;
+  top: 250px;
+  width: 70px;
+  height: 250px;
+  border-radius: 0 100% 100% 0 / 0 50% 50% 0;
+  border-right: 12px solid #ffe27a;
+  box-shadow: 10px 0 24px 2px rgba(255, 226, 122, 0.85);
+  animation: mtGuard 1.05s ease-out forwards;
 }
 
-.mt-rings i {
-  position: absolute;
-  left: -110px;
-  top: -40px;
-  width: 220px;
-  height: 80px;
-  border-radius: 50%;
-  border: 6px solid #b9ea9c;
-  box-shadow: 0 0 14px 2px rgba(185, 234, 156, 0.8);
-  opacity: 0;
-  animation: mtRing 0.8s ease-out forwards;
-}
-
-@keyframes mtRing {
-  from {
-    transform: translateY(110px) scale(0.6);
-    opacity: 0.95;
-  }
-  to {
-    transform: translateY(-90px) scale(1.05);
+@keyframes mtGuard {
+  0% {
     opacity: 0;
+    transform: scaleY(0.5);
   }
+  18%,
+  70% {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scaleY(1.05);
+  }
+}
+
+/* A friend who asks for a match. */
+.wish-bubble.match-bubble {
+  background: var(--yellow);
 }
 
 @media (prefers-reduced-motion: reduce) {
   .mt-orb,
   .mt-burst i,
-  .mt-rings i {
+  .mt-guard {
     animation-duration: 0.01s;
   }
 
@@ -6466,7 +6569,7 @@ button.e-cell.empty {
   }
 }
 
-/* The other monster is turned to face hers. The flip sits on a wrapper, since the monster's own transform is busy with its idle bob. */
-.mt-flip {
-  transform: scaleX(-1);
+.mt-panel .key,
+.mt-panel .btn {
+  color: #1c1b2e;
 }

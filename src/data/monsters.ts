@@ -417,7 +417,32 @@ export function eggArt(): string {
   return `${import.meta.env.BASE_URL}art/items/egg.webp`;
 }
 
-export type BgName = 'meadow' | 'canyon' | 'grass' | 'hollow' | 'bakery' | 'patch';
+export type ArenaName = 'arena-meadow' | 'arena-canyon' | 'arena-hollow' | 'arena-bakery' | 'arena-beach' | 'arena-night';
+export type BgName = 'meadow' | 'canyon' | 'grass' | 'hollow' | 'bakery' | 'patch' | ArenaName;
+
+/**
+ * Most monsters are drawn looking to the right. These look to the left, in
+ * every form. A screen that stands two monsters face to face needs to know.
+ */
+const LOOKS_LEFT = new Set<SpeciesId>(['bug', 'cook', 'fig', 'flam']);
+
+export function looksLeft(id: SpeciesId): boolean {
+  return LOOKS_LEFT.has(id);
+}
+
+/** Where a match is held: the home ground of the monster that asked for it. */
+export function arenaFor(id: SpeciesId): ArenaName {
+  const arenas: Record<Habitat, ArenaName> = {
+    starter: 'arena-meadow',
+    grass: 'arena-meadow',
+    canyon: 'arena-canyon',
+    hollow: 'arena-hollow',
+    upper: 'arena-bakery',
+    early: 'arena-beach',
+    egg: 'arena-night',
+  };
+  return arenas[SPECIES[id].habitat];
+}
 
 /** The picture behind the Bakery and its lessons. Its own picture is not drawn yet: change this to 'bakery' when public/art/bg/bakery.jpg exists. */
 export const BAKERY_BG: BgName = 'bakery';

@@ -242,19 +242,42 @@ are done, "Good night" puts the meadow to sleep, which gives the session a
 clear end.
 
 **A match.** Children who tested the game asked for battles. A match gives
-them one in which the fight is the sum. The other monster's power is a number,
-drawn as a bar with a mark at every ten. Her monster's move takes some away and
-she works out what is left; then the other monster powers up and she works out
-the new total. Five problems make a match, and each answer is the first number
-of the next problem. They are Berry Canyon problems at her own level, they
-count for that level, and they are logged like berry trips. Nothing is timed
-and nothing can be lost: after a wrong answer the move has missed and she tries
-again. A second miss shows the problem in small steps (52 − 27 as 52 − 20,
-32 − 2, 30 − 5) and cuts the bar the same way; a third shows the answer for her
-to type, which earns nothing. After the fifth problem her power move is ready
-and one press ends the match, which counts as a round for her monster. The
-Match button is on a friend's card once a take-away monster (Dusk or Chip) is a
-friend. The moves are drawn by the game, so a new monster needs no extra art
+them one in which the fight is the sum, in turns. On her turn her monster's
+move takes some of the other monster's power away, and she works out what is
+left. On the other monster's turn it attacks and her monster blocks: a good
+block adds to her monster's shield, and she works out the new total. Power and
+shield are two numbers, each on a bar with a mark at every ten; the bar whose
+turn it is shows the problem as a whole and its parts. Five problems make a
+match, and each bar carries on from its own last answer.
+
+Nothing is timed and nothing can be lost: her shield only grows, and after a
+wrong answer she tries again. A second miss shows the problem in small steps
+(52 − 27 as 52 − 20, 32 − 2, 30 − 5) and cuts the bar the same way; a third
+shows the answer for her to type, which earns nothing. After the fifth problem
+her power move is ready and one press ends the match, which counts as a round
+for her buddy.
+
+A match is practice, not teaching. The Berry Canyon teaches a kind of problem
+with crates and berries she can move; a match shows only a bar and the
+numbers, the next step on from objects. So:
+
+- A kind of problem comes into matches once it goes well in the canyon without
+  the berries (`fluent` in `src/skill.ts`). With only adding ready, a match is
+  all blocks.
+- A match mixes every kind that is ready, starting with the one she has gone
+  longest without. It is where old skills are kept up.
+- One friend a day asks for a match, with a "Match?" bubble in the meadow. It
+  is played with her buddy. There is no button that is always there, so a
+  match cannot be used to skip the teaching games.
+- The problems are at her own level, count for that level, and are logged like
+  berry trips.
+- When the answer has to be shown twice for one kind, the match stops and she
+  is sent to the monster that teaches it.
+
+The moves are drawn by the game, so a new monster needs no extra art. Each
+match is held in the arena of the monster that asked (`arenaFor` in
+`src/data/monsters.ts`; pictures in `public/art/bg/arena-*.jpg`, fetched by
+`scripts/fetch-art-arena.sh`). Matches cover adding and taking away only
 (`src/match.ts`, `src/screens/match.ts`).
 
 **Sound.** Every instruction is a recorded voice line. Music plays under it,

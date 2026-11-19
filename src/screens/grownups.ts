@@ -434,7 +434,7 @@ export const grownupsScreen: Screen = (app, params) => {
         h(
           'p',
           { class: 'gu-small' },
-          'Two monsters have a match. The other monster\'s power is a number on a bar: a move takes some away (taking away), then it powers up (adding). The problems are the Berry Canyon\'s, at the child\'s own level, and nothing is timed or lost. A child sees the Match button on a friend\'s card once a take-away monster is a friend. The button here opens one for a look. Nothing is saved and nothing is earned.',
+          'Two monsters have a match, in turns. On the child\'s turn a move takes some of the other monster\'s power away (taking away). On the other monster\'s turn the child\'s monster blocks, and a good block adds to its shield (adding). Nothing is timed and nothing can be lost. The problems are the Berry Canyon\'s, at the child\'s own level. A kind of problem comes into matches once it goes well without the berries, and from then on one friend a day asks for a match in the meadow. The button here opens one for a look. Nothing is saved and nothing is earned.',
         ),
         h(
           'div',

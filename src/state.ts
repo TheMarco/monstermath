@@ -210,6 +210,8 @@ export interface DayState {
   wishes?: Array<{ id: SpeciesId; done: boolean }>;
   /** She said good night: the meadow sleeps until she wakes it. */
   asleep?: boolean;
+  /** The friend who asked for a match today, and how many matches were played. */
+  match?: { foe: SpeciesId; played: number };
 }
 
 export interface Save {

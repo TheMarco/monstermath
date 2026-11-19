@@ -1,22 +1,24 @@
 import { say, sfx } from '../audio';
-import { ALL_SPECIES, SPECIES, type SpeciesId, type Stage } from '../data/monsters';
+import { ALL_SPECIES, arenaFor, bg, looksLeft, SPECIES, type SpeciesId, type Stage } from '../data/monsters';
 import { record, type Mark } from '../ladder';
-import { jumps, matchRungs, MATCH_TURNS, ownerOf, planMatch, type Rungs, type Turn } from '../match';
-import { classifyError, isAddition, topRung, type ErrorPattern } from '../math/regroup';
+import { jumps, matchRungs, ownerOf, planMatch, stalestFirst, type Rungs, type Turn, type TurnKind } from '../match';
+import { classifyError, isAddition, topRung, type Delivery, type ErrorPattern } from '../math/regroup';
 import { bonusLines, climbed, gainLines, levelUpLine, onRound, onTrip, roundStars } from '../rewards';
-import { dayKey, displayName, friends, growthLine, monster, today } from '../state';
-import { backButton, backdrop, button, celebrate, floatUp, icon, monsterImg, speaker, toasts, type Screen } from '../ui/common';
+import { dayKey, displayName, friends, growthLine, isFriend, monster, today } from '../state';
+import { backButton, button, celebrate, floatUp, icon, monsterImg, speaker, toasts, type Screen } from '../ui/common';
 import { h, pick, replace, times } from '../ui/dom';
 import { keypad, pushDigit } from '../ui/keypad';
+import { playWithFriend } from '../tutor';
 import { nameClip, num } from '../voice/lines';
 
-/** How wide the power bar is drawn, in stage pixels. */
-const BAR_W = 600;
+/** How wide each bar is drawn, in stage pixels. */
+const BAR_W = 520;
 
 /**
- * A match. The other monster's power is a number on a bar. Her monster's move
- * takes some of it away and she works out what is left; then the other
- * monster powers up and she works out the new total. See `src/match.ts`.
+ * A match, in turns. The other monster's power and her monster's shield are
+ * two numbers, each on a bar. Her move takes power away and she works out
+ * what is left; the other monster attacks and her block adds shield, and she
+ * works out the new total. See `src/match.ts`.
  *
  * With `practice` set, a grown-up is having a look: nothing is saved or earned.
  */
@@ -24,8 +26,7 @@ export const matchScreen: Screen = (app, params) => {
   const { save } = app;
   const practice = params.practice === true;
   const id = params.id as SpeciesId;
-  const mine = save.monsters[id];
-  const myStage: Stage = mine?.stage ?? 1;
+  const myStage: Stage = save.monsters[id]?.stage ?? 1;
   const name = displayName(save, id);
 
   const others = friends(save).map((f) => f.id).filter((f) => f !== id);
@@ -35,9 +36,10 @@ export const matchScreen: Screen = (app, params) => {
 
   const tryRung = typeof params.rung === 'number' ? params.rung : 3;
   const rungs: Rungs = practice ? { add: tryRung, addR: tryRung, sub: tryRung, subR: Math.min(tryRung, topRung('subR')) } : matchRungs(save);
-  const plan = planMatch(rungs);
-  const scale = Math.max(10, Math.ceil(Math.max(...plan.flatMap((t) => [t.p.a, t.p.answer])) / 10) * 10);
+  const plan = planMatch(rungs, Math.random, practice ? [] : stalestFirst(save, rungs));
+  const scale = Math.max(10, Math.ceil(Math.max(10, ...plan.flatMap((t) => [t.p.a, t.p.answer])) / 10) * 10);
   const unit = BAR_W / scale;
+  const firstOf = (kind: TurnKind): number | null => plan.find((t) => t.kind === kind)?.p.a ?? null;
 
   let at = 0;
   let typed = '';
@@ -50,12 +52,17 @@ export const matchScreen: Screen = (app, params) => {
   let help = 0;
   let phase: 'play' | 'finish' | 'done' = 'play';
   let gone = false;
+  /** Where each bar stands between turns. Null: this match has no turns of that sort. */
+  const value: Record<TurnKind, number | null> = { hit: firstOf('hit'), block: firstOf('block') };
+  /** How often the answer had to be shown, by kind. Twice for one kind: it is not ready for matches. */
+  const shown: Partial<Record<Delivery, number>> = {};
+  let sendBack: SpeciesId | null = null;
 
-  const pet = monsterImg(id, myStage, 220, 'bob');
-  const foePet = monsterImg(foe, foeStage, 220, 'bob');
-  const meter = h('div', { class: 'trip-meter mt-meter' });
-  const barHost = h('div', { class: 'mt-bar-host' });
-  const story = h('p', { class: 'story mt-story' });
+  const pet = monsterImg(id, myStage, 250, 'bob');
+  const foePet = monsterImg(foe, foeStage, 250, 'bob');
+  const meter = h('div', { class: 'mt-meter' });
+  const hud: Record<TurnKind, HTMLElement> = { block: h('div', { class: 'mt-hud mt-hud-mine' }), hit: h('div', { class: 'mt-hud mt-hud-foe' }) };
+  const story = h('p', { class: 'mt-story' });
   const coachEl = h('p', { class: 'mt-coach' });
   const stepsEl = h('div', { class: 'mt-steps' });
   const sumEl = h('div', { class: 'mt-sum', 'data-sum': true });
@@ -66,27 +73,29 @@ export const matchScreen: Screen = (app, params) => {
   );
 
   const turn = (): Turn => plan[Math.min(at, plan.length - 1)] as Turn;
+  const sign = (kind: TurnKind): string => (kind === 'hit' ? '−' : '+');
 
   function storyText(): string {
     if (phase !== 'play') return `${name}'s power move is ready! Press the power button.`;
     const t = turn();
-    const start = t.fresh && at > 0 ? `${foeName} catches their breath. ` : '';
-    return t.kind === 'hit'
-      ? `${start}${foeName} has ${t.p.a} power. ${name}'s move takes away ${t.p.b}. How much power is left?`
-      : `${start}${foeName} has ${t.p.a} power, and powers up by ${t.p.b}. How much power now?`;
+    if (t.kind === 'hit') {
+      const start = t.fresh && at > 0 ? `${foeName} catches their breath. ` : '';
+      return `${start}${foeName} has ${t.p.a} power. ${name}'s move takes away ${t.p.b}. How much power is left?`;
+    }
+    return `${foeName} attacks! ${name}'s shield is ${t.p.a}. A good block adds ${t.p.b}. How much shield now?`;
   }
 
   function storyClips(): Array<string | null> {
     if (phase !== 'play') return ['mt_finish'];
     const t = turn();
-    const start = t.fresh && at > 0 ? 'mt_breath' : null;
     return t.kind === 'hit'
-      ? [start, 'mt_power', num(t.p.a), 'mt_takes', num(t.p.b), 'mt_left']
-      : [start, 'mt_power', num(t.p.a), 'mt_up', num(t.p.b), 'mt_now'];
+      ? [t.fresh && at > 0 ? 'mt_breath' : null, 'mt_power', num(t.p.a), 'mt_takes', num(t.p.b), 'mt_left']
+      : ['mt_shield', num(t.p.a), 'mt_block', num(t.p.b), 'mt_shield_now'];
   }
 
-  function coach(text: string, clip?: string): void {
+  function coach(text: string, clip?: string | null): void {
     replace(coachEl, text);
+    coachEl.classList.toggle('off', text === '');
     if (clip) say(clip);
   }
 
@@ -98,33 +107,49 @@ export const matchScreen: Screen = (app, params) => {
 
   // ---- what she sees -----------------------------------------------------
 
-  /** One stretch of the bar, with its number underneath. */
-  function part(value: number, cls: string, label: string | number): HTMLElement {
-    return h('div', { class: `mt-part ${cls}`, style: `width:${Math.max(0, value * unit)}px` }, h('span', { class: 'mt-part-label' }, String(label)));
+  /** One stretch of a bar, with its number underneath. */
+  function part(n: number, cls: string, label: string | number): HTMLElement {
+    return h('div', { class: `mt-part ${cls}`, style: `width:${Math.max(0, n * unit)}px` }, label === '' ? null : h('span', { class: 'mt-part-label' }, String(label)));
   }
 
   /**
-   * The bar is a part-whole picture. For a hit the whole is known and one part
-   * is taken; for a power-up the two parts are known and the whole is asked.
+   * A bar is a part-whole picture while its turn is on. For a hit the whole is
+   * known and one part is taken; for a block the two parts are known and the
+   * whole is asked. Between its turns a bar just shows where it stands.
    */
-  function drawBar(): void {
-    if (phase !== 'play') {
-      replace(barHost, h('div', { class: 'mt-whole' }, 'Power ', h('b', null, phase === 'done' ? '0' : String(turn().p.answer))), h('div', { class: 'mt-bar' }, phase === 'done' ? null : part(turn().p.answer, 'rest low', '')));
+  function drawHud(kind: TurnKind): void {
+    const host = hud[kind];
+    const who = kind === 'hit' ? foeName : name;
+    const what = kind === 'hit' ? 'Power' : 'Shield';
+    const now = value[kind];
+    host.classList.toggle('none', now === null);
+    if (now === null) {
+      replace(host, h('div', { class: 'mt-hud-top' }, h('span', { class: 'mt-who' }, who)));
       return;
     }
-    const { p, kind } = turn();
-    const total = kind === 'hit' ? p.a : p.answer;
-    const whole = kind === 'hit' || solved ? String(solved ? p.answer : p.a) : '?';
-    // With the small steps showing, the piece is cut the same way: 47 as 40, 2 and 5.
-    const cuts = help > 0 && !solved ? jumps(p).map((j) => j.by) : [p.b];
-    const small = cuts.length > 1 ? 'cut' : '';
-    const parts =
-      kind === 'hit'
-        ? [part(p.answer, 'rest', solved ? p.answer : '?'), ...[...cuts].reverse().map((by) => part(by, `take ${small} ${solved ? 'gone' : ''}`, by))]
-        : [part(p.a, 'rest', p.a), ...cuts.map((by) => part(by, `grow ${small} ${solved ? 'joined' : ''}`, by))];
+    const live = phase === 'play' && turn().kind === kind;
+    host.classList.toggle('live', live);
+    let whole = String(now);
+    let total = now;
+    let parts = [part(now, 'rest', '')];
+    if (live) {
+      const { p } = turn();
+      // With the small steps showing, the piece is cut the same way: 47 as 40, 2 and 5.
+      const cuts = help > 0 && !solved ? jumps(p).map((j) => j.by) : [p.b];
+      const small = cuts.length > 1 ? 'cut' : '';
+      if (kind === 'hit') {
+        whole = String(solved ? p.answer : p.a);
+        total = p.a;
+        parts = [part(p.answer, 'rest', solved ? p.answer : '?'), ...[...cuts].reverse().map((by) => part(by, `take ${small} ${solved ? 'gone' : ''}`, by))];
+      } else {
+        whole = solved ? String(p.answer) : '?';
+        total = p.answer;
+        parts = [part(p.a, 'rest', p.a), ...cuts.map((by) => part(by, `grow ${small} ${solved ? 'joined' : ''}`, by))];
+      }
+    }
     replace(
-      barHost,
-      h('div', { class: 'mt-whole' }, 'Power ', h('b', { class: whole === '?' ? 'ask' : '' }, whole)),
+      host,
+      h('div', { class: 'mt-hud-top' }, h('span', { class: 'mt-who' }, who), h('span', { class: 'mt-what' }, what), h('b', { class: `mt-whole ${whole === '?' ? 'ask' : ''}` }, whole)),
       h(
         'div',
         { class: 'mt-bar' },
@@ -136,7 +161,7 @@ export const matchScreen: Screen = (app, params) => {
   }
 
   function drawMeter(): void {
-    const done = phase === 'play' ? at + (solved ? 1 : 0) : MATCH_TURNS;
+    const done = phase === 'play' ? at + (solved ? 1 : 0) : plan.length;
     replace(meter, times(plan.length, (i) => h('i', { class: `mt-dot ${i < done ? 'on' : ''}` })));
   }
 
@@ -146,32 +171,33 @@ export const matchScreen: Screen = (app, params) => {
       return;
     }
     const { p, kind } = turn();
-    const shown = solved ? String(p.answer) : typed;
+    const text = solved ? String(p.answer) : typed;
     replace(
       sumEl,
       h('span', null, String(p.a)),
-      h('span', { class: 'mt-op' }, kind === 'hit' ? '−' : '+'),
+      h('span', { class: 'mt-op' }, sign(kind)),
       h('span', null, String(p.b)),
       h('span', { class: 'mt-op' }, '='),
-      h('button', { class: `mt-slot ${solved ? 'ok' : ''} ${shown ? '' : 'empty'}`, type: 'button', 'data-hear': true, 'aria-label': 'Your answer' }, shown || '?'),
+      h('button', { class: `mt-slot ${solved ? 'ok' : ''} ${text ? '' : 'empty'}`, type: 'button', 'data-hear': true, 'aria-label': 'Your answer' }, text || '?'),
     );
   }
 
   function drawSteps(): void {
     if (phase !== 'play' || help === 0) {
       replace(stepsEl);
+      stepsEl.classList.add('off');
       return;
     }
     const { p, kind } = turn();
-    const sign = kind === 'hit' ? '−' : '+';
     const list = jumps(p);
+    stepsEl.classList.remove('off');
     replace(
       stepsEl,
       list.map((j, i) => {
         const last = i === list.length - 1;
         // The last result is hers to find, until the third miss shows it.
         const result = last && help < 2 && !solved ? '?' : String(j.to);
-        return h('div', { class: 'mt-step' }, `${j.from} ${sign} ${j.by} = `, h('b', { class: result === '?' ? 'ask' : '' }, result));
+        return h('div', { class: 'mt-step' }, `${j.from} ${sign(kind)} ${j.by} = `, h('b', { class: result === '?' ? 'ask' : '' }, result));
       }),
     );
   }
@@ -187,7 +213,12 @@ export const matchScreen: Screen = (app, params) => {
       return;
     }
     if (solved) {
-      replace(action, button(at === plan.length - 1 ? 'Next' : 'Next move', next, 'btn-primary btn-big'));
+      if (sendBack) {
+        const back = sendBack;
+        replace(action, button(`Play with ${displayName(save, back)}`, () => playWithFriend(app, back), 'btn-primary btn-big'));
+        return;
+      }
+      replace(action, button(at === plan.length - 1 ? 'Next' : 'Next turn', next, 'btn-primary btn-big'));
       return;
     }
     const check = button([icon('check'), 'Check'], doCheck, 'btn-primary btn-big');
@@ -197,7 +228,8 @@ export const matchScreen: Screen = (app, params) => {
 
   function draw(): void {
     replace(story, storyText());
-    drawBar();
+    drawHud('hit');
+    drawHud('block');
     drawMeter();
     drawSum();
     drawSteps();
@@ -207,35 +239,31 @@ export const matchScreen: Screen = (app, params) => {
   // ---- the moves, drawn by the game ---------------------------------------
 
   const fxHost = h('div', { class: 'mt-fx', 'aria-hidden': 'true' });
-  const habitat = SPECIES[id].habitat;
 
-  /** Her monster's power move: a ball of light crosses to the other monster and bursts there. */
-  function shoot(big = false): void {
-    const orb = h('i', { class: `mt-orb mt-${habitat} ${big ? 'big' : ''}` });
+  /** A ball of light crosses from one monster to the other and bursts there. */
+  function shoot(from: 'mine' | 'foe', big = false): void {
+    const colour = `mt-${SPECIES[from === 'mine' ? id : foe].habitat}`;
+    const orb = h('i', { class: `mt-orb from-${from} ${colour} ${big ? 'big' : ''}` });
     fxHost.appendChild(orb);
     sfx('pop');
     window.setTimeout(() => {
       orb.remove();
       if (gone) return;
-      const burst = h(
-        'div',
-        { class: `mt-burst mt-${habitat} ${big ? 'big' : ''}` },
-        times(big ? 14 : 9, (i) => h('i', { style: `--a:${Math.round((360 / (big ? 14 : 9)) * i)}deg` })),
-      );
+      const n = big ? 14 : 9;
+      const burst = h('div', { class: `mt-burst at-${from === 'mine' ? 'foe' : 'mine'} ${colour} ${big ? 'big' : ''}` }, times(n, (i) => h('i', { style: `--a:${Math.round((360 / n) * i)}deg` })));
       fxHost.appendChild(burst);
       sfx('pack');
-      react(foePet, big ? 'spin' : 'tilt');
+      if (from === 'mine') react(foePet, big ? 'spin' : 'tilt');
       window.setTimeout(() => burst.remove(), 700);
     }, 430);
   }
 
-  /** The other monster powering up: rings of light rise around it. */
-  function powerUp(): void {
-    const rings = h('div', { class: 'mt-rings' }, times(3, (i) => h('i', { style: `animation-delay:${i * 0.14}s` })));
-    fxHost.appendChild(rings);
-    sfx('buy');
-    react(foePet, 'jump');
-    window.setTimeout(() => rings.remove(), 1100);
+  /** Her monster's block: a shield of light stands in front of it while the attack breaks on it. */
+  function block(): void {
+    const guard = h('i', { class: 'mt-guard' });
+    fxHost.appendChild(guard);
+    shoot('foe');
+    window.setTimeout(() => guard.remove(), 1100);
   }
 
   // ---- playing -----------------------------------------------------------
@@ -263,10 +291,11 @@ export const matchScreen: Screen = (app, params) => {
     solved = false;
     help = 0;
     const t = turn();
-    coach(t.kind === 'hit' ? `${name} is ready. What will be left?` : `${foeName} powers up!`);
+    value[t.kind] = t.p.a;
+    coach(t.kind === 'hit' ? `${name}'s turn!` : `${foeName}'s turn. Block it!`);
     draw();
-    if (t.kind === 'boost') powerUp();
-    say(at === 0 ? 'mt_start' : null, ...storyClips());
+    if (t.kind === 'block') react(foePet, 'jump');
+    say(at === 0 && t.kind === 'hit' ? 'mt_start' : null, t.kind === 'block' ? 'mt_attack' : null, ...storyClips());
   }
 
   function showSteps(): void {
@@ -275,19 +304,19 @@ export const matchScreen: Screen = (app, params) => {
     help = Math.max(help, 1);
     coach('Take it in small steps. Tens first, then ones.', 'mt_steps');
     drawSteps();
-    drawBar();
+    drawHud(turn().kind);
   }
 
   function doCheck(): void {
     if (solved || phase !== 'play' || typed === '') return;
     const { p, kind } = turn();
-    const value = Number(typed);
-    answers.push(value);
-    if (value === p.answer) {
+    const given = Number(typed);
+    answers.push(given);
+    if (given === p.answer) {
       succeed();
       return;
     }
-    errors.push(classifyError(p, value));
+    errors.push(classifyError(p, given));
     sfx('soft');
     react(pet, 'tilt');
     typed = '';
@@ -296,7 +325,7 @@ export const matchScreen: Screen = (app, params) => {
       revealed = true;
       helped = true;
       help = 2;
-      coach(`${p.a} ${kind === 'hit' ? '−' : '+'} ${p.b} = ${p.answer}. Type ${p.answer}.`, 'mt_copy');
+      coach(`${p.a} ${sign(kind)} ${p.b} = ${p.answer}. Type ${p.answer}.`, 'mt_copy');
     } else if (answers.length === 2) {
       helped = true;
       help = 1;
@@ -311,11 +340,13 @@ export const matchScreen: Screen = (app, params) => {
     const t = turn();
     const { p } = t;
     solved = true;
+    value[t.kind] = p.answer;
     const firstTry = answers.length === 1 && !helped;
     const worked = !revealed;
+    if (revealed) shown[p.type] = (shown[p.type] ?? 0) + 1;
+    const o = ownerOf(p.type);
     if (!practice) {
       const day = today(save);
-      const o = ownerOf(p.type);
       // Only a problem at her own level says something about her level.
       if (o && t.own) {
         const om = monster(save, o);
@@ -345,18 +376,26 @@ export const matchScreen: Screen = (app, params) => {
       });
       // Working it out earns the reward, with or without help. Copying the shown answer does not.
       if (worked) toasts(el, gainLines(onTrip(save, firstTry)));
+      // The answer shown twice for one kind: the berries are still needed. Its monster takes over.
+      if (o && (shown[p.type] ?? 0) >= 2 && isFriend(save, o)) sendBack = o;
       app.commit();
     }
     sfx('yes');
     react(pet, 'jump');
-    if (t.kind === 'hit') shoot();
+    if (t.kind === 'hit') shoot('mine');
+    else block();
     if (worked) floatUp(pet, 'heart', firstTry ? 3 : 1);
-    coach(`Yes! ${p.a} ${isAddition(p.type) ? '+' : '−'} ${p.b} = ${p.answer}`, t.kind === 'hit' ? 'mt_hit' : 'yes');
+    if (sendBack) {
+      coach(`${displayName(save, sendBack)} can help with this one. Play there first.`);
+      say(nameClip(sendBack), 'wants_play');
+    } else {
+      coach(`Yes! ${p.a} ${isAddition(p.type) ? '+' : '−'} ${p.b} = ${p.answer}`, t.kind === 'hit' ? 'mt_hit' : 'mt_blocked');
+    }
     draw();
   }
 
   function next(): void {
-    if (!solved || phase !== 'play') return;
+    if (!solved || phase !== 'play' || sendBack) return;
     if (at < plan.length - 1) {
       at += 1;
       begin();
@@ -371,56 +410,59 @@ export const matchScreen: Screen = (app, params) => {
   function finish(): void {
     if (phase !== 'finish') return;
     phase = 'done';
+    if (value.hit !== null) value.hit = 0;
     sfx('charge');
     react(pet, 'jump');
-    coach('');
     draw();
-    shoot(true);
-    window.setTimeout(() => !gone && shoot(true), 260);
+    shoot('mine', true);
+    window.setTimeout(() => !gone && shoot('mine', true), 260);
     window.setTimeout(() => !gone && win(), 1500);
   }
 
   function win(): void {
-    const again = { label: 'Another match', onClick: () => app.go('match', practice ? { ...params } : { id }) };
     if (practice) {
+      const again = { label: 'Another match', onClick: () => app.go('match', { ...params }) };
       celebrate(el, { id, stage: myStage, title: `${name} won the match!`, voice: ['mt_won'], lines: ['Preview only. Nothing is saved.'], buttons: [again, { label: 'Back', onClick: () => app.go('grownups'), primary: true }] });
       return;
     }
     const m = monster(save, id);
+    const day = today(save);
     m.rounds += 1;
-    today(save).wins += 1;
+    day.wins += 1;
+    day.match = { foe, played: (day.match?.played ?? 0) + 1 };
     toasts(el, gainLines(onRound(save, id)));
     const { result, bonus } = roundStars(save, id);
     app.commit();
     const home = { label: 'Meadow', onClick: () => app.go('home'), primary: true };
+    const good = `Good match, ${foeName}!`;
     if (result === 'grown') {
       celebrate(el, { id, stage: m.stage, title: `${name} evolved!`, fx: { kind: 'evolve', from: (m.stage - 1) as Stage }, voice: [nameClip(id), 'grew_up'], lines: [...bonusLines(bonus), 'Look how strong!'], buttons: [home], big: true });
     } else if (result === 'star') {
-      celebrate(el, { id, stage: m.stage, title: `${name} won the match!`, voice: ['mt_won', 'got_star'], lines: [...bonusLines(bonus), growthLine(m, name)], buttons: [again, home] });
+      celebrate(el, { id, stage: m.stage, title: `${name} won the match!`, voice: ['mt_won', 'got_star'], lines: [good, ...bonusLines(bonus), growthLine(m, name)], buttons: [home] });
     } else {
-      celebrate(el, { id, stage: m.stage, title: `${name} won the match!`, voice: ['mt_won'], lines: [`${name} is full of stars for today. More stars tomorrow!`], buttons: [again, home] });
+      celebrate(el, { id, stage: m.stage, title: `${name} won the match!`, voice: ['mt_won'], lines: [good, `${name} is full of stars for today. More stars tomorrow!`], buttons: [home] });
     }
   }
 
+  const arena = arenaFor(foe);
   const el = h(
     'div',
     { class: 'screen match-screen' },
-    backdrop('canyon'),
+    // Until an arena has its picture, the canyon stands in.
+    h('div', { class: 'backdrop mt-arena', style: `background-image:url("${bg(arena)}"),url("${bg('canyon')}")` }),
     h('div', { class: 'topbar' }, practice ? button([icon('back'), 'Back'], () => app.go('grownups'), 'btn-back') : backButton(app)),
-    h('div', { class: 'mt-side mt-mine' }, pet, h('div', { class: 'nameplate' }, name)),
-    h('div', { class: 'mt-side mt-foe' }, h('div', { class: 'mt-flip' }, foePet), h('div', { class: 'nameplate' }, foeName)),
-    h('div', { class: 'card mt-top' }, meter, barHost),
+    hud.block,
+    hud.hit,
+    // Hers looks right and the other one looks left, whichever way each was drawn.
+    h('div', { class: 'mt-side mt-mine' }, h('div', { class: looksLeft(id) ? 'mt-flip' : '' }, pet)),
+    h('div', { class: 'mt-side mt-foe' }, h('div', { class: looksLeft(foe) ? '' : 'mt-flip' }, foePet)),
+    h('div', { class: 'mt-mid' }, meter, coachEl, stepsEl),
     fxHost,
-    h(
-      'div',
-      { class: 'card mt-panel' },
-      h('div', { class: 'mt-words' }, h('div', { class: 'cy-head' }, story, speaker(storyClips)), coachEl, stepsEl),
-      h('div', { class: 'mt-work' }, sumEl, pad, action),
-    ),
+    h('div', { class: 'mt-panel' }, h('div', { class: 'mt-words' }, story, speaker(storyClips)), h('div', { class: 'mt-work' }, sumEl, action), pad),
   );
 
   if (plan.length === 0) {
-    // No take-away problems yet: there is nothing to play. Go back where she came from.
+    // Nothing is ready for a match yet. Go back where she came from.
     window.setTimeout(() => !gone && app.go(practice ? 'grownups' : 'home'), 0);
   } else {
     begin();
