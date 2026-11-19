@@ -1,7 +1,7 @@
 import { ALL_SPECIES, SPECIES, type SpeciesId } from '../data/monsters';
 import { fracWords, SPOKEN_BOTTOMS, type Frac } from '../math/fractions';
 import { STICKERS } from '../rewards';
-import { numberRecordings } from './numbers';
+import { capital, numberRecordings, spoken } from './numbers';
 
 /**
  * Every line the game speaks. Each entry is recorded once as an audio clip
@@ -494,15 +494,15 @@ export function recordingScript(): Array<[string, string]> {
     out.push([aboutClip(id), `${sp.name}. ${article} ${sp.what}. ${blurb}`]);
   }
   for (const st of STICKERS) out.push([stickerClip(st.id), `${st.name}. ${st.how.replace('+, −, × and ÷', 'plus, minus, times, and sharing')}.`]);
-  for (let n = 0; n <= MAX_SPOKEN_NUMBER; n++) out.push([`n${n}`, `${n}.`]);
+  for (let n = 0; n <= MAX_SPOKEN_NUMBER; n++) out.push([`n${n}`, `${capital(spoken(n))}.`]);
   for (const n of [...Array.from({ length: 99 }, (_, i) => i + 1), ...BIG_HAS]) {
-    out.push([`has_${n}`, `Your friend has ${n} ${n === 1 ? 'berry' : 'berries'}.`]);
+    out.push([`has_${n}`, `Your friend has ${spoken(n)} ${n === 1 ? 'berry' : 'berries'}.`]);
   }
   for (let n = 1; n <= 99; n++) {
     out.push([`come_${n}`, n === 1 ? 'Here comes 1 more. How many now?' : `Here come ${n} more. How many now?`]);
     out.push([`eats_${n}`, `Your friend eats ${n}. How many are left?`]);
   }
-  for (const n of targetNumbers()) out.push([`make_${n}`, `Can you make ${n}?`]);
+  for (const n of targetNumbers()) out.push([`make_${n}`, `Can you make ${spoken(n)}?`]);
   for (const d of SPOKEN_BOTTOMS) {
     for (let n = 1; n < d; n++) {
       const words = fracWords({ n, d }) ?? '';

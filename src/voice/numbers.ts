@@ -93,7 +93,24 @@ export function numberTokens(text: string): NumberToken[] {
   return out;
 }
 
-const capital = (s: string): string => `${s.charAt(0).toUpperCase()}${s.slice(1)}`;
+const TEENS = ['ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen'];
+const TENS = ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'];
+
+/**
+ * A number from 0 to 199 in words, for the recording script. Written as
+ * digits, "103" gets read "one oh three"; a child needs "one hundred and three".
+ */
+export function numberWords(n: number): string {
+  if (n >= 100) return n === 100 ? 'one hundred' : `one hundred and ${numberWords(n - 100)}`;
+  if (n < 10) return DIGITS[n] as string;
+  if (n < 20) return TEENS[n - 10] as string;
+  return n % 10 ? `${TENS[Math.floor(n / 10)]}-${DIGITS[n % 10]}` : (TENS[n / 10] as string);
+}
+
+/** How a number is written in a line that gets recorded: digits up to 100, words above. */
+export const spoken = (n: number): string => (n > 100 && n < 200 ? numberWords(n) : String(n));
+
+export const capital = (s: string): string => `${s.charAt(0).toUpperCase()}${s.slice(1)}`;
 
 /** The clips this file adds to the recording script: key and the text to speak. */
 export function numberRecordings(): Array<[string, string]> {

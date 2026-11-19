@@ -1,11 +1,11 @@
-n192	192.
-n193	193.
-n194	194.
-n195	195.
-n196	196.
-n197	197.
-n198	198.
-n199	199.
+n192	One hundred and ninety-two.
+n193	One hundred and ninety-three.
+n194	One hundred and ninety-four.
+n195	One hundred and ninety-five.
+n196	One hundred and ninety-six.
+n197	One hundred and ninety-seven.
+n198	One hundred and ninety-eight.
+n199	One hundred and ninety-nine.
 n200	200.
 has_1	Your friend has 1 berry.
 has_2	Your friend has 2 berries.
@@ -106,10 +106,10 @@ has_96	Your friend has 96 berries.
 has_97	Your friend has 97 berries.
 has_98	Your friend has 98 berries.
 has_99	Your friend has 99 berries.
-has_125	Your friend has 125 berries.
-has_134	Your friend has 134 berries.
-has_136	Your friend has 136 berries.
-has_152	Your friend has 152 berries.
+has_125	Your friend has one hundred and twenty-five berries.
+has_134	Your friend has one hundred and thirty-four berries.
+has_136	Your friend has one hundred and thirty-six berries.
+has_152	Your friend has one hundred and fifty-two berries.
 come_1	Here comes 1 more. How many now?
 eats_1	Your friend eats 1. How many are left?
 come_2	Here come 2 more. How many now?
