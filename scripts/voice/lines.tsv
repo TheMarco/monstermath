@@ -112,6 +112,8 @@ mt_steps	Take it in small steps. Tens first, then ones.
 mt_copy	Let me show you. Type the answer you see.
 mt_finish	Your power move is ready! Press the power button.
 mt_won	You won the match! Good game!
+op_plus	Plus.
+op_minus	Minus.
 how_many_now	How many now?
 how_many_left	How many are left?
 tip_add	Put the berries together. Then count the crates and the loose berries.

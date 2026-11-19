@@ -112,6 +112,8 @@ mt_steps	Take it in small steps. Tens first, then ones.
 mt_copy	Let me show you. Type the answer you see.
 mt_finish	Your power move is ready! Press the power button.
 mt_won	You won the match! Good game!
+op_plus	Plus.
+op_minus	Minus.
 how_many_now	How many now?
 how_many_left	How many are left?
 tip_add	Put the berries together. Then count the crates and the loose berries.
@@ -215,4 +217,3 @@ fc_times_both	The pieces stay the same size, so the bottom number stays the same
 fc_times_added	It is times, not plus. Count every piece you put down.
 fc_times_other	Not yet. Put the pieces down, and count them.
 fc_tray_added	Do not add the bottom numbers. Count all the small pieces in the whole tray.
-fc_tray_one	That is only one of the two cuts. Cut the tray both ways, and count.

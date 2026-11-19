@@ -6465,3 +6465,8 @@ button.e-cell.empty {
     transition: none;
   }
 }
+
+/* The other monster is turned to face hers. The flip sits on a wrapper, since the monster's own transform is busy with its idle bob. */
+.mt-flip {
+  transform: scaleX(-1);
+}

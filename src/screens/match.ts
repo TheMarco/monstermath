@@ -58,7 +58,7 @@ export const matchScreen: Screen = (app, params) => {
   const story = h('p', { class: 'story mt-story' });
   const coachEl = h('p', { class: 'mt-coach' });
   const stepsEl = h('div', { class: 'mt-steps' });
-  const sumEl = h('div', { class: 'mt-sum' });
+  const sumEl = h('div', { class: 'mt-sum', 'data-sum': true });
   const action = h('div', { class: 'mt-action' });
   const pad = keypad(
     (d) => type(d),
@@ -408,7 +408,7 @@ export const matchScreen: Screen = (app, params) => {
     backdrop('canyon'),
     h('div', { class: 'topbar' }, practice ? button([icon('back'), 'Back'], () => app.go('grownups'), 'btn-back') : backButton(app)),
     h('div', { class: 'mt-side mt-mine' }, pet, h('div', { class: 'nameplate' }, name)),
-    h('div', { class: 'mt-side mt-foe' }, foePet, h('div', { class: 'nameplate' }, foeName)),
+    h('div', { class: 'mt-side mt-foe' }, h('div', { class: 'mt-flip' }, foePet), h('div', { class: 'nameplate' }, foeName)),
     h('div', { class: 'card mt-top' }, meter, barHost),
     fxHost,
     h(

@@ -206,3 +206,18 @@ describe('a monster she named herself', () => {
     expect(script.get('what_puff')).not.toContain('Puff');
   });
 });
+
+describe('a written sum', () => {
+  it('is read as a sum, sign and all, without the answer box', async () => {
+    const { numberAt } = await import('../src/ui/hear');
+    const sum = document.createElement('div');
+    sum.setAttribute('data-sum', '');
+    sum.innerHTML = '<span>70</span><span>−</span><span>47</span><span>=</span><button data-hear>23</button>';
+    document.body.replaceChildren(sum);
+    for (const el of sum.children) (el as HTMLElement).getBoundingClientRect = () => new DOMRect(10, 10, 40, 40);
+    expect(numberAt(sum.children[0] as Element, 20, 20)?.clips).toEqual(['n70', 'op_minus', 'n47']);
+    expect(numberAt(sum.children[1] as Element, 20, 20)?.clips).toEqual(['n70', 'op_minus', 'n47']);
+    sum.children[1]!.textContent = '+';
+    expect(numberAt(sum.children[2] as Element, 20, 20)?.clips).toEqual(['n70', 'op_plus', 'n47']);
+  });
+});

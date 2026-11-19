@@ -130,6 +130,9 @@ export const LINES = {
   mt_copy: 'Let me show you. Type the answer you see.',
   mt_finish: 'Your power move is ready! Press the power button.',
   mt_won: 'You won the match! Good game!',
+  // the signs of a written sum, for reading it out: "seventy, minus, forty-seven"
+  op_plus: 'Plus.',
+  op_minus: 'Minus.',
 
   // berry canyon
   how_many_now: 'How many now?',

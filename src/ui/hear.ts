@@ -62,9 +62,37 @@ function digitsAt(group: Element, x: number, y: number): Heard | null {
   return { clips: token.clips, rect, button: pressed(group) };
 }
 
+const SIGNS: Record<string, string> = { '+': 'op_plus', '−': 'op_minus', '-': 'op_minus' };
+
+/**
+ * A written sum is read as a sum: "seventy, minus, forty-seven". Heard one
+ * number at a time, she would have to put the sum together herself. The box
+ * for her answer is not part of it.
+ */
+function sumAt(sum: Element, x: number, y: number): Heard | null {
+  const said = [...sum.children].filter((el) => !el.matches('button') && (el.textContent ?? '').trim() !== '=');
+  const first = said[0]?.getBoundingClientRect();
+  const last = said[said.length - 1]?.getBoundingClientRect();
+  if (!first || !last) return null;
+  const rect = new DOMRect(first.left, first.top, last.right - first.left, Math.max(first.height, last.height));
+  if (!within(rect, x, y)) return null;
+  const clips: string[] = [];
+  for (const el of said) {
+    const text = (el.textContent ?? '').trim();
+    const [token] = numberTokens(text);
+    const piece = SIGNS[text] ? [SIGNS[text] as string] : token && token.start === 0 && token.end === text.length ? token.clips : null;
+    if (!piece) return null;
+    clips.push(...piece);
+  }
+  return clips.length > 1 ? { clips, rect, button: null } : null;
+}
+
 /** The number drawn at this point of the screen, if there is one that can be said. */
 export function numberAt(target: Element, x: number, y: number): Heard | null {
   if (target.closest(SKIP)) return null;
+  const sum = target.closest('button') ? null : target.closest('[data-sum]');
+  const whole = sum ? sumAt(sum, x, y) : null;
+  if (whole) return whole;
   const range = document.createRange();
   if (typeof range.getClientRects !== 'function') return null;
   const root = target.closest(`button, .frac, ${DIGIT_GROUP}`) ?? target;
