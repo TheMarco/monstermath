@@ -1,6 +1,7 @@
 import { ALL_SPECIES, SPECIES, type SpeciesId } from '../data/monsters';
 import { fracWords, SPOKEN_BOTTOMS, type Frac } from '../math/fractions';
 import { STICKERS } from '../rewards';
+import { numberRecordings } from './numbers';
 
 /**
  * Every line the game speaks. Each entry is recorded once as an audio clip
@@ -508,5 +509,6 @@ export function recordingScript(): Array<[string, string]> {
       out.push([`f_${n}_${d}`, `${words.charAt(0).toUpperCase()}${words.slice(1)}.`]);
     }
   }
+  out.push(...numberRecordings());
   return out;
 }

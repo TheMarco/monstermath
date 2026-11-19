@@ -5955,3 +5955,29 @@ button.e-cell.empty {
   line-height: 1.45;
   color: #333;
 }
+
+/* ---- click a number to hear it ---------------------------------------------- */
+
+#stage.hear-hover,
+#stage.hear-hover * {
+  cursor: pointer;
+}
+
+.hear-glow {
+  position: fixed;
+  z-index: 60;
+  pointer-events: none;
+  border-radius: 12px;
+  background: rgba(255, 214, 51, 0.4);
+  box-shadow: 0 0 0 3px rgba(255, 178, 30, 0.85);
+  animation: hear-glow 0.7s ease-out forwards;
+}
+
+@keyframes hear-glow {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}

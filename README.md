@@ -249,6 +249,17 @@ the meadow turns the music off and the speaker button turns off voice and
 effects. Tracks are in `public/music`, effects in `public/sound`; an effect
 whose file is missing falls back to a synthesized tone (`src/audio.ts`).
 
+**Hearing a number.** Any number on the screen can be clicked to hear it:
+whole numbers up to 9,999, decimals with one or two digits after the point, and
+fractions ("three fourths"). Telling 47 from 74 by eye is hard work with
+dyslexia, and this lets a child check what a number is without asking. On a
+button a click still presses the button, so there she presses and holds for
+about half a second to hear the number and the button is not pressed. That way
+she can listen to each answer before picking one. The number is found in the
+text under the pointer (`src/ui/hear.ts`), so new screens need no extra work.
+Numbers up to 200 have a clip each; bigger ones are put together from a few
+clips (`src/voice/numbers.ts`). The grown-ups page stays silent.
+
 ## Layout
 
 - `src/math` expression scoring, hints, early number problems, regrouping problems, fractions, Bakery problems, error patterns
@@ -257,6 +268,7 @@ whose file is missing falls back to a synthesized tone (`src/audio.ts`).
 - `src/lessons.ts`, `src/tutor.ts` the taught lessons and when they play
 - `src/rewards.ts`, `src/shop.ts` levels, eggs, bonds, stickers, charms, decorations
 - `src/voice/lines.ts` every spoken line; `scripts/voice/export-lines.ts` exports the recording script
+- `src/voice/numbers.ts`, `src/ui/hear.ts` which clips say a number, and the click that asks for it
 - `src/report.ts` numbers for the grown-up page and the teacher summary
 - `scripts/*-spec.md` how the art and animation were generated
 - `scripts/shrink-art.sh` makes pictures and clips smaller after new art is fetched (needs `cwebp` and `ffmpeg`)

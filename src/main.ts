@@ -21,6 +21,7 @@ import { upperScreen } from './screens/upper';
 import { freshSave, loadSave, persist, players, today, wipeSave } from './state';
 import { loadAnimManifest } from './ui/anim';
 import { setCharmLookup } from './ui/charms';
+import { hearNumbers } from './ui/hear';
 import { SPECIES, type SpeciesId, type Stage } from './data/monsters';
 import { celebrate } from './ui/common';
 import type { App, Screen, ScreenHandle, ScreenName } from './ui/common';
@@ -98,6 +99,7 @@ export function startApp(stage: HTMLElement): App {
 
   setCharmLookup((id) => app.save.monsters[id]?.charm);
   window.addEventListener('keydown', (e) => current?.onKey?.(e));
+  hearNumbers(stage);
 
   const fit = (): void => {
     const k = Math.min(window.innerWidth / 1280, window.innerHeight / 720);

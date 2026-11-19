@@ -1007,3 +1007,259 @@ f_4_8	Four eighths.
 f_5_8	Five eighths.
 f_6_8	Six eighths.
 f_7_8	Seven eighths.
+n300	300.
+n400	400.
+n500	500.
+n600	600.
+n700	700.
+n800	800.
+n900	900.
+n1000	1000.
+n2000	2000.
+n3000	3000.
+n4000	4000.
+n5000	5000.
+n6000	6000.
+n7000	7000.
+n8000	8000.
+n9000	9000.
+d0_0	Zero point zero.
+p_0	Point zero.
+d0_1	Zero point one.
+p_1	Point one.
+d0_2	Zero point two.
+p_2	Point two.
+d0_3	Zero point three.
+p_3	Point three.
+d0_4	Zero point four.
+p_4	Point four.
+d0_5	Zero point five.
+p_5	Point five.
+d0_6	Zero point six.
+p_6	Point six.
+d0_7	Zero point seven.
+p_7	Point seven.
+d0_8	Zero point eight.
+p_8	Point eight.
+d0_9	Zero point nine.
+p_9	Point nine.
+d0_00	Zero point zero zero.
+p_00	Point zero zero.
+d0_01	Zero point zero one.
+p_01	Point zero one.
+d0_02	Zero point zero two.
+p_02	Point zero two.
+d0_03	Zero point zero three.
+p_03	Point zero three.
+d0_04	Zero point zero four.
+p_04	Point zero four.
+d0_05	Zero point zero five.
+p_05	Point zero five.
+d0_06	Zero point zero six.
+p_06	Point zero six.
+d0_07	Zero point zero seven.
+p_07	Point zero seven.
+d0_08	Zero point zero eight.
+p_08	Point zero eight.
+d0_09	Zero point zero nine.
+p_09	Point zero nine.
+d0_10	Zero point one zero.
+p_10	Point one zero.
+d0_11	Zero point one one.
+p_11	Point one one.
+d0_12	Zero point one two.
+p_12	Point one two.
+d0_13	Zero point one three.
+p_13	Point one three.
+d0_14	Zero point one four.
+p_14	Point one four.
+d0_15	Zero point one five.
+p_15	Point one five.
+d0_16	Zero point one six.
+p_16	Point one six.
+d0_17	Zero point one seven.
+p_17	Point one seven.
+d0_18	Zero point one eight.
+p_18	Point one eight.
+d0_19	Zero point one nine.
+p_19	Point one nine.
+d0_20	Zero point two zero.
+p_20	Point two zero.
+d0_21	Zero point two one.
+p_21	Point two one.
+d0_22	Zero point two two.
+p_22	Point two two.
+d0_23	Zero point two three.
+p_23	Point two three.
+d0_24	Zero point two four.
+p_24	Point two four.
+d0_25	Zero point two five.
+p_25	Point two five.
+d0_26	Zero point two six.
+p_26	Point two six.
+d0_27	Zero point two seven.
+p_27	Point two seven.
+d0_28	Zero point two eight.
+p_28	Point two eight.
+d0_29	Zero point two nine.
+p_29	Point two nine.
+d0_30	Zero point three zero.
+p_30	Point three zero.
+d0_31	Zero point three one.
+p_31	Point three one.
+d0_32	Zero point three two.
+p_32	Point three two.
+d0_33	Zero point three three.
+p_33	Point three three.
+d0_34	Zero point three four.
+p_34	Point three four.
+d0_35	Zero point three five.
+p_35	Point three five.
+d0_36	Zero point three six.
+p_36	Point three six.
+d0_37	Zero point three seven.
+p_37	Point three seven.
+d0_38	Zero point three eight.
+p_38	Point three eight.
+d0_39	Zero point three nine.
+p_39	Point three nine.
+d0_40	Zero point four zero.
+p_40	Point four zero.
+d0_41	Zero point four one.
+p_41	Point four one.
+d0_42	Zero point four two.
+p_42	Point four two.
+d0_43	Zero point four three.
+p_43	Point four three.
+d0_44	Zero point four four.
+p_44	Point four four.
+d0_45	Zero point four five.
+p_45	Point four five.
+d0_46	Zero point four six.
+p_46	Point four six.
+d0_47	Zero point four seven.
+p_47	Point four seven.
+d0_48	Zero point four eight.
+p_48	Point four eight.
+d0_49	Zero point four nine.
+p_49	Point four nine.
+d0_50	Zero point five zero.
+p_50	Point five zero.
+d0_51	Zero point five one.
+p_51	Point five one.
+d0_52	Zero point five two.
+p_52	Point five two.
+d0_53	Zero point five three.
+p_53	Point five three.
+d0_54	Zero point five four.
+p_54	Point five four.
+d0_55	Zero point five five.
+p_55	Point five five.
+d0_56	Zero point five six.
+p_56	Point five six.
+d0_57	Zero point five seven.
+p_57	Point five seven.
+d0_58	Zero point five eight.
+p_58	Point five eight.
+d0_59	Zero point five nine.
+p_59	Point five nine.
+d0_60	Zero point six zero.
+p_60	Point six zero.
+d0_61	Zero point six one.
+p_61	Point six one.
+d0_62	Zero point six two.
+p_62	Point six two.
+d0_63	Zero point six three.
+p_63	Point six three.
+d0_64	Zero point six four.
+p_64	Point six four.
+d0_65	Zero point six five.
+p_65	Point six five.
+d0_66	Zero point six six.
+p_66	Point six six.
+d0_67	Zero point six seven.
+p_67	Point six seven.
+d0_68	Zero point six eight.
+p_68	Point six eight.
+d0_69	Zero point six nine.
+p_69	Point six nine.
+d0_70	Zero point seven zero.
+p_70	Point seven zero.
+d0_71	Zero point seven one.
+p_71	Point seven one.
+d0_72	Zero point seven two.
+p_72	Point seven two.
+d0_73	Zero point seven three.
+p_73	Point seven three.
+d0_74	Zero point seven four.
+p_74	Point seven four.
+d0_75	Zero point seven five.
+p_75	Point seven five.
+d0_76	Zero point seven six.
+p_76	Point seven six.
+d0_77	Zero point seven seven.
+p_77	Point seven seven.
+d0_78	Zero point seven eight.
+p_78	Point seven eight.
+d0_79	Zero point seven nine.
+p_79	Point seven nine.
+d0_80	Zero point eight zero.
+p_80	Point eight zero.
+d0_81	Zero point eight one.
+p_81	Point eight one.
+d0_82	Zero point eight two.
+p_82	Point eight two.
+d0_83	Zero point eight three.
+p_83	Point eight three.
+d0_84	Zero point eight four.
+p_84	Point eight four.
+d0_85	Zero point eight five.
+p_85	Point eight five.
+d0_86	Zero point eight six.
+p_86	Point eight six.
+d0_87	Zero point eight seven.
+p_87	Point eight seven.
+d0_88	Zero point eight eight.
+p_88	Point eight eight.
+d0_89	Zero point eight nine.
+p_89	Point eight nine.
+d0_90	Zero point nine zero.
+p_90	Point nine zero.
+d0_91	Zero point nine one.
+p_91	Point nine one.
+d0_92	Zero point nine two.
+p_92	Point nine two.
+d0_93	Zero point nine three.
+p_93	Point nine three.
+d0_94	Zero point nine four.
+p_94	Point nine four.
+d0_95	Zero point nine five.
+p_95	Point nine five.
+d0_96	Zero point nine six.
+p_96	Point nine six.
+d0_97	Zero point nine seven.
+p_97	Point nine seven.
+d0_98	Zero point nine eight.
+p_98	Point nine eight.
+d0_99	Zero point nine nine.
+p_99	Point nine nine.
+fd_2	Halves.
+fd_3	Thirds.
+fd_4	Fourths.
+fd_5	Fifths.
+fd_6	Sixths.
+fd_7	Sevenths.
+f_1_7	One seventh.
+fd_8	Eighths.
+fd_9	Ninths.
+f_1_9	One ninth.
+fd_10	Tenths.
+f_1_10	One tenth.
+fd_12	Twelfths.
+f_1_12	One twelfth.
+fd_16	Sixteenths.
+f_1_16	One sixteenth.
+fd_20	Twentieths.
+f_1_20	One twentieth.
+fd_100	Hundredths.
+f_1_100	One hundredth.

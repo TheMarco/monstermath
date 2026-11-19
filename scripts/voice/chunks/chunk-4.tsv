@@ -1,129 +1,3 @@
-n66	66.
-n67	67.
-n68	68.
-n69	69.
-n70	70.
-n71	71.
-n72	72.
-n73	73.
-n74	74.
-n75	75.
-n76	76.
-n77	77.
-n78	78.
-n79	79.
-n80	80.
-n81	81.
-n82	82.
-n83	83.
-n84	84.
-n85	85.
-n86	86.
-n87	87.
-n88	88.
-n89	89.
-n90	90.
-n91	91.
-n92	92.
-n93	93.
-n94	94.
-n95	95.
-n96	96.
-n97	97.
-n98	98.
-n99	99.
-n100	100.
-n101	101.
-n102	102.
-n103	103.
-n104	104.
-n105	105.
-n106	106.
-n107	107.
-n108	108.
-n109	109.
-n110	110.
-n111	111.
-n112	112.
-n113	113.
-n114	114.
-n115	115.
-n116	116.
-n117	117.
-n118	118.
-n119	119.
-n120	120.
-n121	121.
-n122	122.
-n123	123.
-n124	124.
-n125	125.
-n126	126.
-n127	127.
-n128	128.
-n129	129.
-n130	130.
-n131	131.
-n132	132.
-n133	133.
-n134	134.
-n135	135.
-n136	136.
-n137	137.
-n138	138.
-n139	139.
-n140	140.
-n141	141.
-n142	142.
-n143	143.
-n144	144.
-n145	145.
-n146	146.
-n147	147.
-n148	148.
-n149	149.
-n150	150.
-n151	151.
-n152	152.
-n153	153.
-n154	154.
-n155	155.
-n156	156.
-n157	157.
-n158	158.
-n159	159.
-n160	160.
-n161	161.
-n162	162.
-n163	163.
-n164	164.
-n165	165.
-n166	166.
-n167	167.
-n168	168.
-n169	169.
-n170	170.
-n171	171.
-n172	172.
-n173	173.
-n174	174.
-n175	175.
-n176	176.
-n177	177.
-n178	178.
-n179	179.
-n180	180.
-n181	181.
-n182	182.
-n183	183.
-n184	184.
-n185	185.
-n186	186.
-n187	187.
-n188	188.
-n189	189.
-n190	190.
-n191	191.
 n192	192.
 n193	193.
 n194	194.
@@ -167,3 +41,171 @@ has_31	Your friend has 31 berries.
 has_32	Your friend has 32 berries.
 has_33	Your friend has 33 berries.
 has_34	Your friend has 34 berries.
+has_35	Your friend has 35 berries.
+has_36	Your friend has 36 berries.
+has_37	Your friend has 37 berries.
+has_38	Your friend has 38 berries.
+has_39	Your friend has 39 berries.
+has_40	Your friend has 40 berries.
+has_41	Your friend has 41 berries.
+has_42	Your friend has 42 berries.
+has_43	Your friend has 43 berries.
+has_44	Your friend has 44 berries.
+has_45	Your friend has 45 berries.
+has_46	Your friend has 46 berries.
+has_47	Your friend has 47 berries.
+has_48	Your friend has 48 berries.
+has_49	Your friend has 49 berries.
+has_50	Your friend has 50 berries.
+has_51	Your friend has 51 berries.
+has_52	Your friend has 52 berries.
+has_53	Your friend has 53 berries.
+has_54	Your friend has 54 berries.
+has_55	Your friend has 55 berries.
+has_56	Your friend has 56 berries.
+has_57	Your friend has 57 berries.
+has_58	Your friend has 58 berries.
+has_59	Your friend has 59 berries.
+has_60	Your friend has 60 berries.
+has_61	Your friend has 61 berries.
+has_62	Your friend has 62 berries.
+has_63	Your friend has 63 berries.
+has_64	Your friend has 64 berries.
+has_65	Your friend has 65 berries.
+has_66	Your friend has 66 berries.
+has_67	Your friend has 67 berries.
+has_68	Your friend has 68 berries.
+has_69	Your friend has 69 berries.
+has_70	Your friend has 70 berries.
+has_71	Your friend has 71 berries.
+has_72	Your friend has 72 berries.
+has_73	Your friend has 73 berries.
+has_74	Your friend has 74 berries.
+has_75	Your friend has 75 berries.
+has_76	Your friend has 76 berries.
+has_77	Your friend has 77 berries.
+has_78	Your friend has 78 berries.
+has_79	Your friend has 79 berries.
+has_80	Your friend has 80 berries.
+has_81	Your friend has 81 berries.
+has_82	Your friend has 82 berries.
+has_83	Your friend has 83 berries.
+has_84	Your friend has 84 berries.
+has_85	Your friend has 85 berries.
+has_86	Your friend has 86 berries.
+has_87	Your friend has 87 berries.
+has_88	Your friend has 88 berries.
+has_89	Your friend has 89 berries.
+has_90	Your friend has 90 berries.
+has_91	Your friend has 91 berries.
+has_92	Your friend has 92 berries.
+has_93	Your friend has 93 berries.
+has_94	Your friend has 94 berries.
+has_95	Your friend has 95 berries.
+has_96	Your friend has 96 berries.
+has_97	Your friend has 97 berries.
+has_98	Your friend has 98 berries.
+has_99	Your friend has 99 berries.
+has_125	Your friend has 125 berries.
+has_134	Your friend has 134 berries.
+has_136	Your friend has 136 berries.
+has_152	Your friend has 152 berries.
+come_1	Here comes 1 more. How many now?
+eats_1	Your friend eats 1. How many are left?
+come_2	Here come 2 more. How many now?
+eats_2	Your friend eats 2. How many are left?
+come_3	Here come 3 more. How many now?
+eats_3	Your friend eats 3. How many are left?
+come_4	Here come 4 more. How many now?
+eats_4	Your friend eats 4. How many are left?
+come_5	Here come 5 more. How many now?
+eats_5	Your friend eats 5. How many are left?
+come_6	Here come 6 more. How many now?
+eats_6	Your friend eats 6. How many are left?
+come_7	Here come 7 more. How many now?
+eats_7	Your friend eats 7. How many are left?
+come_8	Here come 8 more. How many now?
+eats_8	Your friend eats 8. How many are left?
+come_9	Here come 9 more. How many now?
+eats_9	Your friend eats 9. How many are left?
+come_10	Here come 10 more. How many now?
+eats_10	Your friend eats 10. How many are left?
+come_11	Here come 11 more. How many now?
+eats_11	Your friend eats 11. How many are left?
+come_12	Here come 12 more. How many now?
+eats_12	Your friend eats 12. How many are left?
+come_13	Here come 13 more. How many now?
+eats_13	Your friend eats 13. How many are left?
+come_14	Here come 14 more. How many now?
+eats_14	Your friend eats 14. How many are left?
+come_15	Here come 15 more. How many now?
+eats_15	Your friend eats 15. How many are left?
+come_16	Here come 16 more. How many now?
+eats_16	Your friend eats 16. How many are left?
+come_17	Here come 17 more. How many now?
+eats_17	Your friend eats 17. How many are left?
+come_18	Here come 18 more. How many now?
+eats_18	Your friend eats 18. How many are left?
+come_19	Here come 19 more. How many now?
+eats_19	Your friend eats 19. How many are left?
+come_20	Here come 20 more. How many now?
+eats_20	Your friend eats 20. How many are left?
+come_21	Here come 21 more. How many now?
+eats_21	Your friend eats 21. How many are left?
+come_22	Here come 22 more. How many now?
+eats_22	Your friend eats 22. How many are left?
+come_23	Here come 23 more. How many now?
+eats_23	Your friend eats 23. How many are left?
+come_24	Here come 24 more. How many now?
+eats_24	Your friend eats 24. How many are left?
+come_25	Here come 25 more. How many now?
+eats_25	Your friend eats 25. How many are left?
+come_26	Here come 26 more. How many now?
+eats_26	Your friend eats 26. How many are left?
+come_27	Here come 27 more. How many now?
+eats_27	Your friend eats 27. How many are left?
+come_28	Here come 28 more. How many now?
+eats_28	Your friend eats 28. How many are left?
+come_29	Here come 29 more. How many now?
+eats_29	Your friend eats 29. How many are left?
+come_30	Here come 30 more. How many now?
+eats_30	Your friend eats 30. How many are left?
+come_31	Here come 31 more. How many now?
+eats_31	Your friend eats 31. How many are left?
+come_32	Here come 32 more. How many now?
+eats_32	Your friend eats 32. How many are left?
+come_33	Here come 33 more. How many now?
+eats_33	Your friend eats 33. How many are left?
+come_34	Here come 34 more. How many now?
+eats_34	Your friend eats 34. How many are left?
+come_35	Here come 35 more. How many now?
+eats_35	Your friend eats 35. How many are left?
+come_36	Here come 36 more. How many now?
+eats_36	Your friend eats 36. How many are left?
+come_37	Here come 37 more. How many now?
+eats_37	Your friend eats 37. How many are left?
+come_38	Here come 38 more. How many now?
+eats_38	Your friend eats 38. How many are left?
+come_39	Here come 39 more. How many now?
+eats_39	Your friend eats 39. How many are left?
+come_40	Here come 40 more. How many now?
+eats_40	Your friend eats 40. How many are left?
+come_41	Here come 41 more. How many now?
+eats_41	Your friend eats 41. How many are left?
+come_42	Here come 42 more. How many now?
+eats_42	Your friend eats 42. How many are left?
+come_43	Here come 43 more. How many now?
+eats_43	Your friend eats 43. How many are left?
+come_44	Here come 44 more. How many now?
+eats_44	Your friend eats 44. How many are left?
+come_45	Here come 45 more. How many now?
+eats_45	Your friend eats 45. How many are left?
+come_46	Here come 46 more. How many now?
+eats_46	Your friend eats 46. How many are left?
+come_47	Here come 47 more. How many now?
+eats_47	Your friend eats 47. How many are left?
+come_48	Here come 48 more. How many now?
+eats_48	Your friend eats 48. How many are left?
+come_49	Here come 49 more. How many now?
+eats_49	Your friend eats 49. How many are left?
+come_50	Here come 50 more. How many now?

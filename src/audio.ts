@@ -245,9 +245,11 @@ function stopVoice(): void {
   setBus(0.8);
 }
 
-async function playClips(ids: string[], append: boolean): Promise<void> {
+async function playClips(ids: string[], append: boolean, gap = PIECE_GAP, allOrNothing = false): Promise<void> {
   const c = audioCtx();
   if (!c || !audioSettings.voice || ids.length === 0) return;
+  // Half a number is a wrong number: with a piece missing, say nothing and leave the current line alone.
+  if (allOrNothing && (await Promise.all(ids.map(loadClip))).some((clip) => !clip)) return;
   if (!append) stopVoice();
   const mine = token;
   const loaded = await Promise.all(ids.map(loadClip));
@@ -260,7 +262,7 @@ async function playClips(ids: string[], append: boolean): Promise<void> {
     src.connect(c.destination);
     src.start(at, clip.start, clip.length);
     playing.push(src);
-    at += clip.length + PIECE_GAP;
+    at += clip.length + gap;
   }
   endsAt = at;
   setBus(0.15);
@@ -291,6 +293,15 @@ export function sayAlso(...pieces: Piece[]): void {
   const ids = pieces.filter((p): p is string => !!p);
   note(ids);
   void playClips(ids, true);
+}
+
+/**
+ * Speak a number she clicked. The line before it stays the one the speaker
+ * button repeats, so she can hear the question again afterwards.
+ */
+export function sayNumber(ids: string[]): void {
+  note(ids);
+  void playClips(ids, false, 0, true);
 }
 
 export function sayAgain(): void {
