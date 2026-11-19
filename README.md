@@ -249,6 +249,16 @@ the meadow turns the music off and the speaker button turns off voice and
 effects. Tracks are in `public/music`, effects in `public/sound`; an effect
 whose file is missing falls back to a synthesized tone (`src/audio.ts`).
 
+A new line does not chop off the one being spoken. If the current line has
+2.5 seconds or less to go, it finishes and the new one follows. A line with
+longer to go fades out quickly. Children testing the game said the cut-off
+voice bothered them.
+
+**Names.** A child can give a monster a name of her own. No recording exists
+for a typed name, so the voice leaves the name out for that monster ("This
+friend wants to play with you today!") and describes it without the old name.
+Saying the original name told children their name had not counted.
+
 **Hearing a number.** Any number on the screen can be clicked to hear it:
 whole numbers up to 9,999, decimals with one or two digits after the point, and
 fractions ("three fourths"). Telling 47 from 74 by eye is hard work with

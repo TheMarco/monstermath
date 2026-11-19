@@ -186,13 +186,26 @@ interface Clip {
 }
 
 const clips = new Map<string, Promise<Clip | null>>();
-let playing: AudioBufferSourceNode[] = [];
+
+/** One spoken line: its pieces, and a volume knob so it can fade out. */
+interface Line {
+  start: number;
+  end: number;
+  out: GainNode;
+  srcs: AudioBufferSourceNode[];
+}
+
+let lines: Line[] = [];
 let token = 0;
 let endsAt = 0;
 let lastSaid: string[] = [];
 
 /** Pause between stitched pieces, such as a phrase and its number. */
 const PIECE_GAP = 0.11;
+/** A line with no more than this many seconds left is allowed to finish before the next one starts. */
+const LET_FINISH = 2.5;
+/** A line that has to give way fades out over this long; a hard stop sounds like a fault. */
+const FADE = 0.14;
 
 /** Find where the speech starts and ends, so stitched clips sit close together. */
 function trim(buffer: AudioBuffer): { start: number; length: number } {
@@ -231,39 +244,74 @@ function loadClip(id: string): Promise<Clip | null> {
   return pending;
 }
 
-function stopVoice(): void {
-  token += 1;
-  for (const src of playing) {
+/** Fades a line out and stops it. A line that has not started yet just never plays. */
+function cut(line: Line): void {
+  const now = ctx ? ctx.currentTime : 0;
+  const fade = line.start > now ? 0 : FADE;
+  if (fade) line.out.gain.setTargetAtTime(0, now, fade / 4);
+  for (const src of line.srcs) {
     try {
-      src.stop();
+      src.stop(now + fade);
     } catch {
       /* already stopped */
     }
   }
-  playing = [];
+}
+
+function stopVoice(): void {
+  token += 1;
+  lines.forEach(cut);
+  lines = [];
   endsAt = 0;
   setBus(0.8);
 }
 
-async function playClips(ids: string[], append: boolean, gap = PIECE_GAP, allOrNothing = false): Promise<void> {
+/**
+ * How a new line treats the one being spoken. `now` takes over at once.
+ * `after` waits its turn. `polite` lets a line that is nearly done finish,
+ * and fades out one that still has a long way to go.
+ */
+type Entry = 'now' | 'after' | 'polite';
+
+async function playClips(ids: string[], entry: Entry, gap = PIECE_GAP, allOrNothing = false): Promise<void> {
   const c = audioCtx();
   if (!c || !audioSettings.voice || ids.length === 0) return;
   // Half a number is a wrong number: with a piece missing, say nothing and leave the current line alone.
   if (allOrNothing && (await Promise.all(ids.map(loadClip))).some((clip) => !clip)) return;
-  if (!append) stopVoice();
+  if (entry === 'now') stopVoice();
+  else if (entry === 'polite') token += 1;
   const mine = token;
   const loaded = await Promise.all(ids.map(loadClip));
   if (mine !== token) return;
-  let at = Math.max(c.currentTime + 0.04, append && endsAt > c.currentTime ? endsAt + 0.3 : 0);
+  const now = c.currentTime;
+  let at = now + 0.04;
+  if (entry === 'after' && endsAt > now) at = endsAt + 0.3;
+  if (entry === 'polite') {
+    // Lines still waiting their turn are out of date: this one takes their place.
+    lines.filter((l) => l.start > now).forEach(cut);
+    lines = lines.filter((l) => l.start <= now && l.end > now);
+    const left = Math.max(0, ...lines.map((l) => l.end - now));
+    if (left > 0 && left <= LET_FINISH) at = now + left + 0.25;
+    else {
+      lines.forEach(cut);
+      lines = [];
+    }
+  }
+  const out = c.createGain();
+  out.connect(c.destination);
+  const line: Line = { start: at, end: at, out, srcs: [] };
   for (const clip of loaded) {
     if (!clip) continue;
     const src = c.createBufferSource();
     src.buffer = clip.buffer;
-    src.connect(c.destination);
+    src.connect(out);
     src.start(at, clip.start, clip.length);
-    playing.push(src);
+    line.srcs.push(src);
+    line.end = at + clip.length;
     at += clip.length + gap;
   }
+  lines = lines.filter((l) => l.end > now);
+  lines.push(line);
   endsAt = at;
   setBus(0.15);
   window.clearTimeout(duckTimer);
@@ -272,7 +320,6 @@ async function playClips(ids: string[], append: boolean, gap = PIECE_GAP, allOrN
 
 type Piece = string | null | undefined | false;
 
-/** Speak clips in order. A new line interrupts the one before. */
 /** The most recent clips requested, newest last. Lets tests check every line has a recording. */
 export const spokenLog: string[] = [];
 
@@ -281,18 +328,22 @@ function note(ids: string[]): void {
   if (spokenLog.length > 2000) spokenLog.splice(0, spokenLog.length - 2000);
 }
 
+/**
+ * Speak clips in order. A line that is nearly finished is allowed to finish
+ * first; a longer one fades out to make room.
+ */
 export function say(...pieces: Piece[]): void {
   const ids = pieces.filter((p): p is string => !!p);
   lastSaid = ids;
   note(ids);
-  void playClips(ids, false);
+  void playClips(ids, 'polite');
 }
 
 /** Speak after whatever is being said, without cutting it off. */
 export function sayAlso(...pieces: Piece[]): void {
   const ids = pieces.filter((p): p is string => !!p);
   note(ids);
-  void playClips(ids, true);
+  void playClips(ids, 'after');
 }
 
 /**
@@ -301,11 +352,11 @@ export function sayAlso(...pieces: Piece[]): void {
  */
 export function sayNumber(ids: string[]): void {
   note(ids);
-  void playClips(ids, false, 0, true);
+  void playClips(ids, 'now', 0, true);
 }
 
 export function sayAgain(): void {
-  if (lastSaid.length) void playClips(lastSaid, false);
+  if (lastSaid.length) void playClips(lastSaid, 'now');
 }
 
 export function hush(): void {

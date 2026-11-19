@@ -449,14 +449,29 @@ export function num(n: number): string | null {
   return Number.isInteger(n) && n >= 0 && n <= MAX_SPOKEN_NUMBER ? `n${n}` : null;
 }
 
-/** The monster's name, called out: "Dab!" */
-export function nameClip(id: SpeciesId): string {
-  return `name_${id}`;
+let renamed: (id: SpeciesId) => boolean = () => false;
+
+/**
+ * Tells the voice which monsters she has named herself. There is no recording
+ * of a name she typed, so for those the voice leaves the name out: saying the
+ * old one would tell her that her name did not count.
+ */
+export function setRenamedLookup(fn: (id: SpeciesId) => boolean): void {
+  renamed = fn;
 }
 
-/** A sentence or two about the monster. */
+const nameKey = (id: SpeciesId): string => `name_${id}`;
+const aboutKey = (id: SpeciesId): string => `about2_${id}`;
+const whatKey = (id: SpeciesId): string => `what_${id}`;
+
+/** The monster's name, called out: "Dab!" Nothing for a monster she renamed. */
+export function nameClip(id: SpeciesId): string | null {
+  return renamed(id) ? null : nameKey(id);
+}
+
+/** A sentence or two about the monster. A renamed monster gets the same lines without the name. */
 export function aboutClip(id: SpeciesId): string {
-  return `about2_${id}`;
+  return renamed(id) ? whatKey(id) : aboutKey(id);
 }
 
 export function stickerClip(id: string): string {
@@ -487,11 +502,12 @@ export function recordingScript(): Array<[string, string]> {
   const out: Array<[string, string]> = Object.entries(LINES);
   for (const id of ALL_SPECIES) {
     const sp = SPECIES[id];
-    out.push([nameClip(id), `${sp.name}!`]);
+    out.push([nameKey(id), `${sp.name}!`]);
     // The blurbs already say what grass monsters love; say it once.
     const blurb = sp.blurb.includes('Loves') ? sp.blurb : `${sp.blurb} ${lovesText(id)}`;
     const article = /^[aeiou]/i.test(sp.what) ? 'An' : 'A';
-    out.push([aboutClip(id), `${sp.name}. ${article} ${sp.what}. ${blurb}`]);
+    out.push([aboutKey(id), `${sp.name}. ${article} ${sp.what}. ${blurb}`]);
+    out.push([whatKey(id), `${article} ${sp.what}. ${blurb}`]);
   }
   for (const st of STICKERS) out.push([stickerClip(st.id), `${st.name}. ${st.how.replace('+, −, × and ÷', 'plus, minus, times, and sharing')}.`]);
   for (let n = 0; n <= MAX_SPOKEN_NUMBER; n++) out.push([`n${n}`, `${capital(spoken(n))}.`]);

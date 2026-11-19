@@ -209,7 +209,19 @@ button {
   border-radius: 22px;
 }
 
+/*
+ * The focus ring is for someone moving around with the Tab key. Typing an
+ * answer also counts as "keyboard" to the browser, which then drew the ring
+ * around whatever she had clicked last, such as her monster.
+ */
 :focus-visible {
+  outline: none;
+}
+
+.tabbing :focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
   outline: 4px solid var(--sky);
   outline-offset: 2px;
 }

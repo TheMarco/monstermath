@@ -22,6 +22,7 @@ import { freshSave, loadSave, persist, players, today, wipeSave } from './state'
 import { loadAnimManifest } from './ui/anim';
 import { setCharmLookup } from './ui/charms';
 import { hearNumbers } from './ui/hear';
+import { setRenamedLookup } from './voice/lines';
 import { SPECIES, type SpeciesId, type Stage } from './data/monsters';
 import { celebrate } from './ui/common';
 import type { App, Screen, ScreenHandle, ScreenName } from './ui/common';
@@ -98,7 +99,11 @@ export function startApp(stage: HTMLElement): App {
   };
 
   setCharmLookup((id) => app.save.monsters[id]?.charm);
+  setRenamedLookup((id) => !!app.save.monsters[id]?.nickname?.trim());
   window.addEventListener('keydown', (e) => current?.onKey?.(e));
+  // The focus ring shows only while someone is getting around with the Tab key.
+  window.addEventListener('keydown', (e) => e.key === 'Tab' && document.documentElement.classList.add('tabbing'), true);
+  window.addEventListener('pointerdown', () => document.documentElement.classList.remove('tabbing'), true);
   hearNumbers(stage);
 
   const fit = (): void => {

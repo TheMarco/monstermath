@@ -189,3 +189,20 @@ describe('clicking a number', () => {
     expect(numberAt(half.querySelector('.frac-n') as Element, 50, 20)?.clips).toEqual(['n3']);
   });
 });
+
+describe('a monster she named herself', () => {
+  it('is not called by its old name', async () => {
+    const { aboutClip, nameClip, recordingScript, setRenamedLookup } = await import('../src/voice/lines');
+    expect(nameClip('puff')).toBe('name_puff');
+    expect(aboutClip('puff')).toBe('about2_puff');
+    setRenamedLookup((id) => id === 'puff');
+    expect(nameClip('puff')).toBeNull();
+    expect(aboutClip('puff')).toBe('what_puff');
+    expect(nameClip('dab')).toBe('name_dab');
+    setRenamedLookup(() => false);
+    const script = new Map(recordingScript());
+    const about = script.get('about2_puff') ?? '';
+    expect(script.get('what_puff')).toBe(about.slice(about.indexOf('. ') + 2));
+    expect(script.get('what_puff')).not.toContain('Puff');
+  });
+});

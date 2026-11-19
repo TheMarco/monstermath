@@ -1,8 +1,3 @@
-l_frac_7	And how many pieces are gold?
-l_frac_8	Two thirds! Two gold pieces, out of three.
-l_same_1	This honey bar is cut in two. One half is gold.
-l_same_2	This bar is the same size, but cut in four. Two fourths are gold.
-l_same_3	Look! The gold goes just as far. One half, and two fourths, are the same amount.
 l_same_4	Now one half, and one fourth. Four is a bigger number than two. But one fourth is a smaller piece!
 l_same_5	More cuts make smaller pieces.
 l_same_6	Your turn. Which one is more honey?
@@ -152,60 +147,70 @@ l_dec_5	Your turn. Which one is more?
 l_dec_6	Yes. Five strips is more than four strips and five squares.
 name_puff	Puff!
 about2_puff	Puff. A storm ram. Carries a storm in its fleece. Charges like thunder. Loves all kinds of treats.
+what_puff	A storm ram. Carries a storm in its fleece. Charges like thunder. Loves all kinds of treats.
 name_pim	Pim!
 about2_pim	Pim. A spore hare. Grows mushrooms on its back. Fast on its feet. Loves all kinds of treats.
+what_pim	A spore hare. Grows mushrooms on its back. Fast on its feet. Loves all kinds of treats.
 name_bop	Bop!
 about2_bop	Bop. A tide otter. Rides its own wave. Never sits still. Loves all kinds of treats.
+what_bop	A tide otter. Rides its own wave. Never sits still. Loves all kinds of treats.
 name_dab	Dab!
 about2_dab	Dab. A lotus duck. Wears a lily pad. Loves plus treats.
+what_dab	A lotus duck. Wears a lily pad. Loves plus treats.
 name_moss	Moss!
 about2_moss	Moss. A moss armadillo. Carries a garden on its shell. Loves minus treats.
+what_moss	A moss armadillo. Carries a garden on its shell. Loves minus treats.
 name_glim	Glim!
 about2_glim	Glim. A lantern beetle. Lights up the night. Loves times treats.
+what_glim	A lantern beetle. Lights up the night. Loves times treats.
 name_fenn	Fenn!
 about2_fenn	Fenn. A fern fox. Has a fern for a tail. Loves sharing treats.
+what_fenn	A fern fox. Has a fern for a tail. Loves sharing treats.
 name_nub	Nub!
 about2_nub	Nub. A stone pup. Tough as a boulder. Loves a big pile.
+what_nub	A stone pup. Tough as a boulder. Loves a big pile.
 name_plum	Plum!
 about2_plum	Plum. An orchard bird. Quick wings and sharp eyes. Loves a full crate.
+what_plum	An orchard bird. Quick wings and sharp eyes. Loves a full crate.
 name_dusk	Dusk!
 about2_dusk	Dusk. A dusk bat. Flies at sunset. Always hungry. Loves a berry snack.
+what_dusk	A dusk bat. Flies at sunset. Always hungry. Loves a berry snack.
 name_chip	Chip!
 about2_chip	Chip. A crystal chipmunk. Has a crystal tail. Loves to open crates.
+what_chip	A crystal chipmunk. Has a crystal tail. Loves to open crates.
 name_bix	Bix!
 about2_bix	Bix. A honeycomb badger. Tough as nails, with a sweet tooth. Loves equal pieces.
+what_bix	A honeycomb badger. Tough as nails, with a sweet tooth. Loves equal pieces.
 name_tam	Tam!
 about2_tam	Tam. An amber panda. Balances on anything. Loves to match honey bars.
+what_tam	An amber panda. Balances on anything. Loves to match honey bars.
 name_zim	Zim!
 about2_zim	Zim. A comb lizard. Flares its frill and runs. Loves honey every day.
+what_zim	A comb lizard. Flares its frill and runs. Loves honey every day.
 name_lux	Lux!
 about2_lux	Lux. A pollen fawn. Flowers bloom where it walks. Loves a piece of a piece.
+what_lux	A pollen fawn. Flowers bloom where it walks. Loves a piece of a piece.
 name_fig	Fig!
 about2_fig	Fig. A paint lizard. Drips paint from its tail. Stomps its feet when it is glad. Loves to count berries.
+what_fig	A paint lizard. Drips paint from its tail. Stomps its feet when it is glad. Loves to count berries.
 name_flam	Flam!
 about2_flam	Flam. A fire dragon. Made of fire. A little spicy, but nice. Loves the bigger pile.
+what_flam	A fire dragon. Made of fire. A little spicy, but nice. Loves the bigger pile.
 name_kelp	Kelp!
 about2_kelp	Kelp. A pumpkin sprout. A pumpkin head on a body of vines. Grins all day. Loves a full crate.
+what_kelp	A pumpkin sprout. A pumpkin head on a body of vines. Grins all day. Loves a full crate.
 name_beary	Beary!
 about2_beary	Beary. A berry wing bear. Has wings as red as berries. Hugs with its vines. Loves crates and loose berries.
+what_beary	A berry wing bear. Has wings as red as berries. Hugs with its vines. Loves crates and loose berries.
 name_belch	Belch!
 about2_belch	Belch. A burp pod beast. Has two pods on its head. They burp. Loves big trays.
+what_belch	A burp pod beast. Has two pods on its head. They burp. Loves big trays.
 name_drift	Drift!
 about2_drift	Drift. A dandelion lion. A flower with a puffy tail. The seeds drift away. Loves fair shares.
+what_drift	A dandelion lion. A flower with a puffy tail. The seeds drift away. Loves fair shares.
 name_bug	Bug!
 about2_bug	Bug. A bun pug. Part pug, part warm bun. Loves slices.
+what_bug	A bun pug. Part pug, part warm bun. Loves slices.
 name_cook	Cook!
 about2_cook	Cook. A sail hound. Has eight legs and a sail on its back. Loves crumbs.
-name_tup	Tup!
-about2_tup	Tup. An ember cat. Ears and a tail of flame. Always ready to pounce. Loves all kinds of treats.
-name_jam	Jam!
-about2_jam	Jam. A berry bear. Strong and sweet. Hides snacks everywhere. Loves all kinds of treats.
-name_mint	Mint!
-about2_mint	Mint. A leaf dragon. Wings like leaves. Afraid of nothing. Loves all kinds of treats.
-name_pom	Pom!
-about2_pom	Pom. A frost penguin. Slides on ice. Loves the cold.
-name_nox	Nox!
-about2_nox	Nox. A star owl. Stars on its wings. Sees everything. Loves all kinds of treats.
-name_fizz	Fizz!
-about2_fizz	Fizz. A reef axolotl. A crown of coral gills. Always grinning. Loves all kinds of treats.
-st_friend	First wild friend. Make friends with a wild monster.
+what_cook	A sail hound. Has eight legs and a sail on its back. Loves crumbs.
