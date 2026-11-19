@@ -5981,3 +5981,84 @@ button.e-cell.empty {
     opacity: 0;
   }
 }
+
+/* ---- cards and overlays come up smoothly -------------------------------------- */
+
+/* These cards are centred with a transform, so their way in has to keep it:
+   an animation that only scales would start them half a card off centre. */
+@keyframes cardIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, calc(-50% + 16px)) scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes cardOut {
+  from {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translate(-50%, calc(-50% + 10px)) scale(0.96);
+  }
+}
+
+.friend-card,
+.friends-card,
+.night-card {
+  animation: cardIn 0.28s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.friend-card.closing,
+.friends-card.closing {
+  pointer-events: none;
+  animation: cardOut 0.17s ease-in forwards;
+}
+
+@keyframes veilIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes partyIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.93);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.overlay {
+  animation: veilIn 0.25s ease-out both;
+}
+
+.party {
+  animation: partyIn 0.36s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .friend-card,
+  .friends-card,
+  .night-card,
+  .party {
+    animation: veilIn 0.2s ease-out both;
+  }
+
+  .friend-card.closing,
+  .friends-card.closing {
+    animation: none;
+    opacity: 0;
+  }
+}

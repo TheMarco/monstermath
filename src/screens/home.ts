@@ -161,6 +161,15 @@ export const homeScreen: Screen = (app, params) => {
     .filter((m): m is MonsterState => !!m);
 
   const cardHost = h('div', { class: 'friend-card-host' });
+  /** Closes the open card with a short fade, so it does not just vanish. */
+  const closeCard = (): void => {
+    const card = cardHost.firstElementChild;
+    if (!card || card.classList.contains('closing')) return;
+    card.classList.add('closing');
+    window.setTimeout(() => {
+      if (card.parentNode === cardHost) card.remove();
+    }, 170);
+  };
 
   function bondRow(m: MonsterState): HTMLElement {
     const bond = bondLevel(m.bond ?? 0);
@@ -309,7 +318,7 @@ export const homeScreen: Screen = (app, params) => {
       h(
         'div',
         { class: 'card friend-card' },
-        h('button', { class: 'card-close', type: 'button', 'aria-label': 'Close', onclick: () => cardHost.replaceChildren() }, '×'),
+        h('button', { class: 'card-close', type: 'button', 'aria-label': 'Close', onclick: closeCard }, '×'),
         h('button', { class: 'pet-target', type: 'button', 'aria-label': `Pet ${name}`, onclick: doPet }, portrait),
         h('h3', null, name),
         h('p', { class: 'friend-what' }, wants ? `${name} wants to play today!` : `${sp.what}. ${loves}.`),
@@ -347,7 +356,7 @@ export const homeScreen: Screen = (app, params) => {
       h(
         'div',
         { class: 'card friends-card' },
-        h('button', { class: 'card-close', type: 'button', 'aria-label': 'Close', onclick: () => cardHost.replaceChildren() }, '×'),
+        h('button', { class: 'card-close', type: 'button', 'aria-label': 'Close', onclick: closeCard }, '×'),
         h('h3', null, 'All friends'),
         h(
           'div',
