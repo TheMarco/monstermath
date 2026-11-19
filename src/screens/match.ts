@@ -1,7 +1,7 @@
 import { say, sfx } from '../audio';
 import { ALL_SPECIES, arenaFor, bg, looksLeft, SPECIES, type SpeciesId, type Stage } from '../data/monsters';
 import { record, type Mark } from '../ladder';
-import { jumps, matchRungs, ownerOf, planMatch, stalestFirst, type Rungs, type Turn, type TurnKind } from '../match';
+import { jumps, matchPlayed, matchRungs, ownerOf, planMatch, stalestFirst, type Rungs, type Turn, type TurnKind } from '../match';
 import { classifyError, isAddition, topRung, type Delivery, type ErrorPattern } from '../math/regroup';
 import { bonusLines, climbed, gainLines, levelUpLine, onRound, onTrip, roundStars } from '../rewards';
 import { dayKey, displayName, friends, growthLine, isFriend, monster, today } from '../state';
@@ -429,7 +429,7 @@ export const matchScreen: Screen = (app, params) => {
     const day = today(save);
     m.rounds += 1;
     day.wins += 1;
-    day.match = { foe, played: (day.match?.played ?? 0) + 1 };
+    matchPlayed(save, foe);
     save.matchWins = (save.matchWins ?? 0) + 1;
     toasts(el, gainLines(onRound(save, id)));
     const { result, bonus } = roundStars(save, id);

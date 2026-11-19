@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { describe, expect, it } from 'vitest';
-import { canMatch, jumps, MATCH_TURNS, matchInvite, matchRungs, planMatch, type Rungs } from '../src/match';
+import { BETWEEN_MATCHES, canMatch, jumps, MATCH_TURNS, MATCHES_PER_DAY, matchInvite, matchPlayed, matchRungs, planMatch, type Rungs } from '../src/match';
 import { isAddition, topRung, type Delivery } from '../src/math/regroup';
 import { matchScreen } from '../src/screens/match';
 import { befriend, freshSave, today, type Save } from '../src/state';
@@ -129,8 +129,27 @@ describe('the match screen', () => {
     expect(['nub', 'plum']).toContain(foe);
     for (let seed = 1; seed < 6; seed++) expect(matchInvite(save, ['puff', 'nub', 'plum'], seeded(seed))).toBe(foe);
     expect(matchInvite(save, ['puff'])).toBeNull();
-    today(save).match = { foe: foe as 'nub', played: 1 };
-    expect(matchInvite(save, ['puff', 'nub', 'plum'])).toBeNull();
+  });
+
+  it('has a second friend ask later the same day, once she has played something else', () => {
+    const { save } = setup();
+    const meadow = ['puff', 'nub', 'plum'] as const;
+    const first = matchInvite(save, [...meadow], seeded(3)) as 'nub' | 'plum';
+    // The match itself is five trips; they do not count as "something else".
+    today(save).trips += 5;
+    matchPlayed(save, first);
+    expect(matchInvite(save, [...meadow])).toBeNull();
+    today(save).trips += BETWEEN_MATCHES - 1;
+    expect(matchInvite(save, [...meadow])).toBeNull();
+    today(save).treats += 1;
+    const second = matchInvite(save, [...meadow], seeded(5));
+    expect(second).not.toBeNull();
+    expect(second).not.toBe(first);
+    expect(matchInvite(save, [...meadow], seeded(9))).toBe(second);
+    matchPlayed(save, second as 'nub');
+    today(save).trips += 50;
+    expect(matchInvite(save, [...meadow])).toBeNull();
+    expect(today(save).match?.played).toBe(MATCHES_PER_DAY);
   });
 
   it('takes turns: her hit takes their power away, her block adds to her shield', () => {

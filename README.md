@@ -266,8 +266,10 @@ numbers, the next step on from objects. So:
   all blocks.
 - A match mixes every kind that is ready, starting with the one she has gone
   longest without. It is where old skills are kept up.
-- One friend a day asks for a match, with a "Match?" bubble in the meadow. It
-  is played with her buddy. There is no button that is always there, so a
+- A friend asks for a match with a "Match?" bubble in the meadow, at most
+  twice a day. After the first match nobody asks until she has given five
+  treats or made five trips in the other games, and then it is a different
+  friend. It is played with her buddy. There is no button that is always there, so a
   match cannot be used to skip the teaching games.
 - The problems are at her own level, count for that level, and are logged like
   berry trips.

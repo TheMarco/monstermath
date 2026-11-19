@@ -20,8 +20,19 @@ import { buddyOf, friends, isFriend, today, type Save } from './state';
  */
 
 export const MATCH_TURNS = 5;
-/** One invitation a day: matches are a treat after the teaching games, not a way around them. */
-export const MATCHES_PER_DAY = 1;
+/** Two matches a day at most: matches are a treat between the teaching games, not a way around them. */
+export const MATCHES_PER_DAY = 2;
+/** After a match, this many treats or trips in the other games before another friend asks. */
+export const BETWEEN_MATCHES = 5;
+
+/** What she has done today in the games: treats given and trips made. */
+const doneToday = (save: Save): number => today(save).treats + today(save).trips;
+
+/** A match was won: count it, and hold the next invitation back until she has played something else. */
+export function matchPlayed(save: Save, foe: SpeciesId): void {
+  const day = today(save);
+  day.match = { foe, played: (day.match?.played ?? 0) + 1, over: true, nextAt: doneToday(save) + BETWEEN_MATCHES };
+}
 
 /** `hit`: her move takes power away (taking away). `block`: her block adds shield (adding). */
 export type TurnKind = 'hit' | 'block';
@@ -70,7 +81,9 @@ export function canMatch(save: Save): boolean {
 
 /**
  * The friend who asks for a match today, out of the monsters in the meadow.
- * It is the same one all day, and nobody asks once today's match is played.
+ * The same one keeps asking until its match is played. Then nobody asks until
+ * she has played something else for a while, and after the day's last match
+ * nobody asks at all.
  */
 export function matchInvite(save: Save, inMeadow: SpeciesId[], rng: () => number = Math.random): SpeciesId | null {
   const day = today(save);
@@ -79,10 +92,13 @@ export function matchInvite(save: Save, inMeadow: SpeciesId[], rng: () => number
   const asked = new Set((day.wishes ?? []).filter((w) => !w.done).map((w) => w.id));
   const pool = inMeadow.filter((id) => id !== mine && isFriend(save, id));
   if (pool.length === 0) return null;
-  if (day.match && pool.includes(day.match.foe)) return day.match.foe;
-  // A friend who already asks to play keeps that bubble; another one asks for the match.
-  const free = pool.filter((id) => !asked.has(id));
-  const from = free.length > 0 ? free : pool;
+  if (day.match?.over && doneToday(save) < (day.match.nextAt ?? 0)) return null;
+  if (day.match && !day.match.over && pool.includes(day.match.foe)) return day.match.foe;
+  // A friend who already asks to play keeps that bubble, and the friend from the last match has had its turn.
+  const last = day.match?.over ? day.match.foe : null;
+  const others = pool.filter((id) => id !== last);
+  const free = others.filter((id) => !asked.has(id));
+  const from = free.length > 0 ? free : others.length > 0 ? others : pool;
   const foe = from[Math.floor(rng() * from.length)] as SpeciesId;
   day.match = { foe, played: day.match?.played ?? 0 };
   return foe;
