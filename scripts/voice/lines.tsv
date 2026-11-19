@@ -488,6 +488,11 @@ st_best	Best friends. Become best friends with a monster.
 st_eight	Full meadow. Have 8 monster friends.
 st_days3	Three days. Play on 3 different days.
 st_days7	Seven days. Play on 7 different days.
+st_match1	First match. Win your first match.
+st_match5	Five matches. Win 5 matches.
+st_match10	Ten matches. Win 10 matches.
+st_match20	Twenty matches. Win 20 matches.
+st_match50	Match champion. Win 50 matches.
 n0	0.
 n1	1.
 n2	2.

@@ -216,6 +216,12 @@ export const STICKERS: Sticker[] = [
   { id: 'eight', name: 'Full meadow', mark: '8', tone: 'mul', how: 'Have 8 monster friends', earned: (s) => friends(s).length >= 8 },
   { id: 'days3', name: 'Three days', mark: '3', tone: 'div', how: 'Play on 3 different days', earned: (s) => daysPlayed(s).length >= 3 },
   { id: 'days7', name: 'Seven days', mark: '7', tone: 'gold', how: 'Play on 7 different days', earned: (s) => daysPlayed(s).length >= 7 },
+  // Matches won. One match a day, so the last of these is about two months of playing.
+  { id: 'match1', name: 'First match', mark: '1', tone: 'mint', how: 'Win your first match', earned: (s) => (s.matchWins ?? 0) >= 1 },
+  { id: 'match5', name: 'Five matches', mark: '5', tone: 'add', how: 'Win 5 matches', earned: (s) => (s.matchWins ?? 0) >= 5 },
+  { id: 'match10', name: 'Ten matches', mark: '10', tone: 'sub', how: 'Win 10 matches', earned: (s) => (s.matchWins ?? 0) >= 10 },
+  { id: 'match20', name: 'Twenty matches', mark: '20', tone: 'mul', how: 'Win 20 matches', earned: (s) => (s.matchWins ?? 0) >= 20 },
+  { id: 'match50', name: 'Match champion', mark: '50', tone: 'gold', how: 'Win 50 matches', earned: (s) => (s.matchWins ?? 0) >= 50 },
 ];
 
 /** Award any stickers earned since the last check. Each is returned once. */

@@ -430,6 +430,7 @@ export const matchScreen: Screen = (app, params) => {
     m.rounds += 1;
     day.wins += 1;
     day.match = { foe, played: (day.match?.played ?? 0) + 1 };
+    save.matchWins = (save.matchWins ?? 0) + 1;
     toasts(el, gainLines(onRound(save, id)));
     const { result, bonus } = roundStars(save, id);
     app.commit();

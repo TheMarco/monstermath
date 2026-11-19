@@ -274,6 +274,10 @@ numbers, the next step on from objects. So:
 - When the answer has to be shown twice for one kind, the match stops and she
   is sent to the monster that teaches it.
 
+A match pays what a round of berry trips pays (ranger points, berries, egg
+warmth, a star for her buddy). Matches won also earn their own stickers, at 1,
+5, 10, 20 and 50.
+
 The moves are drawn by the game, so a new monster needs no extra art. Each
 match is held in the arena of the monster that asked (`arenaFor` in
 `src/data/monsters.ts`; pictures in `public/art/bg/arena-*.jpg`, fetched by

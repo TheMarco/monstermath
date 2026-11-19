@@ -206,3 +206,19 @@ describe('the match screen', () => {
     handle.dispose?.();
   });
 });
+
+describe('match stickers', () => {
+  it('come at 1, 5, 10, 20 and 50 matches won', async () => {
+    const { claimStickers } = await import('../src/rewards');
+    const save = freshSave();
+    const ids = (): string[] => save.stickers.filter((s) => s.startsWith('match'));
+    claimStickers(save);
+    expect(ids()).toEqual([]);
+    for (const [wins, have] of [[1, 1], [4, 1], [5, 2], [10, 3], [20, 4], [49, 4], [50, 5]] as const) {
+      save.matchWins = wins;
+      claimStickers(save);
+      expect(ids()).toHaveLength(have);
+    }
+    expect(ids()).toEqual(['match1', 'match5', 'match10', 'match20', 'match50']);
+  });
+});

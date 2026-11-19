@@ -243,6 +243,8 @@ export interface Save {
   startStep?: Partial<Record<Delivery, number>>;
   /** Ranger points: every heart and berry trip counts. */
   xp: number;
+  /** Matches won, for the match stickers. */
+  matchWins?: number;
   /** The egg being warmed, and eggs earned but not yet in the nest. */
   egg: { warmth: number } | null;
   eggsOwed: number;
