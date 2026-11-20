@@ -350,9 +350,10 @@ export const matchScreen: Screen = (app, params) => {
       // Only a problem at her own level says something about her level.
       if (o && t.own) {
         const om = monster(save, o);
-        const moved = record({ rung: t.rung, recent: (om.recent ?? []) as Mark[] }, topRung(p.type), firstTry, false);
+        const moved = record({ rung: t.rung, recent: (om.recent ?? []) as Mark[], missed: om.missed }, topRung(p.type), firstTry, false);
         om.step = moved.rung;
         om.recent = moved.recent;
+    om.missed = moved.missed;
         if (moved.moved > 0) {
           sfx('level');
           toasts(el, [levelUpLine(climbed(save, `trip.${p.type}`, t.rung, moved.rung, id), name, 'numbers')]);

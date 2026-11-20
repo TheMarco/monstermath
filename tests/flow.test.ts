@@ -14,6 +14,8 @@ const tomorrow = (): void => {
 
 // The scripted sessions play at her own rung; stretch problems have their own tests.
 tuning.stretchChance = 0;
+// They also climb at the standard pace; the catch-up for a child who never misses has its own tests.
+tuning.catchUp = false;
 
 /** Plays the first session end to end in jsdom, the way a child would click through it. */
 

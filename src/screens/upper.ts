@@ -70,7 +70,10 @@ export const upperScreen: Screen = (app, params) => {
   function progress(kind: UpperKind): EarlyProgress {
     const store = practice ? tryStore : (save.upper ??= {});
     const at = (store[kind] ??= {});
-    if (at.step === undefined) at.step = upperStartStep(save.intakeLevels, kind, practice ? undefined : save.startGrade);
+    if (at.step === undefined) {
+      at.step = upperStartStep(save.intakeLevels, kind, practice ? undefined : save.startGrade);
+      at.missed = false;
+    }
     at.step = Math.max(0, Math.min(upperTop(kind), at.step));
     return at;
   }
@@ -174,7 +177,7 @@ export const upperScreen: Screen = (app, params) => {
     }
     const at = progress(ownKind);
     const rung = at.step ?? 0;
-    stretch = wantsStretch({ rung, recent: (at.recent ?? []) as Mark[] }, upperTop(ownKind));
+    stretch = wantsStretch({ rung, recent: (at.recent ?? []) as Mark[], missed: at.missed }, upperTop(ownKind));
     const before = p ? upperText(p) : '';
     // Never the same problem twice in a row.
     for (let tries = 0; tries < 6; tries++) {
@@ -589,9 +592,10 @@ export const upperScreen: Screen = (app, params) => {
     const worked = answers.length <= 3;
     const at = progress(p.kind);
     const before = at.step ?? 0;
-    const moved = record({ rung: before, recent: (at.recent ?? []) as Mark[] }, upperTop(p.kind), firstTry, stretch);
+    const moved = record({ rung: before, recent: (at.recent ?? []) as Mark[], missed: at.missed }, upperTop(p.kind), firstTry, stretch);
     at.step = moved.rung;
     at.recent = moved.recent;
+    at.missed = moved.missed;
     // Stepping down means repeated misses: reteach the idea before the next problem.
     if (moved.moved < 0 && !practice) lessonDue = LESSON_FOR_UPPER[p.kind];
     at.shownRun = revealed ? (at.shownRun ?? 0) + 1 : 0;

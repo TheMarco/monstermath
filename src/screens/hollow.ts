@@ -79,7 +79,10 @@ export const hollowScreen: Screen = (app, params) => {
   /** Her rung on this idea's ladder. It starts from the first-day check. */
   function rungFor(kind: FracKind): number {
     const o = monster(save, owner(kind));
-    if (o.step === undefined) o.step = fracStartStep(save.intakeLevels, kind);
+    if (o.step === undefined) {
+      o.step = fracStartStep(save.intakeLevels, kind);
+      o.missed = false;
+    }
     o.step = Math.max(0, Math.min(fracTop(kind), o.step));
     return o.step;
   }
@@ -553,7 +556,7 @@ export const hollowScreen: Screen = (app, params) => {
     const worked = answers.length <= 3;
     const o = monster(save, owner(p.kind));
     const before = rungFor(p.kind);
-    const moved = record({ rung: before, recent: (o.recent ?? []) as Mark[] }, fracTop(p.kind), firstTry, stretch);
+    const moved = record({ rung: before, recent: (o.recent ?? []) as Mark[], missed: o.missed }, fracTop(p.kind), firstTry, stretch);
     // Stepping down means repeated misses: reteach the idea before the next problem.
     if (moved.moved < 0) lessonDue = LESSON_FOR_KIND[p.kind];
     o.step = moved.rung;
@@ -567,6 +570,7 @@ export const hollowScreen: Screen = (app, params) => {
       }
     }
     o.recent = moved.recent;
+    o.missed = moved.missed;
     const day = today(save);
     if (worked) day.trips += 1;
     save.fracLog ??= [];

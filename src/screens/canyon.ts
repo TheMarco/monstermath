@@ -89,7 +89,10 @@ export const canyonScreen: Screen = (app, params) => {
   function rungFor(type: Delivery): number {
     const o = monster(save, owner(type));
     // Saves from before the first-day check start at the full two-digit range.
-    if (o.step === undefined) o.step = save.startStep ? (save.startStep[type] ?? 0) : topRung(type) - 1;
+    if (o.step === undefined) {
+      o.step = save.startStep ? (save.startStep[type] ?? 0) : topRung(type) - 1;
+      o.missed = false;
+    }
     o.step = Math.max(0, Math.min(topRung(type), o.step));
     return o.step;
   }
@@ -616,7 +619,7 @@ export const canyonScreen: Screen = (app, params) => {
     walking = false;
     const o = monster(save, owner(p.type));
     const before = rungFor(p.type);
-    const moved = record({ rung: before, recent: (o.recent ?? []) as Mark[] }, topRung(p.type), firstTry, stretch);
+    const moved = record({ rung: before, recent: (o.recent ?? []) as Mark[], missed: o.missed }, topRung(p.type), firstTry, stretch);
     // Stepping down means repeated misses: reteach the idea before the next trip.
     if (moved.moved < 0) lessonDue = LESSON_FOR_KIND[p.type];
     o.step = moved.rung;
@@ -630,6 +633,7 @@ export const canyonScreen: Screen = (app, params) => {
       }
     }
     o.recent = moved.recent;
+    o.missed = moved.missed;
     const day = today(save);
     if (worked) day.trips += 1;
     save.tripLog.push({
