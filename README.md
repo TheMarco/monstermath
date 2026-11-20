@@ -241,6 +241,19 @@ resting friend brings it out. "Rest" on a friend's card sends it in again
 are done, "Good night" puts the meadow to sleep, which gives the session a
 clear end.
 
+**A short first sitting.** Children who tested the game asked for a shorter
+start. When the game finds the level out for itself, the first sitting asks
+only about numbers and adding: at most 12 questions, and far fewer for a child
+who struggles, because each topic stops after two misses. Before, a child who
+did well faced 30 questions or more before playing anything. Taking away,
+times, sharing and fractions are each asked the first time she goes to a game
+that builds on them (taking away before the first take-away monster,
+fractions before Honey Hollow), ahead of any lesson for that game. So every
+game still starts at her level, and nothing is asked weeks before it is used.
+The grown-up page fills in a topic once it has been asked. When a grown-up
+chooses the start, the check they chose is asked in one sitting as before
+(`src/checkup.ts`, `strandPlan` in `src/intake.ts`).
+
 **A match.** Children who tested the game asked for battles. A match gives
 them one in which the fight is the sum, in turns. On her turn her monster's
 move takes some of the other monster's power away, and she works out what is

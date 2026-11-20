@@ -20,6 +20,7 @@ import { titleScreen } from './screens/title';
 import { matchScreen } from './screens/match';
 import { upperScreen } from './screens/upper';
 import { freshSave, loadSave, persist, players, today, wipeSave } from './state';
+import { checkBefore } from './checkup';
 import { loadAnimManifest } from './ui/anim';
 import { setCharmLookup } from './ui/charms';
 import { hearNumbers } from './ui/hear';
@@ -68,12 +69,28 @@ const MUSIC: Record<ScreenName, [Track | null | 'keep', number]> = {
   grownups: [null, 0],
 };
 
+/** The games a monster is played with in. */
+const GAMES: ScreenName[] = ['befriend', 'canyon', 'hollow', 'upper'];
+
 export function startApp(stage: HTMLElement): App {
   let current: ScreenHandle | null = null;
 
   const app: App = {
     save: loadSave(),
-    go(name, params = {}) {
+    go(to, given = {}) {
+      let name = to;
+      let params = given;
+      // A topic she has not been asked about yet is asked just before the first game that builds on it.
+      // A lesson on the way to a game comes after the questions, so it cannot colour the answers.
+      const lessonFor = to === 'lesson' ? (given.back as { screen?: ScreenName; params?: Record<string, unknown> } | undefined) : undefined;
+      const game = lessonFor?.screen && GAMES.includes(lessonFor.screen) ? (lessonFor.params ?? {}) : GAMES.includes(to) ? given : null;
+      if (game && typeof game.id === 'string' && game.practice !== true) {
+        const check = checkBefore(app.save, game.id as SpeciesId);
+        if (check.length > 0) {
+          name = 'intro';
+          params = { check, back: { screen: to, params: given } };
+        }
+      }
       current?.dispose?.();
       hush();
       audioSettings.voice = app.save.settings.voice;

@@ -1,5 +1,5 @@
 import { beforeAll, describe, expect, it, vi } from 'vitest';
-import { STRANDS, type IntakeItem } from '../src/intake';
+import { ALL_STRANDS, STRANDS, type IntakeItem, type Strand } from '../src/intake';
 import { LESSONS, type LessonId } from '../src/lessons';
 import { tuning } from '../src/ladder';
 import { clock, type Save } from '../src/state';
@@ -37,7 +37,12 @@ function buttonByText(label: string): HTMLElement {
   return found;
 }
 
-const click = (label: string): void => buttonByText(label).click();
+/** Going to a game can first bring a short round of questions about a topic not asked yet. */
+const TO_A_GAME = ['Tall Grass', 'Berry Canyon', 'Honey Hollow', 'Bakery', 'Play'];
+const click = (label: string): void => {
+  buttonByText(label).click();
+  if (TO_A_GAME.includes(label)) checkupIfAsked();
+};
 const key = (k: string): void => {
   window.dispatchEvent(new KeyboardEvent('keydown', { key: k }));
 };
@@ -75,6 +80,32 @@ function answer(item: IntakeItem): void {
     click('Feed');
   }
   wait(1000);
+}
+
+/** Answers every level of a round correctly. */
+function passStrand(strand: Strand): void {
+  for (const level of strand.levels) {
+    answer(level.items[0]);
+    // A pick-one level asks both of its questions.
+    if (level.items[0].choices) answer(level.items[1]);
+  }
+}
+
+/**
+ * A topic the first sitting left out is asked just before the first game that
+ * builds on it. Answers those rounds correctly and returns the topics asked.
+ */
+function checkupIfAsked(): string[] {
+  const asked: string[] = [];
+  for (let i = 0; i < 4 && q('.feed-card .feed-show'); i++) {
+    cuddleIfAsked();
+    const known = saved().intakeLevels ?? {};
+    const strand = ALL_STRANDS.find((s) => known[s.id] === undefined && s.levels[0]!.items[0].show === text('.feed-show'));
+    if (!strand) break;
+    passStrand(strand);
+    asked.push(strand.id);
+  }
+  return asked;
 }
 
 /** Works through the lesson on screen, if there is one, and returns its id. */
@@ -167,22 +198,17 @@ describe('first session', () => {
     click('Pick Puff');
     meetFriend();
     expect(q('.feed-card')).not.toBeNull();
-    // Answer every level of every strand correctly: the full staircase.
-    for (const strand of STRANDS) {
-      for (const level of strand.levels) {
-        answer(level.items[0]);
-        // A pick-one level asks both of its questions.
-        if (level.items[0].choices) answer(level.items[1]);
-      }
-    }
+    // The first sitting asks only about numbers and adding. Answer every level correctly.
+    passStrand(STRANDS[0]!);
+    passStrand(STRANDS[1]!);
     expect(text('.party h2')).toBe('Puff is your friend!');
     const save = saved();
     expect(save.introDone).toBe(true);
-    expect(save.placement).toHaveLength(43);
-    expect(save.intakeLevels).toEqual({ place: 5, add: 7, sub: 7, mul: 6, div: 5, frac: 5 });
-    expect(save.startStep).toEqual({ add: 4, addR: 4, sub: 4, subR: 4 });
+    expect(save.placement).toHaveLength(13);
+    expect(save.intakeLevels).toEqual({ place: 5, add: 7 });
+    expect(save.startStep).toEqual({ add: 4, addR: 4, sub: 0, subR: 0 });
     expect(save.placement.every((p) => p.correct)).toBe(true);
-    expect(save.fast).toEqual({ add: true, addR: true, sub: true, subR: true });
+    expect(save.fast).toEqual({ add: true, addR: true, sub: false, subR: false });
     click('Go to the meadow');
     expect(qa('.friend')).toHaveLength(1);
   });
@@ -606,6 +632,11 @@ describe('a child who finds the sums hard', () => {
     expect(text('.cuddle h2')).toBe('Quick break!');
     cuddleIfAsked();
 
+    // A break, then back to the same place.
+    click('Take a break');
+    click('Start');
+    expect(qa('.feed-progress i.done')).toHaveLength(1);
+
     // Addition: first question right, then two misses at the next level.
     expect(text('.feed-show')).toBe('5 + 3');
     type('8');
@@ -615,24 +646,12 @@ describe('a child who finds the sums hard', () => {
     wait(1000);
     click('Not sure');
     wait(1000);
-    expect(saved().intakeLevels).toEqual({ place: 2, add: 1 });
-    cuddleIfAsked();
-
-    // A break, then back to the same place.
-    click('Take a break');
-    click('Start');
-    expect(qa('.feed-progress i.done')).toHaveLength(2);
-    expect(text('.feed-show')).toBe('8 − 3');
-
-    for (let i = 0; i < 40 && !q('.party'); i++) {
-      cuddleIfAsked();
-      click('Not sure');
-      wait(1000);
-    }
+    // The first sitting ends there: taking away, times, sharing and fractions are asked when their games come up.
+    expect(text('.party h2')).toBe('Pim is your friend!');
     const save = saved();
-    expect(save.intakeLevels).toEqual({ place: 2, add: 1, sub: 0, mul: 0, div: 0, frac: 0 });
-    // 4 + 3 questions before the break, then two per typed strand and one for fractions (pick-one).
-    expect(save.placement).toHaveLength(14);
+    expect(save.intakeLevels).toEqual({ place: 2, add: 1 });
+    // 4 questions on numbers and 3 on adding.
+    expect(save.placement).toHaveLength(7);
     // She passed sums within 10 only, so addition starts one rung up from the bottom.
     expect(save.startStep).toEqual({ add: 1, addR: 0, sub: 0, subR: 0 });
 
@@ -678,7 +697,9 @@ describe('a child who finds the sums hard', () => {
     expect(saved().monsters.nub?.step).toBe(0);
 
     const { intakeWarning } = await import('../src/report');
-    expect(intakeWarning(saved())).toContain('In subtraction the check stopped before sums within 10');
+    // Taking away has not been asked yet: it comes up before the first take-away game, so there is nothing to warn about.
+    expect(intakeWarning(saved())).toBeNull();
+    expect(intakeWarning({ ...saved(), intakeLevels: { place: 2, add: 1, sub: 0 } })).toContain('In subtraction the check stopped before sums within 10');
 
     // Stretch problems: after two clean trips at her rung, one comes from the rung above.
     click('Next trip');

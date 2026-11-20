@@ -3,17 +3,18 @@ import { ALL_SPECIES, SPECIES, STARTERS, type SpeciesId } from '../data/monsters
 import {
   advance,
   currentItem,
+  ALL_STRANDS,
   newRun,
-  fastTrack,
-  startSteps,
   strandPlan,
   type IntakeItem,
   type Strand,
+  type StrandId,
   type StrandRun,
   type Visual,
 } from '../intake';
-import { befriend, displayName, monster } from '../state';
-import { backdrop, button, celebrate, confetti, floatUp, icon, monsterImg, speaker, type Screen } from '../ui/common';
+import { applyCheck } from '../checkup';
+import { befriend, buddyOf, displayName, monster } from '../state';
+import { backdrop, button, celebrate, confetti, floatUp, icon, monsterImg, speaker, type Screen, type ScreenName } from '../ui/common';
 import { h, replace, times } from '../ui/dom';
 import { keypad, pushDigit } from '../ui/keypad';
 import { arrayModel, berry, blocksView, dotsModel, fractionBar, groupsModel } from '../ui/models';
@@ -45,8 +46,10 @@ function drawVisual(v: Visual): HTMLElement {
  * right or wrong, "Not sure" is always allowed, and she can take a break
  * between strands and pick up where she left off.
  */
-export const introScreen: Screen = (app) => {
+export const introScreen: Screen = (app, params) => {
   const { save } = app;
+  /** A check before a game: only these topics, then on to the game. See `src/checkup.ts`. */
+  const checkup = Array.isArray(params.check) ? { strands: params.check as StrandId[], back: params.back as { screen: ScreenName; params?: Record<string, unknown> } } : null;
   const body = h('div', { class: 'intro-body' });
   const el = h('div', { class: 'screen intro-screen' }, backdrop('meadow'), body);
   let onKey: (e: KeyboardEvent) => void = () => {};
@@ -227,8 +230,8 @@ export const introScreen: Screen = (app) => {
     const name = displayName(save, starter);
     const voiceIndex = ALL_SPECIES.indexOf(starter);
     /** The rounds to ask. Counting can be added at the end, once the other rounds are in. */
-    const plan = (): Strand[] => strandPlan(save.startAt, save.intakeLevels ?? {});
-    let strandIndex = Math.min(save.intakeAt ?? 0, plan().length);
+    const plan = (): Strand[] => (checkup ? ALL_STRANDS.filter((s) => checkup.strands.includes(s.id)) : strandPlan(save.startAt, save.intakeLevels ?? {}));
+    let strandIndex = checkup ? 0 : Math.min(save.intakeAt ?? 0, plan().length);
     let run: StrandRun = newRun();
     let busy = false;
     let asked = 0;
@@ -254,7 +257,7 @@ export const introScreen: Screen = (app) => {
           'Take a break',
           () => {
             app.commit();
-            app.go('title');
+            app.go(checkup ? 'home' : 'title');
           },
           'btn-quiet',
         ),
@@ -303,7 +306,7 @@ export const introScreen: Screen = (app) => {
         // Berries for finishing the round, whatever the answers were: something to spend in the meadow.
         save.berries = (save.berries ?? 0) + ROUND_BERRIES;
         strandIndex += 1;
-        save.intakeAt = strandIndex;
+        if (!checkup) save.intakeAt = strandIndex;
         run = newRun();
         moved = true;
       }
@@ -403,17 +406,20 @@ export const introScreen: Screen = (app) => {
         };
       }
 
-      if (asked === 0 && fresh) say('i_intro2', ...item.clips);
+      if (asked === 0 && checkup) say('i_check', ...item.clips);
+      else if (asked === 0 && fresh) say('i_intro2', ...item.clips);
       else if (newStrand && asked > 0) sayAlso('i_next2', ...item.clips);
       else if (asked === 0) say(...item.clips);
       else sayAlso(...item.clips);
     }
 
     function finish(): void {
-      const levels = save.intakeLevels ?? {};
-      const steps = startSteps(levels);
-      save.startStep = steps;
-      save.fast = fastTrack(levels);
+      applyCheck(save);
+      if (checkup) {
+        app.commit();
+        app.go(checkup.back.screen, checkup.back.params);
+        return;
+      }
       save.introDone = true;
       befriend(save, starter);
       app.commit();
@@ -435,7 +441,8 @@ export const introScreen: Screen = (app) => {
   }
 
   // Coming back after a break: straight to where she left off.
-  if (save.starter && !save.introDone) feedStep(save.starter, false);
+  if (checkup) feedStep(buddyOf(save), false);
+  else if (save.starter && !save.introDone) feedStep(save.starter, false);
   else pickStep();
 
   return { el, onKey: (e) => onKey(e) };

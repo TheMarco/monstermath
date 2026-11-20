@@ -203,7 +203,7 @@ export const ALL_STRANDS: Strand[] = [COUNT_STRAND, ...STRANDS];
 export type { StartPoint } from './start';
 
 export const START_POINTS: Array<{ id: StartPoint | 'auto'; label: string; asks: string }> = [
-  { id: 'auto', label: 'Let the game find out', asks: 'Asks about every topic, easiest first, and stops each topic after two misses. Counting is added when the first sums do not go well.' },
+  { id: 'auto', label: 'Let the game find out', asks: 'On the first day asks only about numbers and adding, easiest first, and stops each topic after two misses. Counting is added when the first sums do not go well. Taking away, times, sharing and fractions are each asked later, just before the first game that builds on them.' },
   { id: 'early', label: 'Start with counting (about kindergarten and grade 1)', asks: 'Asks only about counting, numbers to 100, adding and subtracting.' },
   { id: 'sums', label: 'Start with adding and subtracting (about grades 1 and 2)', asks: 'Asks about numbers, adding, subtracting and equal groups. Leaves out division and fractions.' },
   { id: 'middle', label: 'Start with times tables and first fractions (about grade 3)', asks: 'Asks about numbers, adding, subtracting, equal groups, sharing and fractions. Leaves out counting.' },
@@ -238,10 +238,25 @@ export function gradeOf(start: StartPoint | undefined, grade: number | undefined
 export function strandPlan(start: StartPoint | undefined, levels: IntakeLevels): Strand[] {
   const byId = (id: StrandId): Strand => ALL_STRANDS.find((s) => s.id === id) as Strand;
   if (start) return [...PLAN[start], ...(steppedDown(start, levels) ? BELOW[start] : [])].map(byId);
-  const asked = STRANDS.every((s) => levels[s.id] !== undefined);
+  const asked = FIRST_DAY.every((id) => levels[id] !== undefined);
   // Not reading teen numbers, or not adding within 10: find out where counting stands.
   const low = (levels.place ?? 0) < 2 || (levels.add ?? 0) < 1;
-  return asked && low ? [...STRANDS, COUNT_STRAND] : STRANDS;
+  return (asked && low ? [...FIRST_DAY, 'count' as StrandId] : FIRST_DAY).map(byId);
+}
+
+/**
+ * When the game finds out for itself, the first sitting asks only what the
+ * first games need: numbers and adding. A child who does well would otherwise
+ * face thirty questions or more before playing anything.
+ */
+export const FIRST_DAY: StrandId[] = ['place', 'add'];
+/** The other topics are each asked the first time she goes to a game that builds on them. */
+export const LATER: StrandId[] = ['sub', 'mul', 'div', 'frac'];
+
+/** The topics still to ask before a game that builds on these. Only when the game finds out for itself. */
+export function stillToAsk(start: StartPoint | undefined, levels: IntakeLevels | undefined, needs: StrandId[]): StrandId[] {
+  if (start) return [];
+  return LATER.filter((id) => needs.includes(id) && levels?.[id] === undefined);
 }
 
 export interface StrandRun {

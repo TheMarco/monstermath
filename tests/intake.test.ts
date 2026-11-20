@@ -136,16 +136,52 @@ describe('intake staircases', () => {
 
 
 describe('where the check begins', () => {
-  it('asks every topic when no start point is chosen, and adds counting only when the first sums went badly', async () => {
+  it('asks only numbers and adding at first when no start point is chosen, and adds counting when those went badly', async () => {
     const { strandPlan, COUNT_STRAND } = await import('../src/intake');
-    expect(strandPlan(undefined, {}).map((s) => s.id)).toEqual(['place', 'add', 'sub', 'mul', 'div', 'frac']);
+    expect(strandPlan(undefined, {}).map((s) => s.id)).toEqual(['place', 'add']);
     // Part way through, the list does not change, so a break resumes at the right round.
-    expect(strandPlan(undefined, { place: 0, add: 0 })).toHaveLength(6);
-    const strong = { place: 5, add: 7, sub: 7, mul: 6, div: 5, frac: 5 };
-    expect(strandPlan(undefined, strong)).toHaveLength(6);
-    const low = { place: 1, add: 0, sub: 0, mul: 0, div: 0, frac: 0 };
+    expect(strandPlan(undefined, { place: 0 })).toHaveLength(2);
+    expect(strandPlan(undefined, { place: 5, add: 7 })).toHaveLength(2);
+    const low = { place: 1, add: 0 };
     expect(strandPlan(undefined, low).at(-1)).toBe(COUNT_STRAND);
-    expect(strandPlan(undefined, { ...low, count: 2 })).toHaveLength(7);
+    expect(strandPlan(undefined, { ...low, count: 2 })).toHaveLength(3);
+  });
+
+  it('asks each other topic just before the first game that builds on it', async () => {
+    const { checkBefore, applyCheck } = await import('../src/checkup');
+    const { freshSave } = await import('../src/state');
+    const save = freshSave();
+    save.intakeLevels = { place: 5, add: 7 };
+    // Not before the first sitting is over.
+    expect(checkBefore(save, 'dusk')).toEqual([]);
+    save.introDone = true;
+    expect(checkBefore(save, 'nub')).toEqual([]);
+    expect(checkBefore(save, 'dab')).toEqual([]);
+    expect(checkBefore(save, 'puff')).toEqual([]);
+    expect(checkBefore(save, 'fig')).toEqual([]);
+    expect(checkBefore(save, 'dusk')).toEqual(['sub']);
+    expect(checkBefore(save, 'chip')).toEqual(['sub']);
+    expect(checkBefore(save, 'moss')).toEqual(['sub']);
+    expect(checkBefore(save, 'glim')).toEqual(['mul']);
+    expect(checkBefore(save, 'fenn')).toEqual(['div']);
+    expect(checkBefore(save, 'bix')).toEqual(['frac']);
+    expect(checkBefore(save, 'belch')).toEqual(['mul']);
+    expect(checkBefore(save, 'drift')).toEqual(['div']);
+    expect(checkBefore(save, 'bug')).toEqual(['frac']);
+    expect(checkBefore(save, 'cook')).toEqual([]);
+    // Once asked, never again, whatever the result. The answers set where the games start.
+    save.intakeLevels = { ...save.intakeLevels, sub: 7 };
+    expect(checkBefore(save, 'dusk')).toEqual([]);
+    applyCheck(save);
+    expect(save.startStep).toEqual({ add: 4, addR: 4, sub: 4, subR: 4 });
+    expect(save.fast).toEqual({ add: true, addR: true, sub: true, subR: true });
+    // A save from before the check existed is never asked.
+    const old = freshSave();
+    old.introDone = true;
+    expect(checkBefore(old, 'dusk')).toEqual([]);
+    // A grown-up chose the start: the check they chose is the whole check.
+    save.startAt = 'sums';
+    expect(checkBefore(save, 'bix')).toEqual([]);
   });
 
   it('a grown-up can start with counting, or with adding and subtracting', async () => {
