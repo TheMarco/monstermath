@@ -248,6 +248,8 @@ export interface Save {
   xp: number;
   /** Matches won, for the match stickers. */
   matchWins?: number;
+  /** Her level in matches for each kind of berry trip (see `matchLevel` in match.ts). */
+  matchLevels?: Partial<Record<Delivery, { rung: number; recent: number[] }>>;
   /** The egg being warmed, and eggs earned but not yet in the nest. */
   egg: { warmth: number } | null;
   eggsOwed: number;

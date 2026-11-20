@@ -25,6 +25,9 @@ export const MATCHES_PER_DAY = 2;
 /** After a match, this many treats or trips in the other games before another friend asks. */
 export const BETWEEN_MATCHES = 5;
 
+/** Tests of a scripted session switch the invitations off: which friend asks is left to chance. */
+export const matchTuning = { invites: true };
+
 /** What she has done today in the games: treats given and trips made. */
 const doneToday = (save: Save): number => today(save).treats + today(save).trips;
 
@@ -56,14 +59,41 @@ export function ownerOf(type: Delivery): SpeciesId | undefined {
   return CANYON_ORDER.find((c) => SPECIES[c].delivery === type);
 }
 
-/** Her level for each kind that is ready for matches: the kinds that go well without the berries. */
+/** Her level in the Berry Canyon for a kind of problem, where the crates and berries are there to move. */
+function canyonRung(save: Save, type: Delivery): number {
+  const o = ownerOf(type);
+  const step = (o ? save.monsters[o]?.step : undefined) ?? (save.startStep ? (save.startStep[type] ?? 0) : topRung(type) - 1);
+  return Math.max(0, Math.min(topRung(type), step));
+}
+
+/** A match starts this many levels below the canyon when she has not yet shown the kind without the berries. */
+export const BELOW_CANYON = 2;
+/** Trips done cleanly without touching the berries that count as having shown a level without them. */
+const SHOWN_WITHOUT = 2;
+
+/**
+ * Her level in matches for a kind of problem. A match has no berries to move,
+ * only a bar and the numbers, and that is harder than the same sum in the
+ * canyon. So matches keep a level of their own. It starts at the highest
+ * level she has done cleanly without touching the berries, or two levels
+ * below her canyon level when she has not, and it never passes her canyon level.
+ */
+export function matchLevel(save: Save, type: Delivery): number {
+  const canyon = canyonRung(save, type);
+  const kept = save.matchLevels?.[type];
+  if (kept) return Math.max(0, Math.min(canyon, kept.rung));
+  const bare = save.tripLog.filter((t) => t.type === type && t.firstTry && !t.usedBlocks && !t.helped && t.rung !== undefined).map((t) => t.rung as number);
+  const shown = Math.max(-1, ...bare.filter((r) => bare.filter((x) => x >= r).length >= SHOWN_WITHOUT));
+  return Math.max(0, Math.min(canyon, Math.max(shown, canyon - BELOW_CANYON)));
+}
+
+/** Her match level for each kind that is ready for matches: the kinds that go well in the canyon. */
 export function matchRungs(save: Save): Rungs {
   const out: Rungs = {};
   for (const type of KINDS) {
     const o = ownerOf(type);
     if (!o || !isFriend(save, o) || !fluent(save, type)) continue;
-    const step = save.monsters[o]?.step ?? (save.startStep ? (save.startStep[type] ?? 0) : topRung(type) - 1);
-    out[type] = Math.max(0, Math.min(topRung(type), step));
+    out[type] = matchLevel(save, type);
   }
   return out;
 }
@@ -87,6 +117,7 @@ export function canMatch(save: Save): boolean {
  */
 export function matchInvite(save: Save, inMeadow: SpeciesId[], rng: () => number = Math.random): SpeciesId | null {
   const day = today(save);
+  if (!matchTuning.invites) return null;
   if ((day.match?.played ?? 0) >= MATCHES_PER_DAY || !canMatch(save)) return null;
   const mine = buddyOf(save);
   const asked = new Set((day.wishes ?? []).filter((w) => !w.done).map((w) => w.id));

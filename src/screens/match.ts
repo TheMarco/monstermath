@@ -347,15 +347,16 @@ export const matchScreen: Screen = (app, params) => {
     const o = ownerOf(p.type);
     if (!practice) {
       const day = today(save);
-      // Only a problem at her own level says something about her level.
-      if (o && t.own) {
-        const om = monster(save, o);
-        const moved = record({ rung: t.rung, recent: (om.recent ?? []) as Mark[] }, topRung(p.type), firstTry, false);
-        om.step = moved.rung;
-        om.recent = moved.recent;
+      // Matches keep a level of their own: her canyon level is for work with the berries.
+      // Only a problem at her own match level says something about that level.
+      if (t.own) {
+        const levels = (save.matchLevels ??= {});
+        const kept = levels[p.type] ?? { rung: t.rung, recent: [] };
+        const moved = record({ rung: t.rung, recent: kept.recent as Mark[] }, topRung(p.type), firstTry, false);
+        levels[p.type] = { rung: moved.rung, recent: moved.recent };
         if (moved.moved > 0) {
           sfx('level');
-          toasts(el, [levelUpLine(climbed(save, `trip.${p.type}`, t.rung, moved.rung, id), name, 'numbers')]);
+          toasts(el, [levelUpLine(climbed(save, `match.${p.type}`, t.rung, moved.rung, id), name, 'numbers')]);
         }
       }
       if (worked) day.trips += 1;

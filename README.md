@@ -284,8 +284,15 @@ numbers, the next step on from objects. So:
   treats or made five trips in the other games, and then it is a different
   friend. It is played with her buddy. There is no button that is always there, so a
   match cannot be used to skip the teaching games.
-- The problems are at her own level, count for that level, and are logged like
-  berry trips.
+- Matches keep a level of their own for each kind of problem. A sum without
+  berries to move is harder than the same sum in the canyon, so a match starts
+  at the highest level she has done cleanly in the canyon without touching the
+  berries, or two levels below her canyon level when she has always used them.
+  From there the match level climbs on match problems alone and never passes
+  the canyon level. The canyon level is not changed by matches. (A first
+  version used the canyon level as it was, and gave a child who adds
+  three-digit numbers with the berries the same sums with no picture.)
+- The problems are logged like berry trips.
 - When the answer has to be shown twice for one kind, the match stops and she
   is sent to the monster that teaches it.
 

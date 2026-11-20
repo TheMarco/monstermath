@@ -1,9 +1,9 @@
 // @vitest-environment jsdom
 import { describe, expect, it } from 'vitest';
-import { BETWEEN_MATCHES, canMatch, jumps, MATCH_TURNS, MATCHES_PER_DAY, matchInvite, matchPlayed, matchRungs, planMatch, type Rungs } from '../src/match';
+import { BETWEEN_MATCHES, canMatch, jumps, MATCH_TURNS, MATCHES_PER_DAY, matchInvite, matchLevel, matchPlayed, matchRungs, planMatch, type Rungs } from '../src/match';
 import { isAddition, topRung, type Delivery } from '../src/math/regroup';
 import { matchScreen } from '../src/screens/match';
-import { befriend, freshSave, today, type Save } from '../src/state';
+import { befriend, freshSave, monster, today, type Save } from '../src/state';
 import type { App } from '../src/ui/common';
 
 function seeded(seed: number): () => number {
@@ -223,6 +223,63 @@ describe('the match screen', () => {
     typeIn(handle, sumOf(handle.el).answer);
     expect(save.tripLog).toHaveLength(logged);
     handle.dispose?.();
+  });
+});
+
+describe('the level of a match', () => {
+  const trip = (type: Delivery, rung: number, usedBlocks: boolean, firstTry = true) => ({ t: 1, day: '2026-01-01', monster: 'nub' as const, type, a: 5, b: 2, answers: [7], firstTry, errors: [], usedBlocks, rung });
+  function child(step: number) {
+    const save = freshSave();
+    befriend(save, 'nub');
+    monster(save, 'nub').step = step;
+    return save;
+  }
+
+  it('starts two levels below the canyon level when the berries were always used', () => {
+    const save = child(5);
+    for (let i = 0; i < 6; i++) save.tripLog.push(trip('add', 5, true));
+    expect(matchLevel(save, 'add')).toBe(3);
+    expect(matchRungs(save)).toEqual({ add: 3 });
+    expect(matchLevel(child(1), 'add')).toBe(0);
+  });
+
+  it('starts where she has shown the kind without the berries, and one such trip is not enough', () => {
+    const save = child(5);
+    for (let i = 0; i < 6; i++) save.tripLog.push(trip('add', 5, true));
+    save.tripLog.push(trip('add', 4, false));
+    expect(matchLevel(save, 'add')).toBe(3);
+    save.tripLog.push(trip('add', 5, false));
+    expect(matchLevel(save, 'add')).toBe(4);
+    save.tripLog.push(trip('add', 5, false));
+    expect(matchLevel(save, 'add')).toBe(5);
+    // A trip that needed more than one try shows nothing.
+    const other = child(4);
+    other.tripLog.push(trip('add', 4, false, false), trip('add', 4, false, false));
+    expect(matchLevel(other, 'add')).toBe(2);
+  });
+
+  it('then climbs on match problems alone, never past the canyon level, and leaves the canyon level as it is', () => {
+    const save = child(5);
+    for (let i = 0; i < 6; i++) save.tripLog.push(trip('add', 5, true));
+    save.starter = 'puff';
+    befriend(save, 'puff');
+    const app = { save, go: () => undefined, commit: () => undefined, reset: () => undefined, reload: () => undefined } as unknown as App;
+    const handle = matchScreen(app, { id: 'puff', foe: 'nub' });
+    document.body.replaceChildren(handle.el);
+    for (let i = 0; i < MATCH_TURNS; i++) {
+      const m = /(\d+)\s*\+\s*(\d+)/.exec(handle.el.querySelector('.mt-sum')?.textContent ?? '');
+      for (const d of String(Number(m![1]) + Number(m![2]))) handle.onKey?.(new KeyboardEvent('keydown', { key: d }));
+      handle.onKey?.(new KeyboardEvent('keydown', { key: 'Enter' }));
+      handle.onKey?.(new KeyboardEvent('keydown', { key: 'Enter' }));
+    }
+    handle.dispose?.();
+    // The match kept its own level and asked nothing above it; the canyon level did not move.
+    expect([3, 4]).toContain(save.matchLevels?.add?.rung);
+    expect(monster(save, 'nub').step).toBe(5);
+    expect(save.tripLog.slice(-MATCH_TURNS).every((t) => (t.rung ?? 9) <= 3)).toBe(true);
+    expect(save.tripLog.slice(-MATCH_TURNS).every((t) => t.a < 100 && t.b < 100)).toBe(true);
+    save.matchLevels = { add: { rung: 9, recent: [] } };
+    expect(matchLevel(save, 'add')).toBe(5);
   });
 });
 

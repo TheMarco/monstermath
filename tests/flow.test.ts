@@ -2,6 +2,7 @@ import { beforeAll, describe, expect, it, vi } from 'vitest';
 import { ALL_STRANDS, STRANDS, type IntakeItem, type Strand } from '../src/intake';
 import { LESSONS, type LessonId } from '../src/lessons';
 import { tuning } from '../src/ladder';
+import { matchTuning } from '../src/match';
 import { clock, type Save } from '../src/state';
 
 /** New monsters are limited per day and a skill has to hold overnight: the script sleeps between them. */
@@ -14,6 +15,8 @@ const tomorrow = (): void => {
 
 // The scripted sessions play at her own rung; stretch problems have their own tests.
 tuning.stretchChance = 0;
+// No friend asks for a match in the scripted sessions: who asks is left to chance, and matches have their own tests.
+matchTuning.invites = false;
 
 /** Plays the first session end to end in jsdom, the way a child would click through it. */
 
