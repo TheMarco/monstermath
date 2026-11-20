@@ -17,6 +17,8 @@ const tomorrow = (): void => {
 tuning.stretchChance = 0;
 // No friend asks for a match in the scripted sessions: who asks is left to chance, and matches have their own tests.
 matchTuning.invites = false;
+// They also climb at the standard pace; the catch-up for a child who never misses has its own tests.
+tuning.catchUp = false;
 
 /** Plays the first session end to end in jsdom, the way a child would click through it. */
 

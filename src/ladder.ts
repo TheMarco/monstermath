@@ -3,6 +3,9 @@
  * hardest. She works at her rung; about one problem in four is a stretch
  * problem from the rung above. A window of recent problems decides when she
  * moves: mostly clean answers move her up, repeated misses move her down.
+ * A child who has not missed once since a ladder began moves up after three
+ * clean answers: her start was probably too low, and she should not have to
+ * sit through easy problems to prove it.
  * Stretch problems can only help: a miss on one never counts against her.
  */
 
@@ -12,13 +15,21 @@ export type Mark = 0 | 1 | 2 | 3;
 export interface Progress {
   rung: number;
   recent: Mark[];
+  /**
+   * False while she has not missed once at her own rung since this ladder
+   * began. Unset on ladders from before this was kept: those climb as before.
+   */
+  missed?: boolean;
 }
+
+/** A clean run this long, with no miss on the whole ladder so far, moves her up at once. */
+export const CATCH_UP = 3;
 
 export const WINDOW = 6;
 /** How many problems the game wants to see before it moves her up. */
 export const ENOUGH = 5;
-/** About one problem in four comes from the rung above. Tests set this to 0 to play a fixed script. */
-export const tuning = { stretchChance: 0.25 };
+/** About one problem in four comes from the rung above. Tests set this to 0, and the catch-up off, to play a fixed script. */
+export const tuning = { stretchChance: 0.25, catchUp: true };
 
 const isStretch = (m: Mark | undefined): boolean => m === 2 || m === 3;
 const isClean = (m: Mark | undefined): boolean => m === 1 || m === 3;
@@ -47,16 +58,21 @@ export function record(p: Progress, top: number, clean: boolean, stretch: boolea
   const stretchWins = recent.filter((m) => m === 3).length;
   const own = recent.filter((m) => !isStretch(m));
 
+  // A miss at her own rung ends the catch-up for good. A missed stretch problem does not: it was above her rung.
+  const missed = p.missed === undefined ? undefined : p.missed || mark === 0;
+
   // Up: a window with at most one miss that ends on a clean answer, or two stretch problems solved cleanly.
   const steady = recent.length >= ENOUGH && misses <= 1 && isClean(mark);
   const leaping = stretchWins >= 2 && misses === 0 && recent.length >= 3;
-  if (p.rung < top && (steady || leaping)) return { rung: p.rung + 1, recent: [], moved: 1 };
+  // Catching up: she has never missed here, so the start was probably too low. Three clean answers are enough.
+  const catchingUp = tuning.catchUp && missed === false && recent.length >= CATCH_UP && recent.every(isClean);
+  if (p.rung < top && (steady || leaping || catchingUp)) return { rung: p.rung + 1, recent: [], moved: 1, missed };
 
   // Down: two misses in a row at her own rung, or half a window of misses.
   const twoInARow = own.length >= 2 && own.at(-1) === 0 && own.at(-2) === 0;
-  if (p.rung > 0 && (twoInARow || misses >= 3)) return { rung: p.rung - 1, recent: [], moved: -1 };
+  if (p.rung > 0 && (twoInARow || misses >= 3)) return { rung: p.rung - 1, recent: [], moved: -1, missed };
 
-  return { rung: p.rung, recent, moved: 0 };
+  return { rung: p.rung, recent, moved: 0, missed };
 }
 
 /**

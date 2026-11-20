@@ -83,6 +83,8 @@ export interface MonsterState {
   run?: number;
   /** The skill this monster owns: marks for her last few problems (see ladder.ts). */
   recent?: number[];
+  /** False while she has not missed on this skill's ladder since it began (see ladder.ts). */
+  missed?: boolean;
   /** Problems in a row where the answer had to be shown. */
   shownRun?: number;
   /** Treats, before sizes were shared: this monster's own pool and streak. Read once to carry the size over. */
@@ -188,6 +190,8 @@ export interface UpperEvent {
 export interface EarlyProgress {
   step?: number;
   recent?: number[];
+  /** False while she has not missed on this ladder since it began (see ladder.ts). */
+  missed?: boolean;
   /** Problems in a row where the answer had to be shown. */
   shownRun?: number;
 }

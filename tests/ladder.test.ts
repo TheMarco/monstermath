@@ -69,6 +69,40 @@ describe('moving up and down a ladder', () => {
   });
 });
 
+describe('catching up from a start that was too low', () => {
+  const fresh = (rung: number): Progress => ({ rung, recent: [], missed: false });
+  const clean: [boolean, boolean] = [true, false];
+  const miss: [boolean, boolean] = [false, false];
+
+  it('moves up after three clean answers while she has never missed on this ladder', () => {
+    expect(play(fresh(0), 5, [clean, clean])).toMatchObject({ rung: 0 });
+    expect(play(fresh(0), 5, [clean, clean, clean])).toMatchObject({ rung: 1, recent: [], missed: false });
+    // And keeps going: twelve clean answers climb four rungs.
+    expect(play(fresh(0), 5, Array.from({ length: 12 }, () => clean))).toMatchObject({ rung: 4 });
+    expect(play(fresh(5), 5, [clean, clean, clean])).toMatchObject({ rung: 5 });
+  });
+
+  it('ends for good at the first miss at her own rung: after that it is five problems again', () => {
+    const afterMiss = play(fresh(1), 5, [clean, miss, clean, clean, clean]);
+    expect(afterMiss).toMatchObject({ rung: 2, missed: true });
+    expect(play(afterMiss, 5, [clean, clean, clean, clean])).toMatchObject({ rung: 2 });
+    expect(play(afterMiss, 5, [clean, clean, clean, clean, clean])).toMatchObject({ rung: 3 });
+  });
+
+  it('a missed stretch problem does not end it', () => {
+    const p = play(fresh(1), 5, [clean, clean, [false, true]]);
+    expect(p).toMatchObject({ rung: 1, missed: false });
+    // The stretch miss sits in the window, so the next move up comes by the standard rule.
+    expect(play(p, 5, [clean, clean, clean])).toMatchObject({ rung: 2, missed: false });
+    expect(play({ rung: 2, recent: [], missed: false }, 5, [clean, clean, clean])).toMatchObject({ rung: 3 });
+  });
+
+  it('does not apply to a ladder from before this was kept', () => {
+    expect(play(at(0), 5, [clean, clean, clean, clean])).toMatchObject({ rung: 0 });
+    expect(play(at(0), 5, [clean, clean, clean, clean]).missed).toBeUndefined();
+  });
+});
+
 describe('stretch problems', () => {
   it('come about one time in four, once she has settled', () => {
     let count = 0;

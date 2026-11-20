@@ -182,6 +182,11 @@ picks the rung of the first thing the child has not shown yet. From there:
   first time without help and the latest one was clean, or after two stretch
   problems solved cleanly. It goes down after two misses in a row at the
   child's own rung, and the lesson for that skill replays.
+- A child who has not missed once at her own rung since a ladder began moves
+  up after three clean answers in a row. A start with no misses was probably
+  too low, and she should not sit through easy problems to prove it. The first
+  miss ends this for that ladder, and it is five problems again. Ladders
+  started before this rule existed keep the standard pace.
 - A miss on a stretch problem never counts and brings the
   step-by-step help at once.
 - Treats have one ladder per kind of treat, shared by every monster that asks

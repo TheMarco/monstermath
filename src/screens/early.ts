@@ -81,7 +81,10 @@ export const earlyScreen: Screen = (app, params) => {
   function progress(kind: CountKind): EarlyProgress {
     const store = practice ? tryStore : (save.early ??= {});
     const at = (store[kind] ??= {});
-    if (at.step === undefined) at.step = earlyStartStep(save.intakeLevels, kind, practice ? undefined : save.startGrade);
+    if (at.step === undefined) {
+      at.step = earlyStartStep(save.intakeLevels, kind, practice ? undefined : save.startGrade);
+      at.missed = false;
+    }
     at.step = Math.max(0, Math.min(countTop(kind), at.step));
     return at;
   }
@@ -186,7 +189,7 @@ export const earlyScreen: Screen = (app, params) => {
     }
     const at = progress(ownKind);
     const rung = at.step ?? 0;
-    stretch = wantsStretch({ rung, recent: (at.recent ?? []) as Mark[] }, countTop(ownKind));
+    stretch = wantsStretch({ rung, recent: (at.recent ?? []) as Mark[], missed: at.missed }, countTop(ownKind));
     const before = p ? countText(p) : '';
     // Never the same problem twice in a row.
     for (let tries = 0; tries < 6; tries++) {
@@ -633,9 +636,10 @@ export const earlyScreen: Screen = (app, params) => {
     const worked = answers.length <= 3;
     const at = progress(p.kind);
     const before = at.step ?? 0;
-    const moved = record({ rung: before, recent: (at.recent ?? []) as Mark[] }, countTop(p.kind), firstTry, stretch);
+    const moved = record({ rung: before, recent: (at.recent ?? []) as Mark[], missed: at.missed }, countTop(p.kind), firstTry, stretch);
     at.step = moved.rung;
     at.recent = moved.recent;
+    at.missed = moved.missed;
     // Stepping down means repeated misses: reteach the idea before the next problem.
     if (moved.moved < 0 && !practice) lessonDue = LESSON_FOR_COUNT[p.kind];
     at.shownRun = revealed ? (at.shownRun ?? 0) + 1 : 0;
